@@ -1,7 +1,5 @@
-import java.util.ArrayList;
+public interface SortingAlgorithm {
 
-public interface SorthingAlgorithm {
-
-  ArrayList<Integer> sort();
+  double[] sort(double[] unsortedList, int size);
 
 }
