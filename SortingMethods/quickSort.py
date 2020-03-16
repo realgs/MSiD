@@ -19,9 +19,3 @@ def partition(array, low, high):
 
     array[i+1], array[high] = array[high], array[i+1]
     return i + 1
-
-arr = [1,5,3,26,71,6,7,4,4]
-quickSortArr(arr)
-
-for num in arr:
-    print(num)

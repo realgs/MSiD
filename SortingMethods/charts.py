@@ -1,23 +1,42 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from SortingMethods import quickSort as qs
-import timeit as time
+import quickSort as qs
+import mergeSort as ms
+import timeit
 
-arrayOfTime = []
+arrayOfTimeQs = []
+arrayOfTimeMs = []
+
 maxRandomNumberInArray = 10000
-randomArraySize = 100
+randomArraySize = 10000
+howManyArraysToSort = 100
 
-for i in range(0, 100):
-    array = np.random.randint(maxRandomNumberInArray, randomArraySize)
-    start = time.start
-    quickSortArr(array)
-    end = time.end
+for i in range(0, howManyArraysToSort):
+    array_qs = np.random.randint(low = 0, high = maxRandomNumberInArray, size = randomArraySize) 
+    array_ms = array_qs.copy()
 
-    arrayOfTime.append(end - start)
+    start = timeit.default_timer()
+    qs.quickSortArr(array_qs)
+    end = timeit.default_timer()
+
+    arrayOfTimeQs.append(end - start)
+    
+    start = timeit.default_timer()
+    ms.mergeSort(array_ms)
+    end = timeit.default_timer()
+
+    arrayOfTimeMs.append(end - start)
 
 
-for i in range(0, len(arrayOfTime)):
-    print(i)
+fig = plt.figure()
+fig.suptitle("Time of sorting arrays")
 
-#fig, ax = plt.subplots()
-#ax.plot(len(arrayOfTime), arrayOfTime)
+plt.plot(arrayOfTimeQs, label='QuickSort')
+plt.plot(arrayOfTimeMs,  label= 'MergeSort')
+
+plt.xlabel('Index of sorted Array')
+plt.ylabel('Time')
+
+plt.legend()
+
+plt.show()

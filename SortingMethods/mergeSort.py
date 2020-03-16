@@ -1,6 +1,6 @@
 def mergeSort(array):
     if len(array) > 1:
-        middle = (int) (len(array) / 2)
+        middle = len(array) // 2
   
         leftArr = array[:middle]
         rightArr = array[middle:]
@@ -36,9 +36,6 @@ def merge(array, leftArr, rightArr):
         j += 1
         k += 1
 
-
-arr = [1,5,3,26,71,6,7,4,4]
-mergeSort(arr)
-
-for num in arr:
-    print(num)
+myList = [54,26,93,17,77,31,44,55,20]
+mergeSort(myList)
+print(myList)
