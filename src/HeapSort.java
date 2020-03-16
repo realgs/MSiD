@@ -4,11 +4,11 @@ public class HeapSort<T extends Comparable<? super T>>  //not quite sure why, ha
     {
         Integer[] testArray = {12,5,124,214,1,2,564,6,3,2,1,78,4,2,543,33,0};
         HeapSort<Integer> Sorter = new HeapSort<>();
-        Sorter.heapSort(testArray);
-        System.out.println(java.util.Arrays.toString(testArray));
+        Sorter.sort(testArray);
+
     }
 
-    void heapSort(T[] array)
+    void sort(T[] array)
     {
         int size = array.length;
         for (int i = size / 2 - 1; i > -1; i--)
@@ -22,6 +22,7 @@ public class HeapSort<T extends Comparable<? super T>>  //not quite sure why, ha
 
             heapify(array, i, 0);
         }
+        System.out.println(java.util.Arrays.toString(array));
     }
 
     void heapify(T[] array, int size, int i)
