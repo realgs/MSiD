@@ -12,8 +12,7 @@ public class MergeSort {
         tmp = new int[tab.length];
     }
 
-    private void merge(int fst, int mid, int lst)
-    {
+    private void merge(int fst, int mid, int lst) {
         for (int i=fst; i<=lst; i++) tmp[i]=tab[i];
         int idRight=mid+1,idLeft=fst,idTmpTab=fst;
         while (idLeft<=mid&&idRight<=lst) {
@@ -27,8 +26,7 @@ public class MergeSort {
         while (idLeft<=mid) tab[idTmpTab++]=tmp[idLeft++];
     }
 
-    public void sort(int fst, int lst)
-    {
+    public void sort(int fst, int lst) {
         if(fst==lst) return;
         int mid=((lst+fst) / 2);
         sort(fst, mid);
@@ -36,8 +34,7 @@ public class MergeSort {
         merge(fst, mid, lst);
     }
 
-    public void sortAll()
-    {
+    public void sortAll() {
         sort(0, tab.length-1);
     }
 }
