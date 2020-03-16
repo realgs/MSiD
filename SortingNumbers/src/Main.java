@@ -1,6 +1,27 @@
 public class Main {
 
-    public static void main(String[] args) {
+    private static void bubbleSort(int[] array) {
+        boolean flag = false;
+        int buf;
+        while (!flag) {
+            flag = true;
+            for (int i = 0; i < array.length - 1; i++) {
+                if (array[i] > array[i + 1]) {
+                    buf = array[i];
+                    array[i] = array[i + 1];
+                    array[i + 1] = buf;
+                    flag = false;
+                }
+            }
+        }
+    }
 
+    public static void main(String[] args) {
+        int[] bubbleArray = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
+        bubbleSort(bubbleArray);
+        for (int value : bubbleArray) {
+            System.out.print(value + " ");
+        }
+        System.out.println();
     }
 }
