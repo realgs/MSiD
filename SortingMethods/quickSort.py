@@ -1,5 +1,5 @@
 def quickSortArr(array):
-    return quickSort(array, 0, len(array) - 1)
+    quickSort(array, 0, len(array) - 1)
 
 def quickSort(array, low, high):
     if low < high:
@@ -7,7 +7,6 @@ def quickSort(array, low, high):
 
         quickSort(array, low, splitIndex - 1)
         quickSort(array, splitIndex + 1, high)
-    return (array)
 
 def partition(array, low, high):
     pivot = array[high]
@@ -21,7 +20,8 @@ def partition(array, low, high):
     array[i+1], array[high] = array[high], array[i+1]
     return i + 1
 
-arr = quickSortArr([1,5,3,26,71,6,7,4,4])
+arr = [1,5,3,26,71,6,7,4,4]
+quickSortArr(arr)
 
 for num in arr:
     print(num)
