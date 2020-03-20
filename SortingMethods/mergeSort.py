@@ -35,7 +35,3 @@ def merge(array, leftArr, rightArr):
         array[k] = rightArr[j]
         j += 1
         k += 1
-
-myList = [54,26,93,17,77,31,44,55,20]
-mergeSort(myList)
-print(myList)
