@@ -29,7 +29,3 @@ def quick_sort_rec(array, startIndex, endIndex):
 
 def quick_sort(array):
     quick_sort_rec(array, 0, len(array)-1)
-
-numbers = [4, 8, 9, 3, -59, 123, -345, 10, -10, 10]
-quick_sort(numbers)
-print(numbers)
