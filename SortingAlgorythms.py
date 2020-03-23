@@ -23,8 +23,36 @@ def selectSort(arr):
 		for j in range(i+1,len(arr)-1):
 			if arr[j] < minElem:
 				minElem = arr[j]
-				indexOfMin = j		
+				indexOfMin = j	
 		replace(arr,i,indexOfMin)
+
+
+def quickSortPrivate(arr,i,j):
+	if i >= j:
+		return
+	pivotIndex = (int)((j+i)/2)
+	replace(arr,j,pivotIndex)
+	pivotIndex = j
+	r = j
+	l = i
+	while r!=l:
+		while arr[l] <= arr[pivotIndex] and r!=l:
+			l = l + 1
+		if r != l:
+			replace(arr,l,pivotIndex)
+			pivotIndex = l
+			r = r - 1
+		while arr[r] >= arr[pivotIndex] and r!=l:
+			r = r - 1
+		if r != l:
+			replace(arr,r,pivotIndex)
+			pivotIndex = r
+			l = l + 1
+	quickSortPrivate(arr,i,pivotIndex-1)
+	quickSortPrivate(arr,pivotIndex+1,j)
+
+def quickSort(arr):
+	quickSortPrivate(arr,0,len(arr)-1)
 
 arr = [1,7,2,4,10,13]
 
@@ -33,7 +61,7 @@ for i in arr:
 
 print('\n')
 
-selectSort(arr)
+quickSort(arr)
 
 for i in arr:
 	print(i)
