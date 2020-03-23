@@ -1,5 +1,5 @@
-public interface SortingAlgorithm {
+public interface SortingAlgorithm<T> {
 
-    void sort(int arr[]);
+    void sort(T arr[]);
 
 }

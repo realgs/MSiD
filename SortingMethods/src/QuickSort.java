@@ -1,21 +1,22 @@
-public class QuickSort implements SortingAlgorithm{
+public class QuickSort<T extends Comparable<T>> implements SortingAlgorithm<T>{
 
-    public void sort(int arr[]){
+    public void sort(T arr[]){
         quicksort(arr,0,arr.length-1);
     }
 
-    void swap (int arr[],int i, int j){
-        int temp = arr[i];
+    void swap (T arr[],int i, int j){
+        T temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
     }
-    int partition(int arr[], int low, int high)
+
+    int partition(T arr[], int low, int high)
     {
-        int pivot = arr[high];
+        T pivot = arr[high];
         int i = (low-1);
         for (int j=low; j<high; j++)
         {
-            if (arr[j] < pivot)
+            if (arr[j].compareTo(pivot)<0)
             {
                 i++;
                 swap(arr,i,j);
@@ -27,7 +28,7 @@ public class QuickSort implements SortingAlgorithm{
         return i+1;
     }
 
-    void quicksort(int arr[], int low, int high)
+    void quicksort(T arr[], int low, int high)
     {
         if (low < high)
         {

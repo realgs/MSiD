@@ -1,16 +1,20 @@
-public class MergeSort implements SortingAlgorithm {
 
-    public void sort(int arr[]){
+public class MergeSort<T extends Comparable<T>> implements SortingAlgorithm<T> {
+
+
+    public void sort(T arr[]){
         mergesort(arr,0,arr.length-1);
     }
 
-    void merge(int arr[], int l, int m, int r)
+    void merge(T arr[], int l, int m, int r)
     {
         int n1 = m - l + 1;
         int n2 = r - m;
 
-        int L[] = new int [n1];
-        int R[] = new int [n2];
+
+        T L[] = (T[]) new Comparable[n1];
+        T R[] = (T[]) new Comparable[n1];
+
 
         for (int i=0; i<n1; ++i)
             L[i] = arr[l + i];
@@ -22,8 +26,9 @@ public class MergeSort implements SortingAlgorithm {
 
         int k = l;
         while (i < n1 && j < n2)
-        {
-            if (L[i] <= R[j])
+        {//L[i] <= R[j]
+            if (L[i].compareTo(R[j])<0)
+
             {
                 arr[k] = L[i];
                 i++;
@@ -52,7 +57,7 @@ public class MergeSort implements SortingAlgorithm {
     }
 
 
-    void mergesort(int arr[], int l, int r)
+    void mergesort(T arr[], int l, int r)
     {
         if (l < r)
         {
@@ -66,3 +71,4 @@ public class MergeSort implements SortingAlgorithm {
     }
 
 }
+
