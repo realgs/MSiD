@@ -7,6 +7,7 @@ public class Test {
         int[] arr2 = { 5, 4, 3, 2, 1};
         int[] arr3 = { 5, 4, 3, 2, 1};
 
+        System.out.println("RANDOM");
         BubbleSort.sort(arr0);
         InsertSort.sort(arr1);
 
@@ -16,6 +17,7 @@ public class Test {
         printArray(arr1);
         System.out.println();
 
+        System.out.println("REVERSE ORDER");
         BubbleSort.sort(arr2);
         InsertSort.sort(arr3);
 
@@ -25,6 +27,7 @@ public class Test {
         printArray(arr3);
         System.out.println();
 
+        System.out.println("CORRECT ORDER");
         BubbleSort.sort(arr2);
         InsertSort.sort(arr3);
 
