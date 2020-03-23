@@ -15,19 +15,23 @@ public class BogoSort <T extends Comparable<? super T>>
         bongos.sort(testArray1);
     }
 
-    void sort(ArrayList<T> array)
+    public void sort(ArrayList<T> array)
     {
 
         long i=0;
-        while(!isSorted(array)) {
+        long start = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
+        //System.out.println("Finally!");
+        while(!isSorted(array) && (time-start)<10000){
             Collections.shuffle(array);
             i++;
-            if(i%1000000 == 0)
-                System.out.println("Just a second");
+            time = System.currentTimeMillis();
         }
-
+        if(isSorted(array))
         System.out.println("Finally!");
-        System.out.println(array.toString());
+        else
+            System.out.println("Sorry i couldn't make it :C");
+        //System.out.println(array.toString());
     }
 
 

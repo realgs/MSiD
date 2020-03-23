@@ -23,7 +23,7 @@ public class HeapSort<T extends Comparable<? super T>>  //not quite sure why, ha
         Sorter2.sort(testArray2);
     }
 
-    void sort(ArrayList<T> array)
+    public void sort(ArrayList<T> array)
     {
         int size = array.size();
         for (int i = size / 2 - 1; i > -1; i--)
@@ -37,7 +37,7 @@ public class HeapSort<T extends Comparable<? super T>>  //not quite sure why, ha
 
             heapify(array, i, 0);
         }
-        System.out.println(array.toString());
+        //System.out.println(array.toString());
     }
 
     void heapify(ArrayList<T> array, int size, int i)
