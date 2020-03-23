@@ -1,15 +1,15 @@
 import scala.annotation.tailrec
 
 object SortingAlgorithms extends App {
-  def maximum(xs: List[Int]): List[Int] =
+  def maximum[T <% Ordered[T]](xs: List[T]): List[T] =
     (xs.tail foldLeft List(xs.head)) {
       (ys, x) =>
         if(x > ys.head) (x :: ys)
         else (ys.head :: x :: ys.tail)
     }
 
-  def selectionSort(xs: List[Int]) = {
-    def selectionSortHelper(xs: List[Int], accumulator: List[Int]): List[Int] =
+  def selectionSort[T <% Ordered[T]](xs: List[T]) = {
+    def selectionSortHelper(xs: List[T], accumulator: List[T]): List[T] =
       if(xs.isEmpty) accumulator
       else {
         val ys = maximum(xs)
@@ -19,21 +19,21 @@ object SortingAlgorithms extends App {
     selectionSortHelper(xs, Nil)
   }
 
-  def insertSort(xs: List[Int]): List[Int] =
+  def insertSort[T <% Ordered[T]](xs: List[T]): List[T] =
     xs match {
       case Nil => Nil
       case h::t =>  insert(h, insertSort(t))
     }
 
-  def insert(x: Int, xs: List[Int]): List[Int] =
+  def insert[T <% Ordered[T]](x: T, xs: List[T]): List[T] =
     (x,xs) match {
       case (_,h::_) if x<=h => x :: xs
       case (_,h::t) =>  h :: insert(x, t)
       case _ => x::Nil
     }
-  def bubblesort(source: List[Int]) : List[Int]  = {
+  def bubblesort[T <% Ordered[T]](source: List[T]) : List[T]  = {
     @tailrec
-    def sort(iteration: List[Int], source: List[Int] , result: List[Int]) : List[Int]= source match {
+    def sort(iteration: List[T], source: List[T] , result: List[T]) : List[T]= source match {
       case h1 :: h2 :: rest => if(h1 > h2) sort(iteration, h1 :: rest, result :+ h2) else sort(iteration, h2 :: rest, result :+ h1)
       case l:: Nil => sort(iteration, Nil, result :+ l)
       case Nil => if(iteration.isEmpty) return result else sort(iteration.dropRight(1), result, Nil )
