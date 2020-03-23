@@ -1,6 +1,6 @@
-public class MergeSort {
+public class MergeSort implements SortingAlgorithm {
 
-    void sort(int arr[]){
+    public void sort(int arr[]){
         mergesort(arr,0,arr.length-1);
     }
 
@@ -65,11 +65,4 @@ public class MergeSort {
         }
     }
 
-    public String toString(int arr[]) {
-        String result = "";
-        for(int i = 0; i < arr.length; i++) {
-            result += arr[i] + " ";
-        }
-        return result;
-    }
 }

@@ -1,10 +1,14 @@
-public class QuickSort {
+public class QuickSort implements SortingAlgorithm{
 
-    void sort(int arr[]){
+    public void sort(int arr[]){
         quicksort(arr,0,arr.length-1);
     }
 
-
+    void swap (int arr[],int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
     int partition(int arr[], int low, int high)
     {
         int pivot = arr[high];
@@ -14,17 +18,11 @@ public class QuickSort {
             if (arr[j] < pivot)
             {
                 i++;
-
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+                swap(arr,i,j);
             }
         }
 
-
-        int temp = arr[i+1];
-        arr[i+1] = arr[high];
-        arr[high] = temp;
+        swap(arr,i+1,high);
 
         return i+1;
     }
@@ -40,11 +38,5 @@ public class QuickSort {
         }
     }
 
-    public String toString(int arr[]) {
-        String result = "";
-        for(int i = 0; i < arr.length; i++) {
-            result += arr[i] + " ";
-        }
-        return result;
-    }
+
 }

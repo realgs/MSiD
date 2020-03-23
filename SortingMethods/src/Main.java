@@ -8,11 +8,12 @@ public class Main {
     int arr1[] = {2,52,12,71,3,85,23};
     int arr2[] = {2,52,12,71,3,85,23};
 
-    QuickSort quickSort= new QuickSort();
+    SortingAlgorithm quickSort= new QuickSort();
     quickSort.sort(arr1);
-    MergeSort mergeSort= new MergeSort();
+    SortingAlgorithm mergeSort= new MergeSort();
     mergeSort.sort(arr2);
-    System.out.println(quickSort.toString(arr1));
-    System.out.println(mergeSort.toString(arr2));
+
+    System.out.println(Arrays.toString(arr1));
+    System.out.println(Arrays.toString(arr2));
     }
 }
