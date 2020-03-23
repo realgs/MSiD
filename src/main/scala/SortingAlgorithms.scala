@@ -65,11 +65,20 @@ object SortingAlgorithms extends App {
       case Nil | _ :: Nil =>
         list
       case _ =>
-        val (part1, part2) = split(list) //list.splitAt(list.length / 2)
+        val (part1, part2) = split(list)
         val sorted1 = mergeSort(part1)
         val sorted2 = mergeSort(part2)
         merge(sorted1, sorted2)
     }
+
+  def time[R](block: => R): Any = {
+    val t0 = System.nanoTime()
+    block
+    val t1 = System.nanoTime()
+    println("Elapsed time: " + (t1 - t0)*Math.pow(10,-9) + "s")
+  }
+  
+  time(bubblesort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
   println(bubblesort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
   println(insertSort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
   println(selectionSort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
