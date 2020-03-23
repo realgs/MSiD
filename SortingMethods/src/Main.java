@@ -10,7 +10,9 @@ public class Main {
 
     QuickSort quickSort= new QuickSort();
     quickSort.sort(arr1);
-
+    MergeSort mergeSort= new MergeSort();
+    mergeSort.sort(arr2);
     System.out.println(quickSort.toString(arr1));
+    System.out.println(mergeSort.toString(arr2));
     }
 }
