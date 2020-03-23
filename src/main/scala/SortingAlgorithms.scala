@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.util.Random
 
 object SortingAlgorithms extends App {
   def maximum[T <% Ordered[T]](xs: List[T]): List[T] =
@@ -31,7 +32,7 @@ object SortingAlgorithms extends App {
       case (_,h::t) =>  h :: insert(x, t)
       case _ => x::Nil
     }
-  def bubblesort[T <% Ordered[T]](source: List[T]) : List[T]  = {
+  def bubbleSort[T <% Ordered[T]](source: List[T]) : List[T]  = {
     @tailrec
     def sort(iteration: List[T], source: List[T] , result: List[T]) : List[T]= source match {
       case h1 :: h2 :: rest => if(h1 > h2) sort(iteration, h1 :: rest, result :+ h2) else sort(iteration, h2 :: rest, result :+ h1)
@@ -77,9 +78,11 @@ object SortingAlgorithms extends App {
     val t1 = System.nanoTime()
     println("Elapsed time: " + (t1 - t0)*Math.pow(10,-9) + "s")
   }
-  
-  time(bubblesort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
-  println(bubblesort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
-  println(insertSort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
-  println(selectionSort(List(6, 1, 125, 76, 14, 5, 1, 1, 6, 1, 6, 8, 8, 5, 3)))
+  def r = new Random();
+  time(insertSort((1 to 1000 map r.nextInt).toList))
+  time(selectionSort((1 to 1000 map r.nextInt).toList))
+  time(mergeSort((1 to 1000 map r.nextInt).toList))
+  time(bubbleSort((1 to 1000 map r.nextInt).toList))
+
+
 }
