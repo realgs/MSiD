@@ -17,10 +17,10 @@ def bubbleSort(arr):
 
 def selectSort(arr):
 	
-	for i in range(0,len(arr)-1):
+	for i in range(0,len(arr)):
 		indexOfMin = i
 		minElem = arr[i]
-		for j in range(i+1,len(arr)-1):
+		for j in range(i+1,len(arr)):
 			if arr[j] < minElem:
 				minElem = arr[j]
 				indexOfMin = j	
@@ -54,14 +54,28 @@ def quickSortPrivate(arr,i,j):
 def quickSort(arr):
 	quickSortPrivate(arr,0,len(arr)-1)
 
-arr = [1,7,2,4,10,13]
+def insertSort(arr):
+	for i in range(len(arr)):
+		j = 0
+		bool = False
+		while j<i and (not bool):
+			if arr[j] > arr[i]:
+				bool = True
+				arr.insert(j,arr[i])
+				del arr[i+1]
+			j = j + 1
+		if bool:
+			arr.insert(j,arr[i])
+			del arr[i+1]
+
+arr = [1,7,2,4,10,13,3]
 
 for i in arr:
 	print(i)
 
 print('\n')
 
-quickSort(arr)
+insertSort(arr)
 
 for i in arr:
 	print(i)
