@@ -1,9 +1,16 @@
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class QuickSort extends Sort{
 
-    public static <T> int split(List<T> input, int first, int last, Comparator<? super T> comparator) {
+    public static <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
+        List<T> result= new LinkedList<T>(quickSort(list, 0, list.size()-1,comparator));
+        return result;
+
+    }
+
+    private static <T> int split(List<T> input, int first, int last, Comparator<? super T> comparator) {
         int i = first;
         int j = last;
         T pivot = (T) input.get((first + last) / 2);
@@ -27,7 +34,7 @@ public class QuickSort extends Sort{
 
         return i;
     }
-    public static <T> List<T> quickSort(List<T> input, int left, int right,Comparator<? super T> comparator) {
+    private static <T> List<T> quickSort(List<T> input, int left, int right,Comparator<? super T> comparator) {
         int index = split(input, left, right,comparator);
         if(left < index - 1) {
             quickSort(input, left, index - 1,comparator);
