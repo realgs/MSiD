@@ -43,7 +43,7 @@ public class QuickSort {
     public String toString(int arr[]) {
         String result = "";
         for(int i = 0; i < arr.length; i++) {
-            result += arr[i] + "\n";
+            result += arr[i] + " ";
         }
         return result;
     }
