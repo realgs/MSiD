@@ -5,29 +5,33 @@ public class BogoSort <T extends Comparable<? super T>>
     public static void main(String[] args)
     {
         BogoSort<Integer> bongos = new BogoSort<>();
-        Integer[] testArray = {12,5,124,214,1,2,0,5,11,13,15};
-        System.out.println(java.util.Arrays.toString(testArray));
-        bongos.sort(testArray);
+        Random r = new Random();
+        ArrayList<Integer> testArray1 = new ArrayList<>();
+        ArrayList<String> testArray2 = new ArrayList<>();
+        for(int i=0;i<10; i++){
+            testArray1.add(r.nextInt(201)-100);
+            testArray2.add(Integer.toString(r.nextInt(201)-100));
+        }
+        bongos.sort(testArray1);
     }
 
-    void sort(T[] array)
+    void sort(ArrayList<T> array)
     {
-        List<T> list = Arrays.asList(array);
+
         long i=0;
-        while(!isSorted(list)) {
-            Collections.shuffle(list);
+        while(!isSorted(array)) {
+            Collections.shuffle(array);
             i++;
             if(i%1000000 == 0)
                 System.out.println("Just a second");
         }
 
         System.out.println("Finally!");
-        System.out.println(Arrays.toString(list.toArray()));
+        System.out.println(array.toString());
     }
 
 
-    public  <T extends Comparable<? super T>>
-    boolean isSorted(Iterable<T> iterable) {
+    public  <T extends Comparable<? super T>> boolean isSorted(Iterable<T> iterable) {
         Iterator<T> iter = iterable.iterator();
         if (!iter.hasNext()) {
             return true;
