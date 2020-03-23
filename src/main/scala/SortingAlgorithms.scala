@@ -72,17 +72,18 @@ object SortingAlgorithms extends App {
         merge(sorted1, sorted2)
     }
 
-  def time[R](block: => R): Any = {
+  def time[R](block: => R): R = {
     val t0 = System.nanoTime()
-    block
+    val res = block
     val t1 = System.nanoTime()
     println("Elapsed time: " + (t1 - t0)*Math.pow(10,-9) + "s")
+    res
   }
   def r = new Random();
-  time(insertSort((1 to 1000 map r.nextInt).toList))
-  time(selectionSort((1 to 1000 map r.nextInt).toList))
-  time(mergeSort((1 to 1000 map r.nextInt).toList))
-  time(bubbleSort((1 to 1000 map r.nextInt).toList))
+  println(time(insertSort((1 to 1000 map r.nextInt).toList)))
+  println(time(selectionSort((1 to 1000 map r.nextInt).toList)))
+  println(time(mergeSort((1 to 1000 map r.nextInt).toList)))
+  println(time(bubbleSort((1 to 1000 map r.nextInt).toList)))
 
 
 }
