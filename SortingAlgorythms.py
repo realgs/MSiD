@@ -64,9 +64,6 @@ def insertSort(arr):
 				arr.insert(j,arr[i])
 				del arr[i+1]
 			j = j + 1
-		if bool:
-			arr.insert(j,arr[i])
-			del arr[i+1]
 
 arr = [1,7,2,4,10,13,3]
 
