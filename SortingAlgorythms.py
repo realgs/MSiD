@@ -80,7 +80,10 @@ def randomIntegerArray(size):
 		arr.append(randint(0,100))
 	return arr
 
+
 arr = [1,7,2,4,10,13,3]
+
+arr2 = arr.copy()
 
 for i in arr:
 	print(i)
@@ -94,7 +97,26 @@ for i in arr:
 
 print('\n')
 
+arrSorted = arr.copy()
+arr = arr2.copy()
+
 bubbleSort(arr)
+
+def checkIfSortedCorrectly(arr,arrSorted):
+	for i in range(len(arr)):
+		if arr[i] != arrSorted[i]:
+			print("Something went wrong")
+	arr = arr2.copy()
+
+checkIfSortedCorrectly(arr,arrSorted)
+
+selectSort(arr)
+
+checkIfSortedCorrectly(arr,arrSorted)
+
+quickSort(arr)
+
+checkIfSortedCorrectly(arr,arrSorted)
 
 for i in arr:
 	print(i)
@@ -103,10 +125,22 @@ for i in arr:
 
 arr = randomIntegerArray(10000)
 
+arr2 = arr.copy()
+
+print("Bubblesort")
 testSortingAlgorythm(arr,bubbleSort)
 
+arr = arr2.copy()
+
+print("Quicksort")
 testSortingAlgorythm(arr,quickSort)
 
+arr = arr2.copy()
+
+print("Insertsort")
 testSortingAlgorythm(arr,insertSort)
 
+arr = arr2.copy()
+
+print("Selectsort")
 testSortingAlgorythm(arr,selectSort)
