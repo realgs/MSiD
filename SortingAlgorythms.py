@@ -1,3 +1,7 @@
+import time
+from random import seed
+from random import randint
+
 def replace(arr,i,j):
 	elem = arr[i]
 	arr[i] = arr[j]
@@ -5,25 +9,23 @@ def replace(arr,i,j):
 
 def bubbleSort(arr):
 
-	n = 0
-
 	for i in range(len(arr)):
-		
-		for j in range(n,len(arr)-1):
 
-			if arr[j+1] < arr[j]: 			
-				replace(arr,j+1,j)	
-		n = n+1
+		for j in range(len(arr)-1-i):
+
+			if arr[j+1] < arr[j]:
+				replace(arr,j+1,j)
+
 
 def selectSort(arr):
-	
+
 	for i in range(0,len(arr)):
 		indexOfMin = i
 		minElem = arr[i]
 		for j in range(i+1,len(arr)):
 			if arr[j] < minElem:
 				minElem = arr[j]
-				indexOfMin = j	
+				indexOfMin = j
 		replace(arr,i,indexOfMin)
 
 
@@ -65,6 +67,19 @@ def insertSort(arr):
 				del arr[i+1]
 			j = j + 1
 
+def testSortingAlgorythm(arr,function):
+	start = time.time()
+	function(arr)
+	end = time.time()
+	print(end-start)
+
+def randomIntegerArray(size):
+	seed(1)
+	arr = []
+	for _ in range(size):
+		arr.append(randint(0,100))
+	return arr
+
 arr = [1,7,2,4,10,13,3]
 
 for i in arr:
@@ -83,3 +98,15 @@ bubbleSort(arr)
 
 for i in arr:
 	print(i)
+
+
+
+arr = randomIntegerArray(10000)
+
+testSortingAlgorythm(arr,bubbleSort)
+
+testSortingAlgorythm(arr,quickSort)
+
+testSortingAlgorythm(arr,insertSort)
+
+testSortingAlgorythm(arr,selectSort)
