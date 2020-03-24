@@ -1,4 +1,4 @@
-from random import shuffle, randint
+from random import randint
 from BinarySearchTree import BST as tr
 
 
@@ -7,14 +7,14 @@ def quick_sort(list_to_sort, low, high):
         pi = partition(list_to_sort, low, high)
         if high - low < 10:
             insertion_sort(list_to_sort, low, high+1)
-            low = high
+            # low = high
         else:
             quick_sort(list_to_sort, low, pi-1)
             quick_sort(list_to_sort, pi+1, high)
 
 
 def partition(li_sort, low, high):
-    piv_pos = randint(low, high)     # picking random element as pivot
+    piv_pos = randint(low, high)
     pivot = li_sort[piv_pos]
     li_sort[piv_pos], li_sort[high] = li_sort[high], li_sort[piv_pos]
     i = (low-1)
