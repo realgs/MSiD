@@ -1,5 +1,31 @@
 public class Main {
 
+    private static void quickSort(int[] array, int n1, int n2) {
+        if (n1 < n2) {
+            int k = partition(array, n1, n2);
+            quickSort(array, n1, k-1);
+            quickSort(array, k+1, n2);
+        }
+    }
+
+    private static int partition(int[] array, int n1, int n2) {
+        int pivot = array[n1];
+        int i = n1;
+        for (int j = n1 + 1; j <= n2; j++)
+            if (array[j] < pivot) {
+                ++i;
+                swap(array, i, j);
+            }
+        swap(array, n1, i);
+        return i;
+    }
+
+    private static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
     private static void shellSort(int[] array) {
         int j;
         for (int k = array.length / 2; k > 0; k /= 2) {
@@ -46,12 +72,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] shell = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
-        shellSort(shell);
-        for (int value : shell) {
+        int[] quick = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
+        quickSort(quick, 0, quick.length - 1);
+        for (int value : quick) {
             System.out.print(value + " ");
         }
         System.out.println();
-
     }
 }
