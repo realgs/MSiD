@@ -1,5 +1,18 @@
 public class Main {
 
+    private static void shellSort(int[] array) {
+        int j;
+        for (int k = array.length / 2; k > 0; k /= 2) {
+            for (int i = k; i < array.length; i++) {
+                int buf = array[i];
+                for (j = i; j >= k && array[j - k] > buf; j -= k) {
+                    array[j] = array[j - k];
+                }
+                array[j] = buf;
+            }
+        }
+    }
+
     private static void selectionSort(int[] array) {
         for (int i = 0; i < array.length; i++) {
             int min = array[i];
@@ -33,18 +46,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] bubbleArray = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
-        bubbleSort(bubbleArray);
-        for (int value : bubbleArray) {
+        int[] shell = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
+        shellSort(shell);
+        for (int value : shell) {
             System.out.print(value + " ");
         }
         System.out.println();
 
-        int[] selectionArray = new int[]{2, 4, 1, 6, 7, 1, 5, 42, 25, 124, 64};
-        selectionSort(selectionArray);
-        for (int value : selectionArray) {
-            System.out.print(value + " ");
-        }
-        System.out.println();
     }
 }
