@@ -1,10 +1,30 @@
+import java.util.Random;
+
 public class Main {
+
+    private interface IComparison {
+        public void sort(int[] array);
+    }
+    private static IComparison quick = array -> {
+        quickSort(array, 0, array.length - 1);
+    };
+    private static IComparison shell = Main::shellSort;
+    private static IComparison bubble = Main::bubbleSort;
+    private static IComparison selection = Main::selectionSort;
+
+    private static void comparison(int[] array, IComparison comparison) {
+        long start = System.currentTimeMillis();
+        comparison.sort(array);
+        long finish = System.currentTimeMillis();
+        long timeConsumedMillis = finish - start;
+        System.out.println("Czas wykonnania - " + timeConsumedMillis);
+    }
 
     private static void quickSort(int[] array, int n1, int n2) {
         if (n1 < n2) {
             int k = partition(array, n1, n2);
-            quickSort(array, n1, k-1);
-            quickSort(array, k+1, n2);
+            quickSort(array, n1, k - 1);
+            quickSort(array, k + 1, n2);
         }
     }
 
@@ -72,11 +92,26 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        int[] quick = new int[]{6, 4, 2, 7, 124, 64, 125, 1, 2, 35, 2, 32};
-        quickSort(quick, 0, quick.length - 1);
-        for (int value : quick) {
-            System.out.print(value + " ");
+        Random random = new Random();
+        int[] forQuick = new int[10000];
+        for (int i = 0; i < forQuick.length; i++) {
+            forQuick[i] = random.nextInt(10000);
         }
-        System.out.println();
+        comparison(forQuick, quick);
+        int[] forBubble = new int[10000];
+        for (int i = 0; i < forBubble.length; i++) {
+            forBubble[i] = random.nextInt(10000);
+        }
+        comparison(forBubble, bubble);
+        int[] forShell = new int[10000];
+        for (int i = 0; i < forShell.length; i++) {
+            forShell[i] = random.nextInt(10000);
+        }
+        comparison(forShell, shell);
+        int[] forSelection = new int[10000];
+        for (int i = 0; i < forSelection.length; i++) {
+            forSelection[i] = random.nextInt(10000);
+        }
+        comparison(forSelection, selection);
     }
 }
