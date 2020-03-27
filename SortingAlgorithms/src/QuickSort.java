@@ -10,7 +10,7 @@ public class QuickSort implements SortingAlgorithm {
   public double[] sort(double[] list, int size) {
     this.size = size;
     sortedList = new double[size];
-    sortedList = list;
+    System.arraycopy(list, 0, sortedList, 0, size);
     quicksort(sortedList, 0, size-1);
     return sortedList;
 

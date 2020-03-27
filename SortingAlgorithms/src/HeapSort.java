@@ -8,7 +8,7 @@ public class HeapSort implements SortingAlgorithm{
 
       this.size = size;
       sortedList = new double[size];
-      sortedList = list;
+      System.arraycopy(list, 0, sortedList, 0, size);
       heapsort(sortedList, size);
       return sortedList;
 
