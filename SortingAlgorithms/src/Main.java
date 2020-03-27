@@ -6,11 +6,14 @@ public class Main {
 
     SortingAlgorithm heapSort = new HeapSort();
     SortingAlgorithm quickSort = new QuickSort();
+    SortingAlgorithm insertionSort = new InsertionSort();
 
     heapSort.sort(unsortedList, 5);
     System.out.println(heapSort.toString());
     quickSort.sort(unsortedList, 5);
     System.out.println(quickSort.toString());
+    insertionSort.sort(unsortedList, 5);
+    System.out.println(insertionSort.toString());
 
   }
 
