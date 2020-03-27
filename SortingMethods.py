@@ -1,3 +1,6 @@
+import Measurement
+import random
+
 
 class SortingMethods:
 
@@ -29,11 +32,43 @@ class SortingMethods:
             self.quick_sort_ranged(array, p + 1, high)
 
     def quick_sort(self, array):
-        self.quick_sort_ranged(array, 0, len(array)-1)
+        self.quick_sort_ranged(array, 0, len(array) - 1)
+
+    def insert_sort(self, array):
+        i = 1
+        while i < len(array):
+            x = array[i]
+            j = i - 1
+            while j >= 0 and array[j] > x:
+                array[j + 1] = array[j]
+                j = j - 1
+            array[j + 1] = x
+            i += 1
+
+    # Marcin Ciura's gap sequence
+    gaps = [701, 301, 132, 57, 23, 10, 4, 1]
+
+    def shell_sort(self, array):
+        for gap in self.gaps:
+            for i in range(gap, len(array)):
+                tmp = array[i]
+                j = i
+                while j >= gap and array[j - gap] > tmp:
+                    array[j] = array[j - gap]
+                    j = j - gap
+                array[j] = tmp
 
 
-arr = [1, 999.99, 420.69, -22, -1.1]
+# tests:
+
+
+arr = [random.uniform(1, 10000) for _ in range(10000)]
+
+arr1 = arr.copy()
+arr2 = arr.copy()
+arr3 = arr.copy()
 sm = SortingMethods()
-sm.quick_sort(arr)
-for i in range(len(arr)):
-    print("%.2f" % arr[i]),
+print("Bubblesort: " + str(Measurement.measure_time(lambda: sm.bubble_sort(arr))))
+print("Insertsort: " + str(Measurement.measure_time(lambda: sm.insert_sort(arr1))))
+print("Shellsort: " + str(Measurement.measure_time(lambda: sm.shell_sort(arr2))))
+print("Quicksort: " + str(Measurement.measure_time(lambda: sm.quick_sort(arr3))))
