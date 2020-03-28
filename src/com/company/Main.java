@@ -11,6 +11,7 @@ public class Main {
         MergeSort mSort = new MergeSort(testArray);
         InsertSort iSort = new InsertSort(testArray2);
         QuickSort qSort = new QuickSort(testArray3);
+        HeapSort hSort = new HeapSort(testArray4);
 
         System.out.println("MergeSort: ");
 
@@ -33,6 +34,14 @@ public class Main {
         qSort.sortAll();
 
         for (int e: testArray3) {
+            System.out.println(e);
+        }
+
+        System.out.println("HeapSort: ");
+
+        hSort.sortAll();
+
+        for (int e: testArray4) {
             System.out.println(e);
         }
 
