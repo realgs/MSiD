@@ -13,16 +13,16 @@ class PancakeSort implements SortingAlgorithm{
   }
 
   private void pancakeSort() {
-    for (int currSize = size-1; currSize > 1; currSize--) {
+    for (int currSize = size; currSize > 1; currSize--) {
 
       int mi, i;
-      for (mi = 0, i = 1; i < size; i++) {
+      for (mi = 0, i = 1; i < currSize; i++) {
         if (sortedList[i] > sortedList[mi]) mi = i;
       }
 
       if (mi != currSize) {
-        flip(i);
-        flip(currSize);
+        flip(mi);//
+        flip(currSize-1);
       }
     }
   }
@@ -30,8 +30,7 @@ class PancakeSort implements SortingAlgorithm{
   private void flip(int i) {
     double temp;
     int start = 0;
-    while (start < i)
-    {
+    while (start < i) {
       temp = sortedList[start];
       sortedList[start] = sortedList[i];
       sortedList[i] = temp;
