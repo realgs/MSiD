@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class BogoSort <T extends Comparable<? super T>>
+public class BogoSort <T extends Comparable<? super T>> extends Sorting<T>
 {
     public static void main(String[] args)
     {

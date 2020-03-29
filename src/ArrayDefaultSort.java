@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ArrayDefaultSort<T extends Comparable<? super T>> {
+public class ArrayDefaultSort<T extends Comparable<? super T>> extends Sorting<T>{
 
 
     public void sort(ArrayList<T> array){

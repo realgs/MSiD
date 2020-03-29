@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class HeapSort<T extends Comparable<? super T>>  //not quite sure why, have to read more about Comparable
+public class HeapSort<T extends Comparable<? super T>> extends Sorting<T> //not quite sure why, have to read more about Comparable
 {
     public static void main(String[] args)
     {
