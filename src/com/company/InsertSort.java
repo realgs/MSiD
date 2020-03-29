@@ -1,10 +1,18 @@
 package com.company;
 
-public class InsertSort {
+public class InsertSort implements Sorting{
 
     private int[] tab;
 
+    public InsertSort() {
+        this.tab = new int[]{};
+    }
+
     public InsertSort(int[] tab) {
+        this.tab = tab;
+    }
+
+    public void setTabToSort(int[] tab) {
         this.tab = tab;
     }
 

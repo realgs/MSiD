@@ -2,12 +2,22 @@ package com.company;
 
 import java.util.ArrayList;
 
-public class MergeSort {
+public class MergeSort implements Sorting{
 
     private int[] tab;
     private int[] tmp;
 
+    public MergeSort() {
+        tab = new int[]{};
+        tmp = new int[]{};
+    }
+
     public MergeSort(int[] tab) {
+        this.tab = tab;
+        tmp = new int[tab.length];
+    }
+
+    public void setTabToSort(int[] tab) {
         this.tab = tab;
         tmp = new int[tab.length];
     }

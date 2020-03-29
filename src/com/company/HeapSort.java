@@ -1,15 +1,22 @@
 package com.company;
 
-public class HeapSort {
+public class HeapSort implements Sorting{
 
     private int tab[];
 
-    public HeapSort(int[] tab) {
+    public HeapSort() {
+        this.tab = new int[]{};
+    }
 
+    public HeapSort(int[] tab) {
         this.tab = tab;
     }
 
-    public void swap(int i, int j) {
+    public void setTabToSort(int[] tab) {
+        this.tab = tab;
+    }
+
+    private void swap(int i, int j) {
         int tmp = tab[i];
         tab[i]=tab[j];
         tab[j]=tmp;
