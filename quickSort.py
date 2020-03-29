@@ -11,5 +11,5 @@ def recursiveQuick(inputTab):
 
 
 
-def quicksort(inputTab):
+def quickSort(inputTab):
     inputTab[:] = recursiveQuick(inputTab)
