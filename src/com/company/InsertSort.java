@@ -8,7 +8,7 @@ public class InsertSort {
         this.tab = tab;
     }
 
-    public void sort() {
+    public void sortAll() {
         for(int i=1; i<tab.length; i++) {
             int elem = tab[i];
             int id = i - 1;
