@@ -1,33 +1,33 @@
 import random
+import time
+import copy
 from bubbleSort import bubbleSort
 from insertSort import insertSort
 from selectSort import selectSort
-from quickSort import quicksort
+from quickSort import quickSort
 
-testTab = [random.randint(-100,100) for i in range(5)]
-print("Before bubble sort sort:")
-print(testTab)
-bubbleSort(testTab)
-print("After bubble sort sort:")
-print(testTab)
+def measureTime(sortFunctions, tabSize):
+    testTab = [random.randint(-100,100) for i in range(tabSize)]
+    results = {}
+    for sortFunc in sortFunctions:
+        tab = copy.copy(testTab)
 
-testTab = [random.randint(-100,100) for i in range(5)]
-print("Before insert sort sort:")
-print(testTab)
-insertSort(testTab)
-print("After insert sort sort:")
-print(testTab)
+        start = time.time()
+        sortFunc(tab)
+        end = time.time()
 
-testTab = [random.randint(-100,100) for i in range(5)]
-print("Before select sort sort:")
-print(testTab)
-selectSort(testTab)
-print("After select sort sort:")
-print(testTab)
+        if tab != sorted(tab):
+            print("Your algorithm is wrong!")
+            results[sortFunc] = -1
+        else:
+            results[sortFunc] = end-start
+    return results
 
-testTab = [random.randint(-100,100) for i in range(5)]
-print("Before quick sort sort:")
-print(testTab)
-quicksort(testTab)
-print("After quick sort sort:")
-print(testTab)
+
+sortFunctions = [bubbleSort, insertSort, selectSort, quickSort]
+
+result = measureTime(sortFunctions, 25000)
+
+sortedResult = sorted(result, key=lambda x : result[x])
+for sortFun in sortedResult:
+    print("{} with time = {}".format(sortFun.__name__,result[sortFun]))
