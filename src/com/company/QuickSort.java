@@ -2,20 +2,14 @@ package com.company;
 
 import java.util.Random;
 
-public class QuickSort implements Sorting{
-
-    private int[] tab;
+public class QuickSort extends Sorting{
 
     public QuickSort() {
-        this.tab=new int[]{};
+        super();
     }
 
     public QuickSort(int[] tab) {
-        this.tab=tab;
-    }
-
-    public void setTabToSort(int[] tab) {
-        this.tab = tab;
+        super(tab);
     }
 
     private void swap(int i, int j) {

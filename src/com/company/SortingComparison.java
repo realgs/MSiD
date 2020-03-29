@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 public class SortingComparison {
 
-    public static long timepiece(Sorting sortingMethod, int tabToSort[]) {
+    public static double timepiece(Sorting sortingMethod, int tabToSort[]) {
         long time, startTime, endTime;
         sortingMethod.setTabToSort(tabToSort);
         startTime=System.nanoTime();
         sortingMethod.sortAll();
         endTime = System.nanoTime();
-        time=(endTime-startTime+5000)/10000;
-        return time;
+        time=(endTime-startTime)/10000;
+        return (double)time/100;
     }
 
-    public static ArrayList<Long> comparison(ArrayList<Sorting> sortMethods, Generator numberGenerator){
-        ArrayList<Long> timeList = new ArrayList<>();
+    public static ArrayList<Double> comparison(ArrayList<Sorting> sortMethods, Generator numberGenerator){
+        ArrayList<Double> timeList = new ArrayList<>();
         for(Sorting method : sortMethods) {
             timeList.add(timepiece(method, numberGenerator.getTabCopy()));
         }

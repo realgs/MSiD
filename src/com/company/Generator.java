@@ -26,9 +26,9 @@ public class Generator {
     public int[] getTabCopy() {
         int[] copyTab = new int[n];
         for(int i = 0; i < n; i++) {
-            copyTab[i] = copyTab[i];
-            System.out.println(tab[i]);
+            copyTab[i] = tab[i];
         }
         return copyTab;
     }
+
 }

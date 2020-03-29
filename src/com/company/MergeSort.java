@@ -1,24 +1,21 @@
 package com.company;
 
-import java.util.ArrayList;
+public class MergeSort extends Sorting{
 
-public class MergeSort implements Sorting{
-
-    private int[] tab;
     private int[] tmp;
 
     public MergeSort() {
-        tab = new int[]{};
+        super();
         tmp = new int[]{};
     }
 
     public MergeSort(int[] tab) {
-        this.tab = tab;
+        super(tab);
         tmp = new int[tab.length];
     }
 
     public void setTabToSort(int[] tab) {
-        this.tab = tab;
+        super.setTabToSort(tab);
         tmp = new int[tab.length];
     }
 

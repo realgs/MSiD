@@ -21,10 +21,12 @@ public class Main {
         sortingMethodsList.add(qSort);
         sortingMethodsList.add(hSort);
 
-        ArrayList<Long> results = SortingComparison.comparison(sortingMethodsList, numberGenerator);
+        ArrayList<Double> results = SortingComparison.comparison(sortingMethodsList, numberGenerator);
 
         for(int i=0; i < sortingMethodsList.size(); i++) {
-            System.out.println(results);
+            System.out.println(sortingMethodsList.get(i).getClass().getName() + " - czas: " + results.get(i) +
+                    "ms, test poprawności: " + sortingMethodsList.get(i).isTabSort());
         }
+
     }
 }
