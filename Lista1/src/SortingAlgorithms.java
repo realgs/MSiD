@@ -37,6 +37,9 @@ public class SortingAlgorithms {
  }
 
 
+ public static void selectionSort(int[] array3)
+
+
 
     public static void printArray(int[] array) {
         System.out.print("The original array: " );

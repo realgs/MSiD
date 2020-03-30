@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="21ad585a-58f0-4197-b5a2-493d9b758cb4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/SortingAlgorithms.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortingAlgorithms.java" afterDir="false" />
+    <list default="true" id="476b52ed-c453-4b6c-8829-3d7f6780beee" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../Lista1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Lista1/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lista1/src/SortingAlgorithms.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Lista1/src/SortingAlgorithms.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,12 +16,12 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/SortingAlgorithms.java">
+        <entry file="file://$PROJECT_DIR$/src/SortingComparison.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
+            <state relative-caret-position="229">
+              <caret line="43" column="38" lean-forward="true" selection-start-line="43" selection-start-column="38" selection-end-line="43" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -40,16 +41,19 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Sortowanie.java" />
-        <option value="$PROJECT_DIR$/src/Sorting.java" />
-        <option value="$PROJECT_DIR$/src/BubbleSorting.java" />
-        <option value="$PROJECT_DIR$/src/SortingAlgorithms.java" />
+        <option value="$PROJECT_DIR$/src/SortingComparison.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="48" />
-    <option name="y" value="102" />
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="1">
+    <option name="x" value="1" />
     <option name="width" value="1440" />
     <option name="height" value="848" />
   </component>
@@ -59,38 +63,27 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="Lista1" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lista1" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Lista1" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Lista1" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Lista2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Lista2" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-  </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src" />
-    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -105,16 +98,16 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="SortingAlgorithms" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="SortingAlgorithms" />
-      <module name="Lista1" />
+    <configuration name="SortingComparison" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SortingComparison" />
+      <module name="Lista2" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SortingAlgorithms" />
+        <item itemvalue="Application.SortingComparison" />
       </list>
     </recent_temporary>
   </component>
@@ -131,32 +124,31 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="21ad585a-58f0-4197-b5a2-493d9b758cb4" name="Default Changelist" comment="" />
-      <created>1585333938655</created>
+      <changelist id="476b52ed-c453-4b6c-8829-3d7f6780beee" name="Default Changelist" comment="" />
+      <created>1585599983244</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1585333938655</updated>
-      <workItem from="1585333941126" duration="306000" />
-      <workItem from="1585335055136" duration="75000" />
-      <workItem from="1585336017173" duration="929000" />
-      <workItem from="1585597448076" duration="1950000" />
+      <updated>1585599983244</updated>
+      <workItem from="1585599984529" duration="1000" />
+      <workItem from="1585600024938" duration="929000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3260000" />
+    <option name="totallyTimeSpent" value="930000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="48" y="102" width="1440" height="848" extended-state="0" />
+    <frame x="0" y="0" width="1440" height="848" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26037195" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
       <window_info id="UI Designer" order="4" />
       <window_info id="Capture Tool" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
+      <window_info anchor="bottom" id="Messages" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32936507" />
@@ -169,7 +161,6 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Terminal" order="10" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
-      <window_info anchor="bottom" id="Messages" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -185,10 +176,10 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/SortingAlgorithms.java">
+    <entry file="file://$PROJECT_DIR$/src/SortingComparison.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
+        <state relative-caret-position="229">
+          <caret line="43" column="38" lean-forward="true" selection-start-line="43" selection-start-column="38" selection-end-line="43" selection-end-column="38" />
         </state>
       </provider>
     </entry>
