@@ -13,11 +13,13 @@ public class SortingComparison {
         comparison.sort(array);
         long finish = System.currentTimeMillis();
         long timeConsumedMillis = finish - start;
-        System.out.println("Sorting time : " + timeConsumedMillis);
+        System.out.println("Sorting time of algorithm: " + timeConsumedMillis);
     }
 
-    private static IComparison bubble = SortingComparison::bubbleSort;
+    private static IComparison bubbleSort = SortingComparison::bubbleSort;
     private static IComparison insertSort = SortingComparison::insertSort;
+    private static IComparison selectionSort = SortingComparison::selectionSort;
+
 
     public static void bubbleSort(int[] array) {
 
@@ -49,6 +51,22 @@ public class SortingComparison {
     }
 
 
+    public static void selectionSort(int[] array){
+        for (int i = 0; i < array.length - 1; i++)
+        {
+            int ind = i;
+            for (int j = i + 1; j < array.length; j++){
+                if (array[j] < array[ind]){
+                    ind = j;
+                }
+            }
+            int smallerN = array[ind];
+            array[ind] = array[i];
+            array[i] = smallerN;
+        }
+    }
+
+
 
 
 
@@ -57,17 +75,23 @@ public class SortingComparison {
     public static void main(String[] args) {
         Random random = new Random();
 
-        int[] puzyrek = new int[10000];
+        int[] puzyrek = new int[20000];
         for (int i = 0; i < puzyrek.length; i++) {
-            puzyrek[i] = random.nextInt(100000);
+            puzyrek[i] = random.nextInt(20000);
         }
-        comparison(puzyrek, bubble);
+        comparison(puzyrek, bubbleSort);
 
-        int[] wstawka = new int[10000];
+        int[] wstawka = new int[20000];
         for (int i = 0; i < wstawka.length; i++) {
-            wstawka[i] = random.nextInt(100000);
+            wstawka[i] = random.nextInt(20000);
         }
         comparison(wstawka, insertSort);
+
+        int[] wybor = new int[20000];
+        for (int i = 0; i < wybor.length; i++) {
+            wybor[i] = random.nextInt(20000);
+        }
+        comparison(wybor, selectionSort );
 
 
     }
