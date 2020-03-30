@@ -1,27 +1,23 @@
 package sorting;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class HeapSort<T extends Comparable<T>> implements SortingAlgorithm<T> {
     @Override
     public List<T> sort(List<T> toSort) {
-        List<T> heap = builtHeap(toSort);
-        for (int heapSize = heap.size() - 1; heapSize >= 0; heapSize--) {
-            Collections.swap(heap, heapSize, 0);
-            heapify(heap, 0, heapSize);
+        toSort = builtHeap(toSort);
+        for (int toSortSize = toSort.size() - 1; toSortSize >= 0; toSortSize--) {
+            Collections.swap(toSort, toSortSize, 0);
+            heapify(toSort, 0, toSortSize);
         }
-        toSort.clear();
-        toSort.addAll(heap);
         return toSort;
     }
 
     List<T> builtHeap(List<T> list) {
-        ArrayList<T> heap = new ArrayList<>(list);
         for (int i = list.size(); i >= 0; i--) {
-            heapify(heap, i, list.size());
+            heapify(list, i, list.size());
         }
-        return heap;
+        return list;
     }
 
     private void heapify(List<T> list, int currentElement, int size) {
