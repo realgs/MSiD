@@ -16,9 +16,12 @@ public class SortingComparison {
         System.out.println("Sorting time of algorithm: " + timeConsumedMillis);
     }
 
-    private static IComparison bubbleSort = SortingComparison::bubbleSort;
-    private static IComparison insertSort = SortingComparison::insertSort;
-    private static IComparison selectionSort = SortingComparison::selectionSort;
+    private static IComparison bubbleS = SortingComparison::bubbleSort;
+    private static IComparison insertS = SortingComparison::insertSort;
+    private static IComparison selectionS = SortingComparison::selectionSort;
+    private static IComparison quickS = array -> {
+        Quicksort(array, 0, array.length - 1);
+    };
 
 
     public static void bubbleSort(int[] array) {
@@ -66,6 +69,44 @@ public class SortingComparison {
         }
     }
 
+    public static int partition(int[] array, int low, int high) {
+        Random random = new Random();
+
+        int pivot = random.nextInt(array.length);
+        int i = (low - 1);
+
+        for (int j = low; j < high; j++) {
+            if (array[j] < pivot) {
+                i++;
+
+                int temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+
+        }
+
+        int temp = array[i + 1];
+        array[i + 1] = array[high];
+        array[high] = temp;
+
+        return i + 1;
+
+
+    }
+
+    public static void Quicksort(int[] array, int low, int high){
+
+        if(low<high) {
+
+            int partitionIndex = partition(array, low, high);
+            Quicksort(array,low, partitionIndex - 1);
+            Quicksort(array, partitionIndex + 1, high);
+
+        }
+    }
+
+
 
 
 
@@ -79,19 +120,27 @@ public class SortingComparison {
         for (int i = 0; i < puzyrek.length; i++) {
             puzyrek[i] = random.nextInt(20000);
         }
-        comparison(puzyrek, bubbleSort);
+        comparison(puzyrek, bubbleS);
 
         int[] wstawka = new int[20000];
         for (int i = 0; i < wstawka.length; i++) {
             wstawka[i] = random.nextInt(20000);
         }
-        comparison(wstawka, insertSort);
+        comparison(wstawka, insertS);
 
         int[] wybor = new int[20000];
         for (int i = 0; i < wybor.length; i++) {
             wybor[i] = random.nextInt(20000);
         }
-        comparison(wybor, selectionSort );
+        comparison(wybor, selectionS);
+
+        int[] bystrij = new int[20000];
+        for (int i = 0; i < bystrij.length; i++) {
+            bystrij[i] = random.nextInt(20000);
+        }
+        comparison(bystrij,quickS);
+
+
 
 
     }
