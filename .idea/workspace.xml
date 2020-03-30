@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
+=======
   <component name="ChangeListManager">
     <list default="true" id="8899ce6e-c22c-404f-9d0c-cb9beb78f409" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -8,10 +10,32 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+>>>>>>> master
   <component name="DefaultGradleProjectSettings">
     <option name="testRunner" value="GRADLE" />
     <option name="delegatedBuild" value="true" />
   </component>
+<<<<<<< HEAD
+  <component name="GradleLocalSettings">
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/Desktop/SO/so_2019_wt_17/SystemyOperacyjne" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="SbtLocalSettings">
+    <option name="projectSyncType">
+      <map>
+        <entry key="$USER_HOME$/Desktop/akka-quickstart-scala" value="PREVIEW" />
+        <entry key="$USER_HOME$/Desktop/projectSBT-PingPong" value="PREVIEW" />
+      </map>
+    </option>
+  </component>
+=======
   <component name="FileEditorManager">
     <leaf>
       <file pinned="false" current-in-tab="true">
@@ -164,6 +188,7 @@
       </provider>
     </entry>
   </component>
+>>>>>>> master
   <component name="masterDetails">
     <states>
       <state key="ProjectJDKs.UI">
