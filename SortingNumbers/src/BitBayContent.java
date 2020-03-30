@@ -11,6 +11,11 @@ import java.net.URLConnection;
 
 public class BitBayContent {
 
+    private static float getValue(String str) {
+        String number = str.split(",")[0].substring(1);
+        return Float.parseFloat(number);
+    }
+
     private static String getJString(URL url) throws IOException {
         URLConnection connection = url.openConnection();
         connection.connect();
@@ -38,10 +43,25 @@ public class BitBayContent {
         }
     }
 
+    private static void updateData(URL url) throws InterruptedException, ParseException, IOException {
+        JSONParser parser = new JSONParser();
+        String jsonStr;
+        do {
+            jsonStr = getJString(url);
+            JSONObject jsonObject = (JSONObject) parser.parse(jsonStr);
+            JSONArray bids = (JSONArray) jsonObject.get("bids");
+            JSONArray asks = (JSONArray) jsonObject.get("asks");
+            for(int i = 0; i < bids.size(); i ++) {
+                System.out.println(1 - ((getValue(bids.get(i).toString()) - getValue(asks.get(i).toString())) / getValue(asks.get(i).toString())));
+            }
+            Thread.sleep(5000);
+        } while (jsonStr != null);
+    }
 
     public static void main(String[] args) throws Exception {
         URL bitBayUrl = new URL("https://bitbay.net/API/Public/BTC/orderbook.json");
         printData(getJString(bitBayUrl));
-
+        System.out.println();
+        updateData(bitBayUrl);
     }
 }
