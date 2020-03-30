@@ -33,6 +33,6 @@ void InsertSort::vSort() {
 	}
 	auto stop = std::chrono::high_resolution_clock::now();
 	chrono::duration<double> elapsed = stop - start;
-	cout << "It takes " << elapsed.count() << endl;
+	cout << "It takes for InsertSort" << elapsed.count() << endl;
 
 }

@@ -147,11 +147,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BubbleSort.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="InsertSort.cpp" />
     <ClCompile Include="Sort3i4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BubbleSort.h" />
     <ClInclude Include="Generator.h" />
     <ClInclude Include="InsertSort.h" />
   </ItemGroup>
