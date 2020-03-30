@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="476b52ed-c453-4b6c-8829-3d7f6780beee" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/SortingComparison.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortingComparison.java" afterDir="false" />
-    </list>
+    <list default="true" id="476b52ed-c453-4b6c-8829-3d7f6780beee" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +17,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/SortingComparison.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="573">
-              <caret line="103" column="24" selection-start-line="103" selection-start-column="24" selection-end-line="103" selection-end-column="24" />
+            <state relative-caret-position="139">
+              <caret line="118" selection-start-line="118" selection-end-line="135" />
             </state>
           </provider>
         </entry>
@@ -51,7 +49,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="43" />
     <option name="y" value="34" />
     <option name="width" value="1440" />
@@ -136,12 +134,12 @@
       <option name="presentableId" value="Default" />
       <updated>1585599983244</updated>
       <workItem from="1585599984529" duration="1000" />
-      <workItem from="1585600024938" duration="2459000" />
+      <workItem from="1585600024938" duration="2672000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2460000" />
+    <option name="totallyTimeSpent" value="2673000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="43" y="34" width="1440" height="848" extended-state="0" />
@@ -157,7 +155,7 @@
       <window_info anchor="bottom" id="Messages" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.14021164" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.34819278" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -184,8 +182,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/SortingComparison.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="573">
-          <caret line="103" column="24" selection-start-line="103" selection-start-column="24" selection-end-line="103" selection-end-column="24" />
+        <state relative-caret-position="139">
+          <caret line="118" selection-start-line="118" selection-end-line="135" />
         </state>
       </provider>
     </entry>
