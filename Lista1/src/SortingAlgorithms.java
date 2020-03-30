@@ -20,21 +20,7 @@ public class SortingAlgorithms {
 
  }
 
- public static void printArrayOriginalBeforeBubbleSort(int[] array) {
-     System.out.print("The original array: " );
-     for (int i = 0; i < array.length; i++) {
-         System.out.print(array[i] + " ");
-     }
-     System.out.println();
- }
 
- public static void printArrayBubbleSorted(int[] array) {
-     System.out.print("The sorted array: " );
-     for (int i = 0; i < array.length; i++) {
-         System.out.print(array[i] + " ");
-     }
-     System.out.println();
- }
 
  public static void InsertSort(int[] array2) {
 
@@ -50,46 +36,44 @@ public class SortingAlgorithms {
      }
  }
 
- public static void printArrayOriginalBeforeInsertSort(int[] array2) {
-     System.out.print("The original array: ");
-     for (int i = 0; i < array2.length; i++) {
-         System.out.print(array2[i] + " ");
-     }
-     System.out.println();
-
- }
-
- public static void printArrayInsertSorted(int[] array2) {
-     System.out.print("The sorted array: ");
-     for (int i = 0; i < array2.length; i++) {
-         System.out.print(array2[i] + " ");
-     }
-     System.out.println();
- }
 
 
- 
-
+    public static void printArray(int[] array) {
+        System.out.print("The original array: " );
+        for (int i = 0; i < array.length; i++) {
+            System.out.print(array[i] + " ");
+        }
+        System.out.println();
+    }
 
 
  public static void main(String[] args) {
-     int[] array = {3, 92, 406, 1, 7, 3, 21, 2, 832, 14291, 454012, 12};
-     int[] array2 = {7, 91, 102, 4, 1, 6, 39, 10, 32, 491, 4012, 123};
+     System.out.println();
 
-     System.out.println();
-     System.out.println("BubbleSort");
-     System.out.println();
-     printArrayOriginalBeforeBubbleSort(array);
+     int[] array = new int[]{3, 92, 406, 1, 7, 3, 21, 2, 832, 14291, 454012, 12};
+     printArray(array);
+     System.out.print("Bubble-sorted array: ");
      bubbleSort(array);
-     printArrayBubbleSorted(array);
+
+     for (int value: array) {
+         System.out.print(value + " ");
+     }
+     System.out.println();
 
      System.out.println();
-     System.out.println("InsertSort");
-     System.out.println();
-     printArrayOriginalBeforeInsertSort(array2);
+
+     int[] array2 = new int[]{2, 4, 6, 32, 1, 90, 64, 223, 91283, 6, 8, 3, 6032};
+     printArray(array2);
+     System.out.print("Insert-sorted array: ");
      InsertSort(array2);
-     printArrayInsertSorted(array2);
+
+     for (int value: array2) {
+         System.out.print(value + " ");
+
  }
+     System.out.println();
+
+    }
 
 
 }
