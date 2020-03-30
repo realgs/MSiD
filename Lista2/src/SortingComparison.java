@@ -115,25 +115,32 @@ public class SortingComparison {
 
     public static void main(String[] args) {
         Random random = new Random();
-
+        System.out.println();
+        System.out.println("BubbleSort");
         int[] puzyrek = new int[20000];
         for (int i = 0; i < puzyrek.length; i++) {
             puzyrek[i] = random.nextInt(20000);
         }
         comparison(puzyrek, bubbleS);
+        System.out.println();
 
+        System.out.println("InsertSort");
         int[] wstawka = new int[20000];
         for (int i = 0; i < wstawka.length; i++) {
             wstawka[i] = random.nextInt(20000);
         }
         comparison(wstawka, insertS);
+        System.out.println();
 
+        System.out.println("SelectionSort");
         int[] wybor = new int[20000];
         for (int i = 0; i < wybor.length; i++) {
             wybor[i] = random.nextInt(20000);
         }
         comparison(wybor, selectionS);
+        System.out.println();
 
+        System.out.println("QuickSort");
         int[] bystrij = new int[20000];
         for (int i = 0; i < bystrij.length; i++) {
             bystrij[i] = random.nextInt(20000);
