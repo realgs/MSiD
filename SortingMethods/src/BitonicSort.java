@@ -19,7 +19,6 @@ public class BitonicSort<T extends Comparable<T>> implements SortingAlgorithm<T>
     {
         if (cnt>1)
         {
-           // int k = cnt/2;
             int k=greatestPowerOfTwoLessThan(cnt);
             for (int i=low; i<low+cnt-k; i++)
                 compAndSwap(a,i, i+k, dir);
