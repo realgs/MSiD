@@ -1,13 +1,14 @@
-from sortingmethods import quick_sort, insert_sort, bubble_sort
+from sortingmethods import quick_sort, insert_sort, bubble_sort, merge_sort
 from random import randint
 
 def main():
     minValue = -100
     maxValue = 100
-    arraySize = 10
+    arraySize = 100
     array1 = [randint(minValue, maxValue) for _ in range(0, arraySize)]
     array2 = array1.copy()
     array3 = array1.copy()
+    array4 = array1.copy()
 
     print("Before insertion sort: \n%s" % array1)
     insert_sort(array1)
@@ -20,6 +21,10 @@ def main():
     print("Before bubble sort: \n%s" % array3)
     bubble_sort(array3)
     print("After bubble sort: \n%s" % array3)
+
+    print("Before merge sort: \n%s" % array4)
+    merge_sort(array4)
+    print("After merge sort: \n%s" % array4)
 
 if __name__ == "__main__":
     main()
