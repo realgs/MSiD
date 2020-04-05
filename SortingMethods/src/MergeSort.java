@@ -26,7 +26,7 @@ public class MergeSort<T extends Comparable<T>> implements SortingAlgorithm<T> {
 
         int k = l;
         while (i < n1 && j < n2)
-        {
+        {//L[i] <= R[j]
             if (L[i].compareTo(R[j])<0)
 
             {
