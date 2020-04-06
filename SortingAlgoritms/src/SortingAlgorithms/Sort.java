@@ -1,3 +1,6 @@
+package SortingAlgorithms;
+
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -19,8 +22,16 @@ public abstract class Sort {
         exchange(list,list.indexOf(o1),list.indexOf(o2));
     }
 
-    protected abstract  <T> List<T> sort(List<T> list, Comparator<? super T> comparator);
+    protected abstract <T> List<T> sort(List<T> list, Comparator<? super T> comparator);
 
+    public<T> long get_execution_time(List<T> list, Comparator<? super T> comparator, long start){
+        List<T> copy_list = new ArrayList<>(list);
+
+        sort(copy_list,comparator);
+        long time = System.nanoTime() - start;
+        return time;
+
+    }
     public  List<String> sortStrings(List<String> list){
         return sort(list, String::compareTo);
 

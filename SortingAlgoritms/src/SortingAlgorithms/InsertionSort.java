@@ -1,4 +1,4 @@
-
+package SortingAlgorithms;
 
 
 import java.util.Comparator;
@@ -6,6 +6,7 @@ import java.util.List;
 
 
 public class InsertionSort extends Sort{
+
 
     public <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
 
