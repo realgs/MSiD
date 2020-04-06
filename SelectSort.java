@@ -4,7 +4,6 @@ public class SelectSort implements Sorting
 	public void sort(int[] tab) 
 	{
 		int [] liczby = tab.clone(); 
-		long start = System.currentTimeMillis(); 
 		int temp, min_index;
 		
 		for(int i=0; i<liczby.length-1; i++)
