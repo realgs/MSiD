@@ -18,4 +18,26 @@ public abstract class Sort {
     protected static <T> void exchange(List<T> list, Object o1, Object o2) {
         exchange(list,list.indexOf(o1),list.indexOf(o2));
     }
+
+    protected abstract  <T> List<T> sort(List<T> list, Comparator<? super T> comparator);
+
+    public  List<String> sortStrings(List<String> list){
+        return sort(list, String::compareTo);
+
+    }
+
+    public  List<Character> sortCharacters(List<Character> list){
+        return sort(list, Character::compareTo);
+
+    }
+
+    public  List<Double> sortDoubles(List<Double> list){
+        return sort(list, Double::compareTo);
+
+    }
+
+    public  List<Integer> sortIntegers(List<Integer> list){
+        return sort(list, Integer::compareTo);
+
+    }
 }

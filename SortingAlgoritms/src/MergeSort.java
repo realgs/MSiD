@@ -5,27 +5,9 @@ import java.util.List;
 
 public class MergeSort extends Sort {
 
-    public static List<String> sortStrings(List<String> list){
-        return sort(list, String::compareTo);
 
-    }
 
-    public static List<Character> sortCharacters(List<Character> list){
-        return sort(list, Character::compareTo);
-
-    }
-
-    public static List<Double> sortDoubles(List<Double> list){
-        return sort(list, Double::compareTo);
-
-    }
-
-    public static List<Integer> sortIntegers(List<Integer> list){
-        return sort(list, Integer::compareTo);
-
-    }
-
-    public static <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
+    public  <T> List<T> sort(List<T> list, Comparator<? super T> comparator) {
 
 
         if (list.size() > 1) {

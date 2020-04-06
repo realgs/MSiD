@@ -24,10 +24,14 @@ public class Main {
         characters.add('q');
 
 
-        System.out.println(MergeSort.sortIntegers(list_integers).toString());
-        System.out.println(QuickSort.sortDoubles(list_doubles).toString());
-        System.out.println(MergeSort.sortStrings(list_strings).toString());
-        System.out.println(QuickSort.sortCharacters(characters).toString());
+        QuickSort quickSort = new QuickSort();
+        MergeSort mergeSort = new MergeSort();
+        InsertionSort insertionSort = new InsertionSort();
+
+        System.out.println(insertionSort.sortIntegers(list_integers).toString());
+        System.out.println(insertionSort.sortDoubles(list_doubles).toString());
+        System.out.println(mergeSort.sortStrings(list_strings).toString());
+        System.out.println(quickSort.sortCharacters(characters).toString());
 
 
 
