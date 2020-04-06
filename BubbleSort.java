@@ -17,7 +17,7 @@ public class BubbleSort implements Sorting
 					swaped = true;
 					temp = liczby[j];
 					liczby[j] = liczby[j+1];
-					liczby[j+1] = swap;
+					liczby[j+1] = temp;
 				}
 			}
 			if (swaped==false) break;
