@@ -1,4 +1,4 @@
 public interface Sorting
 {
-	public void sort(int [] tab);
+	public long sort(int [] tab);
 }

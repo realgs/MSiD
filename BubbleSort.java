@@ -1,9 +1,10 @@
 public class BubbleSort implements Sorting
 {
 	@Override
-	public void sort(int[] tab) 
+	public long sort(int[] tab) 
 	{
-		int [] liczby = tab.clone(); 
+		int [] liczby = tab.clone();
+		long start = System.currentTimeMillis(); 		
 		boolean swaped;
 		int temp;
 		
@@ -17,11 +18,12 @@ public class BubbleSort implements Sorting
 					swaped = true;
 					temp = liczby[j];
 					liczby[j] = liczby[j+1];
-					liczby[j+1] = swap;
+					liczby[j+1] = temp;
 				}
 			}
 			if (swaped==false) break;
 		}
+		return ( System.currentTimeMillis() - start);
 	}
 	
 }

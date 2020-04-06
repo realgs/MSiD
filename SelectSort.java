@@ -1,7 +1,7 @@
 public class SelectSort implements Sorting
 {
 	@Override
-	public void sort(int[] tab) 
+	public long sort(int[] tab) 
 	{
 		int [] liczby = tab.clone(); 
 		long start = System.currentTimeMillis(); 
@@ -22,7 +22,7 @@ public class SelectSort implements Sorting
 			liczby[i]=liczby[min_index];
 			liczby[min_index] = swap;
 		}
-		
+		return ( System.currentTimeMillis() - start);
 	}
 
 }
