@@ -5,7 +5,7 @@ public class SelectSort implements Sorting
 	{
 		int [] liczby = tab.clone(); 
 		long start = System.currentTimeMillis(); 
-		int swap, min_index;
+		int temp, min_index;
 		
 		for(int i=0; i<liczby.length-1; i++)
 		{
@@ -18,9 +18,9 @@ public class SelectSort implements Sorting
 					min_index = j;
 				}
 			}
-			swap = liczby[i];
+			temp = liczby[i];
 			liczby[i]=liczby[min_index];
-			liczby[min_index] = swap;
+			liczby[min_index] = temp;
 		}
 		
 	}
