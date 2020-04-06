@@ -1,13 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import quickSort as qs
-import mergeSort as ms
+import mergeSort
 import timeit
 import sortingTests as check
 import random
 import selectionSort
 import insertSort
 import copy
+from random import randint
 
 arrayOfTimeQs = []
 arrayOfTimeMs = []
@@ -35,7 +36,7 @@ def quickSortCase(arr):
 
 def mergeSortCase(arr):
     start = timeit.default_timer()
-    ms.mergeSort(arr)
+    mergeSort.mergeSort(arr)
     end = timeit.default_timer()
     
     time = end - start
@@ -79,7 +80,7 @@ def sortArraysToCalculateTime():
     arrayOfTimeIs = []
 
     for i in range(0, howManyArraysToSort):
-        array_qs = np.random.randint(low = minRandomNumberInArray, high = maxRandomNumberInArray, size = randomArraySize) 
+        array_qs = [randint(minRandomNumberInArray, maxRandomNumberInArray) for _ in range(0, randomArraySize)]
         array_ms = copy.copy(array_qs)
         array_ss = copy.copy(array_qs)
         array_is = copy.copy(array_qs)
@@ -88,12 +89,6 @@ def sortArraysToCalculateTime():
         selectionSortCase(array_ss)
         insertionSortCase(array_is)
         quickSortCase(array_qs)
-
-        print("Arrays to sort left: " + str(howManyArraysToSort - i - 1))
-        if not check.areArraysEqual(array_qs, array_ms) and not check.areArraysEqual(array_ss, array_is): 
-            print("SORTING FAILED, ARRAYS NOT EQUAL")
-            break
-
 
 def showChartsOfTime(titleOfChart):
     fig = plt.figure()
