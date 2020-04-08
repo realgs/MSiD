@@ -41,4 +41,9 @@ public class QuickSort<T extends Comparable<? super T>> implements ListSorter<T>
             list.set(right, temp);
         }
     }
+
+    @Override
+    public String toString() {
+        return "QuickSort";
+    }
 }

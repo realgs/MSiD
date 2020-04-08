@@ -35,4 +35,9 @@ public class HeapSort<T extends Comparable<? super T>> implements ListSorter<T> 
             heapify(heap,0,i);
         }
     }
+
+    @Override
+    public String toString() {
+        return "HeapSort";
+    }
 }

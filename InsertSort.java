@@ -11,4 +11,9 @@ public class InsertSort<T extends Comparable<? super T>> implements ListSorter<T
             list.set(j, value);
         }
     }
+
+    @Override
+    public String toString() {
+        return "InsertSort";
+    }
 }

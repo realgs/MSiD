@@ -23,4 +23,9 @@ public class ShellSort<T extends Comparable<? super T>> implements ListSorter<T>
             distance = distanceTable[distanceTable.length - ++iterator];
         }
     }
+
+    @Override
+    public String toString() {
+        return "ShellSort";
+    }
 }
