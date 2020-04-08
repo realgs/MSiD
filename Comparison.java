@@ -25,14 +25,10 @@ public class Comparison {
     public void compareAlgorithms() {
         ArrayList<ArrayListSorter<Integer>> listOfAlgorithms = new ArrayList<>();
 
-        BubbleSort<Integer> bubbleSort = new BubbleSort<>();
-        listOfAlgorithms.add(bubbleSort);
-
-        ShellSort<Integer> shellSort = new ShellSort<>();
-        listOfAlgorithms.add(shellSort);
-
-        InsertSort<Integer> insertSort = new InsertSort<>();
-        listOfAlgorithms.add(insertSort);
+        listOfAlgorithms.add(new BubbleSort<>());
+        listOfAlgorithms.add(new ShellSort<>());
+        listOfAlgorithms.add(new InsertSort<>());
+        listOfAlgorithms.add(new HeapSort<>());
 
         printResult(listOfAlgorithms);
     }
