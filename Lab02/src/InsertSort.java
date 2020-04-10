@@ -1,17 +1,17 @@
-public class InsertSort {
+import java.util.ArrayList;
 
-    static void sort (int[] arr) {
-        int n = arr.length;
-        for (int i = 1; i < n; ++i) {
-            int key = arr[i];
-            int j = i - 1;
+public class InsertSort <T extends Comparable<? super T>> implements ArrayListSorting<T>{
 
-            while (j > -1 && arr[j] > key) {
-                arr[j + 1] = arr[j];
-                --j;
-            }
+    @Override
+    public void sort (ArrayList<T> list) {
+        int size = list.size();
+        for (int i = 1; i < size; ++i) {
+            T key = list.get(i);
+            int j;
+            for (j = i - 1; j > -1 && list.get(j).compareTo(key) > 0; --j)
+                list.set(j + 1, list.get(j));
 
-            arr[j + 1] = key;
+            list.set(j + 1, key);
         }
     }
 

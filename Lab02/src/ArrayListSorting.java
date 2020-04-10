@@ -1,4 +1,5 @@
-package PACKAGE_NAME;
+import java.util.ArrayList;
 
-public class ArrayListSorting {
+public interface ArrayListSorting<T> {
+    void sort(ArrayList<T> list);
 }
