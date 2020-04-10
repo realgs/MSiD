@@ -49,4 +49,9 @@ public class MergeSort<T extends Comparable<? super T>> implements ArrayListSort
             ++k;
         }
     }
+
+    @Override
+    public String toString() {
+        return "MergeSort";
+    }
 }

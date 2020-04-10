@@ -32,4 +32,9 @@ public class QuickSort<T extends Comparable<? super T>> implements ArrayListSort
 
         return i + 1;
     }
+
+    @Override
+    public String toString() {
+        return "QuickSort";
+    }
 }

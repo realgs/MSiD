@@ -15,4 +15,8 @@ public class InsertSort <T extends Comparable<? super T>> implements ArrayListSo
         }
     }
 
+    @Override
+    public String toString() {
+        return "InsertSort";
+    }
 }

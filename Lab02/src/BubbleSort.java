@@ -15,4 +15,8 @@ public class BubbleSort<T extends Comparable<? super T>> implements ArrayListSor
                 }
     }
 
+    @Override
+    public String toString() {
+        return "BubbleSort";
+    }
 }
