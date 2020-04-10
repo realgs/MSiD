@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class BubbleSort<T extends Comparable<? super T>> implements ArrayListSorting<T>{
+public class BubbleSort<T extends Comparable<? super T>> implements ArrayListSorting<T> {
 
     @Override
     public void sort (ArrayList<T> list) {
