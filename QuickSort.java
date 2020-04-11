@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-public class QuickSort<T extends Comparable<? super T>> implements Sort {
+public class QuickSort<T extends Comparable<? super T>> implements Sort<T> {
     Random random = new Random();
 
     @Override
-    public void sort(ArrayList list) {
+    public void sort(ArrayList<T> list) {
         quicksort(list, 0, list.size());
     }
 

@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import static java.util.Collections.swap;
 
-public class BubbleSort<T extends Comparable<? super T>> implements Sort {
+public class BubbleSort<T extends Comparable<? super T>> implements Sort<T> {
 
     @Override
-    public void sort(ArrayList list) {
+    public void sort(ArrayList<T> list) {
         bubbleSort(list);
     }
 
@@ -13,7 +13,7 @@ public class BubbleSort<T extends Comparable<? super T>> implements Sort {
         while(rightMaxIndex > 0){
             int lastChecked = 0;
             for(int i=0; i<rightMaxIndex; i++){
-                if((list.get(i)).compareTo(list.get(i+1)) < 0) {
+                if((list.get(i)).compareTo(list.get(i+1)) > 0) {
                     swap(list, i, i + 1);
                     lastChecked = i;
 
