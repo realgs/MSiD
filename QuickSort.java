@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuickSort<T extends Comparable<? super T>> {
+public class QuickSort<T extends Comparable<? super T>> implements Sort{
     
     int partition(List<T> list, int startIndex, int endIndex)
     {
@@ -25,14 +25,18 @@ public class QuickSort<T extends Comparable<? super T>> {
     }
 
 
-    void sort(List<T> list, int startIndex, int endIndex)
+    void sortHelper(List<T> list, int startIndex, int endIndex)
     {
         if (startIndex < endIndex)
         {
             int pi = partition(list, startIndex, endIndex);
 
-            sort(list, startIndex, pi-1);
-            sort(list, pi+1, endIndex);
+            sortHelper(list, startIndex, pi-1);
+            sortHelper(list, pi+1, endIndex);
         }
+    }
+
+    public void sort(List<T> list){
+        sortHelper(list, 0, list.size() - 1)
     }
 

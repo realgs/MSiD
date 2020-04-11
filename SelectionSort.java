@@ -1,6 +1,6 @@
 import java.util.List;
 
-public class SelectionSort<T extends Comparable<? super T>>{
+public class SelectionSort<T extends Comparable<? super T>> implements Sort<T>{
 
 
     void sort(List<T> list) {

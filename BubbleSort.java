@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.List;
 
-public class BubbleSort<T extends Comparable<? super T>> {
+public class BubbleSort<T extends Comparable<? super T>> implements Sort<T>{
 
-    public void sort(ArrayList<T> list){
+    public void sort(List<T> list){
         boolean isSorting = true;
         while(isSorting) {
             isSorting = false;

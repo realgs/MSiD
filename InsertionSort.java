@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.List;
 
-public class InsertionSort<T extends Comparable<? super T>> {
+public class InsertionSort<T extends Comparable<? super T>> implements Sort<T>{
 
-    void sort(ArrayList<T> list){
+    void sort(List<T> list){
         for(int i = 1; i < list.size(); i++){
             int i_index = i;
 
