@@ -1,7 +1,7 @@
 public class InsertSort {
 
 
-    void sort(int[] tab){
+    static void sort(int[] tab){
         for (int i = 1; i < tab.length; ++i) {
             int key = tab[i], j = i - 1;
 

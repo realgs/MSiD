@@ -1,6 +1,6 @@
 public class HeapSort {
 
-    void sort(int [] tab) {
+    static void sort(int[] tab) {
         for (int i = tab.length / 2 - 1; i >= 0; i--) {
             heapify(tab, tab.length, i);
         }
@@ -16,7 +16,7 @@ public class HeapSort {
 
     }
 
-    private void heapify(int tab[], int n, int i) {
+    private static void heapify(int tab[], int n, int i) {
         int largest = i, left = 2 * i + 1, right = 2 * i + 2;
 
         if (left < n && tab[left] > tab[largest]) {
