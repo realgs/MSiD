@@ -13,6 +13,14 @@ def get_markets():
     return markets
 
 
+def get_all_data():
+    url = "https://api.bitbay.net/rest/trading/ticker"
+    headers = {'content-type': 'application/json'}
+
+    response = requests.request("GET", url, headers=headers)
+    return response.json()
+
+
 def get_data(market):
     url = f"https://api.bitbay.net/rest/trading/ticker/{market}"
     headers = {'content-type': 'application/json'}
@@ -30,6 +38,13 @@ def print_sells_and_buys_market(market):
     print(get_sells_and_buys_market(market))
 
 
+def print_all_sells_and_buys_():
+    data = get_all_data()
+    for market in data['items']:
+        (bid, ask) = (data['items'][market]['highestBid'], data['items'][market]['lowestAsk'])
+        print("{0}: {1}".format(market, (bid, ask)))
+
+
 def print_sells_and_buys_(markets):
     for market in markets:
         print("{0}: {1}".format(market, get_sells_and_buys_market(market)))
@@ -45,5 +60,7 @@ def print_current_diff(market):
         print(calc_diff(bid, ask))
         sleep(5)
 
+
+print_all_sells_and_buys_()
 
 print_current_diff('BTC-PLN')
