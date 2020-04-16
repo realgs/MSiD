@@ -8,13 +8,20 @@ def get_data(crypto, currency, category):
 
 
 def print_orderbook(crypto, currency):
-    orderbook = get_data(crypto, currency, 'orderbook')
-    bids = orderbook['bids']
-    asks = orderbook['asks']
     print(f'{crypto}-{currency}')
+    orderbook = get_data(crypto, currency, 'orderbook')
+
+    try:
+        bids = orderbook['bids']
+        asks = orderbook['asks']
+    except KeyError:
+        print('Not enough data.')
+        return
+
     print('BIDS')
     for bid in bids:
         print(f'\t{bid[1]:>-10} (rate: {bid[0]:>-10})')
+
     print('-' * 30)
     print('ASKS')
     for ask in asks:
@@ -28,6 +35,15 @@ def get_percent_diff(bid, ask):
 def diff_monitor(crypto, currency):
     print(f'{crypto}-{currency} percentage difference')
     while True:
-        data = get_data(crypto, currency, 'ticker')
-        print(f'\t{get_percent_diff(data["bid"], data["ask"])}%')
-        time.sleep(5)
+        try:
+            data = get_data(crypto, currency, 'ticker')
+
+            try:
+                print(f'\t{get_percent_diff(data["bid"], data["ask"])}%')
+            except KeyError:
+                print('Not enough data.')
+
+            time.sleep(5)
+
+        except KeyboardInterrupt:
+            exit(0)
