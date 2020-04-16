@@ -1,28 +1,33 @@
 import requests
+import time
 
 
-bids = []
-asks = []
+def get_data(crypto, currency, category):
+    url = f'https://bitbay.net/API/Public/{crypto}{currency}/{category}.json'
+    return requests.get(url).json()
 
 
 def print_orderbook(crypto, currency):
-    get_orderbook(crypto, currency)
+    orderbook = get_data(crypto, currency, 'orderbook')
+    bids = orderbook['bids']
+    asks = orderbook['asks']
+    print(f'{crypto}-{currency}')
     print('BIDS')
     for bid in bids:
-        print(f'\t{bid[1]} (rate: {bid[0]})')
+        print(f'\t{bid[1]:>-10} (rate: {bid[0]:>-10})')
     print('-' * 30)
     print('ASKS')
     for ask in asks:
-        print(f'\t{ask[1]} (rate: {ask[0]})')
+        print(f'\t{ask[1]:>-10} (rate: {ask[0]:>-10})')
 
 
-def orderbook_url(crypto, currency):
-    return f'https://bitbay.net/API/Public/{crypto}{currency}/orderbook.json'
+def get_percent_diff(bid, ask):
+    return 1 - (ask - bid) / bid
 
 
-def get_orderbook(crypto, currency):
-    global bids
-    global asks
-    orderbook = requests.get(orderbook_url(crypto, currency)).json()
-    bids = orderbook['bids']
-    asks = orderbook['asks']
+def diff_monitor(crypto, currency):
+    print(f'{crypto}-{currency} percentage difference')
+    while True:
+        data = get_data(crypto, currency, 'ticker')
+        print(f'\t{get_percent_diff(data["bid"], data["ask"])}%')
+        time.sleep(5)
