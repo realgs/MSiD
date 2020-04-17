@@ -1,28 +1,37 @@
-import requests
+from fetcher import fetchMarkets, fetchPrices
 from random import randint
-#use to get all market names
-markets = requests.get("https://api.bittrex.com/api/v1.1/public/getmarkets").json()['result']
-#max requests per minute = 60. 5 requests every 5 seconds is 5*12 = 60 requests every minute.
+import time
+
 maxRandomMarkets = 5
-namesList = []
 
-for m in markets:
-    namesList.append(m['MarketName'])
+def pickRandomNames(allNames):
+    namesTemp = allNames.copy()
+    output = []
+    for _ in range(0, maxRandomMarkets):
+        if len(namesTemp) == 0:
+            break
+        index = randint(0, len(namesTemp))
+        name = namesTemp[index]
+        output.append(name)
+        namesTemp.remove(name)
+    return output
 
-namesTemp = namesList.copy()
-outputNames = []
+def main():
+    allNames = fetchMarkets()
+    markets = pickRandomNames(allNames)
+    while(True):
+        print("-"*68)
+        print("|   Name   |    Bid    |    Ask    |    Dif    |    Timestamp    |")
+        print("-"*68)
+        timestamp = time.strftime("%x %X", time.gmtime())
+        results = fetchPrices(markets)
+        for r in results:
+            name = r[0]
+            bid = r[1]
+            ask = r[2]
+            diff = ((ask - bid)/ask) * 100
+            print(f"{name:10}  {bid:.8f}   {ask:.8f}   {diff:.4f}%   {timestamp}")
+        time.sleep(5)
 
-for i in range(0, maxRandomMarkets):
-    index = randint(0, len(namesTemp))
-    name = namesTemp[index]
-    outputNames.append(name)
-    namesTemp.remove(name)
-
-
-print(f"-------------------------------------------------\n|  Nazwa  |   Sprzedaż   |  Kupno  |  Różnica  |\n-------------------------------------------------")
-for name in outputNames:
-    prices = requests.get(f"https://api.bittrex.com/api/v1.1/public/getticker?market={name}").json()['result']
-    bid = float(prices['Bid'])
-    ask = float(prices['Ask'])
-    diff = ((ask - bid)/ask) * 100
-    print(f"{name:10}  {bid:.8f}   {ask:.8f}   {diff:.4f} %")
+if __name__ == "__main__":
+    main()
