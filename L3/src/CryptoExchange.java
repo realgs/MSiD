@@ -1,18 +1,17 @@
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.json.simple.parser.ParseException;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONObject;
 import java.net.URL;
 import java.net.URLConnection;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 public class CryptoExchange {
 
 
-    private static void printParsedData(String j) throws ParseException {
+    private static void pData(String j) throws ParseException {
         if (j != null) {
             JSONParser p = new JSONParser();
             JSONObject o = (JSONObject) p.parse(j);
@@ -28,7 +27,7 @@ public class CryptoExchange {
 
 
 
-    public static void updateData(URL link) throws Exception {
+    public static void uData(URL link) throws Exception {
         JSONParser p = new JSONParser();
         String line;
 
@@ -93,9 +92,9 @@ public class CryptoExchange {
         System.out.println("BITBAY.NET EXCHANGE BITCOIN CASH RATES: ");
         System.out.println();
         URL cryptoURL = new URL("https://bitbay.net/API/Public/BCC/orderbook.json");
-        printParsedData(getJSONString(cryptoURL));
+        pData(getJSONString(cryptoURL));
         System.out.println();
-        updateData(cryptoURL);
+        uData(cryptoURL);
 
     }
 
