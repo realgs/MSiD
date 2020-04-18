@@ -1,31 +1,63 @@
-import java.util.Random;
+import java.util.ArrayList;
+import java.net.URL;
+import java.io.IOException;
 
 public class Main 
 {
-	private static int [] losuj_tab(int n)
-	{
-		Random r = new Random();
-		int [] tab = new int[n];
+	static ArrayList <Offer> bids;
+	static ArrayList <Offer> asks;
+
+	private static void printOrderbook(URL source) throws IOException {
 		
-		for(int i=0; i<n; i++)
+		JSONParser parser = new JSONParser(source);
+		parser.getData();
+		bids = parser.getBids();
+		asks = parser.getAsks();
+		
+		System.out.println("BIDS\n------------------------------------------------");
+		
+		for(Offer bid : bids)
 		{
-			liczby[i]=r.nextInt(10000);
+			System.out.println("BID: " + bid);
 		}
+		System.out.println("------------------------------------------------\n\nASKS\n------------------------------------------------");
 		
-		return tab;
+		
+		for(Offer ask : asks)
+		{
+			System.out.println("ASK: " + ask);
+		}
+		System.out.println("------------------------------------------------");
 	}
 	
-	@SuppressWarnings("unused")
-	public static void main(String[] args) 
-	{
-		Sorting bubble = new Bubble(),  merge = new Merge();
+	private static double calcDiff() {
+		System.out.print("KUPNO: " + bids.get(0).getPrice() + "\t SPRZEDAZ: "+ asks.get(0).getPrice());
+		return ( (asks.get(0).getPrice() - bids.get(0).getPrice())/bids.get(0).getPrice() )*100;
+	}
+
+	private static void inspectDiff(URL source) throws IOException, InterruptedException {
 		
-		int [] losowa = losuj_tab(10000);
+		JSONParser parser = new JSONParser(source);
 		
-		System.out.println("TABLICA LOSOWA: ");
-		System.out.println("Bubble Sort: " + bubble.sort(losowa));
-		System.out.println("Merge Sort: " + merge.sort(losowa));
+		while(true) {
+			parser.getData();
+			bids = parser.getBids();
+			asks = parser.getAsks();
+			System.out.println("\tROZNICA: " + calcDiff() + "%");
+			Thread.sleep(5000);
+		}
 		
 	}
 
+    public static void main(String[] args) throws Exception {
+    	
+    	URL bitbay = new URL("https://bitbay.net/API/Public/BTC/orderbook.json");
+    	
+    	printOrderbook(bitbay);
+    	
+    	System.out.println();
+    	
+    	inspectDiff(bitbay);
+    	
+    }
 }
