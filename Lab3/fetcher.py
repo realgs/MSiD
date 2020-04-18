@@ -1,8 +1,6 @@
 import requests
 import threading
 
-#threadLock = threading.Lock()
-
 class PriceFetcher(threading.Thread):
     def __init__(self, name):
         threading.Thread.__init__(self)
@@ -10,11 +8,9 @@ class PriceFetcher(threading.Thread):
         self.value = None
 
     def run(self):
-        #threadLock.acquire()
         prices = requests.get(f"https://api.bittrex.com/api/v1.1/public/getticker?market={self.name}").json()['result']
         bid = float(prices['Bid'])
         ask = float(prices['Ask'])
-        #threadLock.release()
         self.value = [self.name, bid, ask]
 
     def join(self, *args):
