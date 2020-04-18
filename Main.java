@@ -1,63 +1,33 @@
-import java.util.ArrayList;
-import java.net.URL;
-import java.io.IOException;
+import java.util.Random;
 
 public class Main 
 {
-	static ArrayList <Offer> bids;
-	static ArrayList <Offer> asks;
-
-	private static void printOrderbook(URL source) throws IOException {
+	private static int [] losuj_tab(int n)
+	{
+		Random r = new Random();
+		int [] tab = new int[n];
 		
-		JSONParser parser = new JSONParser(source);
-		parser.getData();
-		bids = parser.getBids();
-		asks = parser.getAsks();
-		
-		System.out.println("BIDS\n------------------------------------------------");
-		
-		for(Offer bid : bids)
+		for(int i=0; i<n; i++)
 		{
-			System.out.println("BID: " + bid);
+			liczby[i]=r.nextInt(10000);
 		}
-		System.out.println("------------------------------------------------\n\nASKS\n------------------------------------------------");
 		
-		
-		for(Offer ask : asks)
-		{
-			System.out.println("ASK: " + ask);
-		}
-		System.out.println("------------------------------------------------");
+		return tab;
 	}
 	
-	private static double calcDiff() {
-		System.out.print("KUPNO: " + bids.get(0).getPrice() + "\t SPRZEDAZ: "+ asks.get(0).getPrice());
-		return ( (asks.get(0).getPrice() - bids.get(0).getPrice())/bids.get(0).getPrice() )*100;
-	}
-
-	private static void inspectDiff(URL source) throws IOException, InterruptedException {
+	@SuppressWarnings("unused")
+	public static void main(String[] args) 
+	{
+		Sorting bubble = new Bubble(),  merge = new Merge(), insert = new Insert(), quick = new Quick();
 		
-		JSONParser parser = new JSONParser(source);
+		int [] losowa = losuj_tab(10000);
 		
-		while(true) {
-			parser.getData();
-			bids = parser.getBids();
-			asks = parser.getAsks();
-			System.out.println("\tROZNICA: " + calcDiff() + "%");
-			Thread.sleep(5000);
-		}
+		System.out.println("TABLICA LOSOWA: ");
+		System.out.println("Bubble Sort: " + bubble.sort(losowa));
+		System.out.println("Merge Sort: " + merge.sort(losowa));
+		System.out.println("Insert Sort: " + insert.sort(losowa));
+		System.out.println("Quick Sort: " + quick.sort(losowa));
 		
 	}
 
-    public static void main(String[] args) throws Exception {
-    	
-    	URL bitbay = new URL("https://bitbay.net/API/Public/BTC/orderbook.json");
-    	
-    	printOrderbook(bitbay);
-    	
-    	System.out.println();
-    	
-    	inspectDiff(bitbay);
-    	
-    }
 }
