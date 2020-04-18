@@ -4,6 +4,7 @@ import time
 
 maxRandomMarkets = 5
 customMarkets = ["BTC-LTC", "USD-BSV", "USD-BTC", "USD-LTC", "USD-ETH"]
+headerString = "|   Name   |      Bid      |      Ask      |      Dif      |      Timestamp     |"
 
 def pickRandomNames(allNames):
     namesTemp = allNames.copy()
@@ -18,17 +19,16 @@ def pickRandomNames(allNames):
     return output
 
 def main():
-    allNames = fetchMarkets()
     markets = None
     if input("Load custom markets? (Y/N)") == "N":
-        markets = pickRandomNames(allNames)
+        markets = pickRandomNames(fetchMarkets())
     else:
         markets = customMarkets
     while(True):
         results = fetchPrices(markets)
-        print("-"*81)
-        print("|   Name   |      Bid      |      Ask      |      Dif      |      Timestamp     |")
-        print("-"*81)
+        print("-"*len(headerString))
+        print(headerString)
+        print("-"*len(headerString))
         timestamp = time.strftime("%x %X", time.gmtime())
         for r in results:
             name = r[0]
