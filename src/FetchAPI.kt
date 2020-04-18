@@ -44,15 +44,35 @@ class FetchApi() {
 
   }
 
+  fun getBitStampBuySell(): () -> BuySell {
+
+    val currency = BitStampTickerEntity.tickers[0]
+    val response = sendRequest("https://www.bitstamp.net/api/v2/ticker/$currency")
+    val gson = Gson()
+    val ticker: BitStampTickerEntity.MainData = gson.fromJson(response.body, BitStampTickerEntity.MainData::class.java)
+    return { BuySell("bitstamp", ticker.ask, ticker.bid) }
+
+  }
+
+  fun getCexBuySell(): () -> BuySell {
+
+    val currency = CexTickerEntity.tickers[0]
+    val response = sendRequest("https://cex.io/api/ticker/$currency")
+    val gson = Gson()
+    val ticker: CexTickerEntity.MainData = gson.fromJson(response.body, CexTickerEntity.MainData::class.java)
+    return { BuySell("cex", ticker.ask, ticker.bid) }
+
+  }
+
 //  fun <T : TickerEntity> getStockBuySell(url: String, stockName: String): () -> BuySell {
 //
-//    val tickerEntity : T = TickerEntity() as T
+//    val tickerEntity : T = T
 //    val currency = tickerEntity.tickers[0]
 //    val response = sendRequest(url.replace("{}", currency))
 //    val gson = Gson()
 //    val ticker: tickerEntity.MainData = gson.fromJson(response.body, tickerEntity.MainData::class.java)
 //    println(currency)
-//    return { BuySell (stockName, ticker.ask, ticker.bid) }
+//    return { BuySell (stockName, ticker.Ask, ticker.Bid) }
 //  }
 }
 
@@ -60,7 +80,7 @@ suspend fun main(){
 
   val fetch: FetchApi = FetchApi()
 
-  val allStocks: List<() -> BuySell> = listOf(fetch.getBittrexBuySell(), fetch.getBitBayBuySell())
+  val allStocks: List<() -> BuySell> = listOf(fetch.getBittrexBuySell(), fetch.getBitBayBuySell(), fetch.getBitStampBuySell(), fetch.getCexBuySell())
 
   runBlocking {
 
@@ -69,7 +89,7 @@ suspend fun main(){
       for (stock in stockResults) {
         println("Name: ${stock.stockName}")
         println("Buy: ${stock.buy} Sell: ${stock.sell}")
-        println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}")
+        println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}\n")
       }
       delay(5000)
     }
