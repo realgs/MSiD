@@ -3,6 +3,7 @@ import com.google.gson.annotations.SerializedName
 interface TickerEntity{
 
   val tickers: Array<String>
+  val fee: Double
 
   data class MainData (
     val Bid: Double,
@@ -13,7 +14,9 @@ interface TickerEntity{
 
 object BittrexTickerEntity : TickerEntity {
 
-  override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "BTC-USD")
+  override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC")
+  //override val fee: Double = 0.002
+  override val fee: Double = 0.0001
 
   data class MainData(
     val success: Boolean,
@@ -33,6 +36,9 @@ object BitbayTickerEntity : TickerEntity {
 
   override val tickers = arrayOf<String>("LTCBTC", "BTCDOGE", "BTCPOT", "BTCUSD")
 
+  //override val fee = 0.0043
+  override val fee: Double = 0.0001
+
   data class MainData(
     val max : Double,
     val min : Double,
@@ -49,6 +55,8 @@ object BitbayTickerEntity : TickerEntity {
 object BitStampTickerEntity : TickerEntity {
 
   override val tickers: Array<String> = arrayOf<String>("ltcbtc", "ethbtc", "bchbtc", "btcusd")
+  //override val fee: Double = 0.005
+  override val fee: Double = 0.0001
 
   data class MainData(
     @SerializedName("ask")val ask : Double,
@@ -60,6 +68,8 @@ object BitStampTickerEntity : TickerEntity {
 object CexTickerEntity : TickerEntity {
 
   override val tickers: Array<String> = arrayOf<String>("LTC/BTC", "ETH/BTC", "BCH/BTC", "BTC/USD")
+  //override val fee: Double = 0.0025
+  override val fee: Double = 0.0001
 
   data class MainData(
     @SerializedName("ask")val ask : Double,

@@ -1,5 +1,6 @@
 import com.google.gson.Gson
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -19,48 +20,56 @@ class FetchApi() {
     return Response(conn.responseCode, responseBody)
   }
 
-  fun getBittrexBuySell(): () -> BuySell {
-    val currency = BittrexTickerEntity.tickers[0]
+  val getBittrexBuySell = fun(): BuySell {
+    val currency = BittrexTickerEntity.tickers[3]
     val response = sendRequest("https://api.bittrex.com/api/v1.1/public/getticker?market=$currency")
     val gson = Gson()
     val ticker: BittrexTickerEntity.MainData = gson.fromJson(response.body, BittrexTickerEntity.MainData::class.java)
     if(ticker.success) {
       println(currency)
-      return { BuySell("bittrex", ticker.result.Ask, ticker.result.Bid) }
+      val buyVal = ticker.result.Ask + ticker.result.Ask * BittrexTickerEntity.fee
+      val sellVal = ticker.result.Bid - ticker.result.Bid * BittrexTickerEntity.fee
+      return BuySell("bittrex", buyVal, sellVal)
     }
 
     println("Could not receive data about $currency")
-    return { BuySell("bittrex") }
+    return BuySell("bittrex")
 
   }
 
-  fun getBitBayBuySell(): () -> BuySell {
+  val getBitBayBuySell = fun(): BuySell {
 
-    val currency = BitbayTickerEntity.tickers[0]
+    val currency = BitbayTickerEntity.tickers[3]
     val response = sendRequest("https://bitbay.net/API/Public/$currency/ticker.json")
     val gson = Gson()
     val ticker: BitbayTickerEntity.MainData = gson.fromJson(response.body, BitbayTickerEntity.MainData::class.java)
-    return { BuySell("bitbay", ticker.ask, ticker.bid) }
+    val buyVal = ticker.ask + ticker.ask * BitbayTickerEntity.fee
+    val sellVal = ticker.bid - ticker.bid * BitbayTickerEntity.fee
+    return BuySell("bitbay", buyVal, sellVal)
 
   }
 
-  fun getBitStampBuySell(): () -> BuySell {
+  val getBitStampBuySell= fun(): BuySell {
 
-    val currency = BitStampTickerEntity.tickers[0]
+    val currency = BitStampTickerEntity.tickers[3]
     val response = sendRequest("https://www.bitstamp.net/api/v2/ticker/$currency")
     val gson = Gson()
     val ticker: BitStampTickerEntity.MainData = gson.fromJson(response.body, BitStampTickerEntity.MainData::class.java)
-    return { BuySell("bitstamp", ticker.ask, ticker.bid) }
+    val buyVal = ticker.ask + ticker.ask * BitStampTickerEntity.fee
+    val sellVal = ticker.bid - ticker.bid * BitStampTickerEntity.fee
+    return BuySell("bitstamp", buyVal, sellVal)
 
   }
 
-  fun getCexBuySell(): () -> BuySell {
+  val getCexBuySell = fun(): BuySell {
 
-    val currency = CexTickerEntity.tickers[0]
+    val currency = CexTickerEntity.tickers[3]
     val response = sendRequest("https://cex.io/api/ticker/$currency")
     val gson = Gson()
     val ticker: CexTickerEntity.MainData = gson.fromJson(response.body, CexTickerEntity.MainData::class.java)
-    return { BuySell("cex", ticker.ask, ticker.bid) }
+    val buyVal = ticker.ask + ticker.ask * CexTickerEntity.fee
+    val sellVal = ticker.bid - ticker.bid * CexTickerEntity.fee
+    return BuySell("cex", buyVal, sellVal)
 
   }
 
@@ -79,18 +88,14 @@ class FetchApi() {
 suspend fun main(){
 
   val fetch: FetchApi = FetchApi()
-
-  val allStocks: List<() -> BuySell> = listOf(fetch.getBittrexBuySell(), fetch.getBitBayBuySell(), fetch.getBitStampBuySell(), fetch.getCexBuySell())
+  val currencyPair = Pair("USD", "BTC")
+  val allStocks: List<() -> BuySell> = listOf(fetch.getBittrexBuySell, fetch.getBitBayBuySell, fetch.getBitStampBuySell, fetch.getCexBuySell)
 
   runBlocking {
 
     while(true) {
       val stockResults = StockOperations.watchAllStocks(allStocks)
-      for (stock in stockResults) {
-        println("Name: ${stock.stockName}")
-        println("Buy: ${stock.buy} Sell: ${stock.sell}")
-        println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}\n")
-      }
+      StockOperations.checkMarkets(stockResults, currencyPair)
       delay(5000)
     }
   }
