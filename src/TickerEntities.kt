@@ -1,5 +1,4 @@
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 interface TickerEntity{
@@ -11,13 +10,13 @@ interface TickerEntity{
 
 }
 
-class BittrexTickerEntity(val res: JsonObject = JsonObject()) : TickerEntity {
+class BittrexTickerEntity(@SerializedName("result")val result: String? = null) : TickerEntity {
 
   override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC")
   //override val fee: Double = 0.002
   override val fee: Double = 0.0001
-  override var bid: Double = 0.1
-  override var ask: Double = 0.1
+  override var bid: Double = 0.0
+  override var ask: Double = 0.0
 
   data class ResultData (
     val Bid: Double,
@@ -26,14 +25,13 @@ class BittrexTickerEntity(val res: JsonObject = JsonObject()) : TickerEntity {
   )
 
   init {
-    println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(res)
-    //if(result != null) {
+    println(result)
+    if(result != null) {
       val gson = Gson()
-      //val res: ResultData = gson.fromJson(result, ResultData::class.java)
-      //bid = res.Bid
-      //ask = res.Ask
-    //}
+      val res: ResultData = gson.fromJson(result, ResultData::class.java)
+      bid = res.Bid
+      ask = res.Ask
+    }
   }
 
 }

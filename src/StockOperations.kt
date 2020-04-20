@@ -6,11 +6,11 @@ object StockOperations{
     return 1 - (buySell.sell - buySell.buy) / buySell.buy
   }
 
-  suspend fun watchStock(methodToExecute : () -> BuySell): BuySell {
+  fun watchStock(methodToExecute : () -> BuySell): BuySell {
       return methodToExecute()
   }
 
-  suspend fun watchAllStocks(methodsToExecute: List<() -> BuySell>): List<BuySell> {
+  suspend fun watchAllStocks(methodsToExecute: List<() -> BuySell?>): List<BuySell?> {
 
     val deferred = methodsToExecute.map { stock ->
       GlobalScope.async {
@@ -22,22 +22,24 @@ object StockOperations{
 
   }
 
-  fun checkMarkets(stockResults: List<BuySell>, currencyPair: Pair<String?, String?>): Double {
+  fun checkMarkets(stockResults: List<BuySell?>, currencyPair: Pair<String?, String?>): Double {
     var lowestBuy = Double.MAX_VALUE
     var highestSell = 0.0
     var stockToBuyOn: BuySell? = null
     var stockToSellOn: BuySell? = null
     for (stock in stockResults) {
-      println("Name: ${stock.stockName}")
-      println("Buy: ${stock.buy} Sell: ${stock.sell}")
-      println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}\n")
-      if(stock.buy < lowestBuy){
-        lowestBuy = stock.buy
-        stockToBuyOn = stock
-      }
-      if(stock.sell > highestSell){
-        highestSell = stock.sell
-        stockToSellOn = stock
+      if(stock != null) {
+        println("Name: ${stock.stockName}")
+        println("Buy: ${stock.buy} Sell: ${stock.sell}")
+        println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}\n")
+        if (stock.buy < lowestBuy) {
+          lowestBuy = stock.buy
+          stockToBuyOn = stock
+        }
+        if (stock.sell > highestSell) {
+          highestSell = stock.sell
+          stockToSellOn = stock
+        }
       }
     }
 
