@@ -1,4 +1,5 @@
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.net.HttpURLConnection
@@ -21,25 +22,20 @@ class FetchApi() {
   }
 
 
-  inline fun < reified T : TickerEntity> getStockBuySell(url: String, stockName: String): BuySell? {
+  inline fun < reified T : TickerEntity> getStockBuySell(url: String, stockName: String, entityConstructor: () -> T): BuySell? {
 
-    val tickerEntity : T = T::class.java.getConstructor().newInstance()
-    //println(tickerEntity)
+    val tickerEntity : T = entityConstructor()
     val currency = tickerEntity.tickers[3]
     val response = sendRequest(url.replace("{}", currency))
     if(response.statusCode == 200) {
-      val gson = Gson()
-      //println(response.body)
-      val ticker: T = gson.fromJson(response.body, T::class.java)
-      return BuySell(stockName, ticker.ask, ticker.bid)
+      tickerEntity.receiveJson(response.body)
+      return BuySell(stockName, tickerEntity.ask, tickerEntity.bid)
     }
     else{
       println("Failed to receive data from $stockName market!")
       return null
     }
   }
-
-
 
 }
 
@@ -48,11 +44,11 @@ fun main(){
   val fetch: FetchApi = FetchApi()
   val currencyPair = Pair("USD", "BTC")
   val wallet = Wallet(10000.0, currencyPair.first, currencyPair.second )
-  val bittrex = fun(): BuySell? { return fetch.getStockBuySell<BittrexTickerEntity>("https://api.bittrex.com/api/v1.1/public/getticker?market={}", "bittrex") }
-  val bitbay = fun(): BuySell? { return fetch.getStockBuySell<BitbayTickerEntity>("https://bitbay.net/API/Public/{}/ticker.json", "bitbay") }
-  val bitstamp = fun(): BuySell? { return fetch.getStockBuySell<BitStampTickerEntity>("https://www.bitstamp.net/api/v2/ticker/{}", "bitstamp") }
-  val cex = fun(): BuySell? { return fetch.getStockBuySell<CexTickerEntity>("https://cex.io/api/ticker/{}", "cex") }
-  val allStocks: List<() -> BuySell?> = listOf(bitbay, bitstamp, cex)
+  val bittrex = fun(): BuySell? { return fetch.getStockBuySell("https://api.bittrex.com/api/v1.1/public/getticker?market={}", "bittrex", ::BittrexTickerEntity) }
+  val bitbay = fun(): BuySell? { return fetch.getStockBuySell("https://bitbay.net/API/Public/{}/ticker.json", "bitbay", ::BitbayTickerEntity) }
+  val bitstamp = fun(): BuySell? { return fetch.getStockBuySell("https://www.bitstamp.net/api/v2/ticker/{}", "bitstamp", ::BitStampTickerEntity) }
+  val cex = fun(): BuySell? { return fetch.getStockBuySell("https://cex.io/api/ticker/{}", "cex", ::CexTickerEntity) }
+  val allStocks: List<() -> BuySell?> = listOf(bittrex, bitbay, bitstamp, cex)
 
   runBlocking {
 
@@ -69,18 +65,5 @@ fun main(){
   while(true){
     Thread.sleep(5000)
   }
-
-//  data class bitt(val result: String) {
-//    val someVal: String = "string"
-//    fun method() {
-//      print("something")
-//    }
-//  }
-//
-//  val response = fetch.sendRequest("https://api.bittrex.com/api/v1.1/public/getticker?market=USD-BTC")
-//  println(response)
-//  val gson = Gson()
-//  val ticker = gson.fromJson(response.body, bitt::class.java)
-//  println(ticker)
 
 }

@@ -1,16 +1,26 @@
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import java.io.Reader
 
-interface TickerEntity{
+abstract class TickerEntity(){
 
-  val tickers: Array<String>
-  val fee: Double
-  val bid : Double
-  val ask : Double
+  abstract val tickers: Array<String>
+  abstract val fee: Double
+  abstract var bid : Double
+  abstract var ask : Double
+
+  open fun receiveJson(json: String){
+    val gson = Gson()
+    val tickerJson: JsonObject = gson.fromJson(json, JsonObject::class.java)
+    bid = tickerJson.get("bid").asDouble
+    ask = tickerJson.get("ask").asDouble
+
+  }
 
 }
 
-class BittrexTickerEntity(@SerializedName("result")val result: String? = null) : TickerEntity {
+class BittrexTickerEntity() : TickerEntity() {
 
   override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC")
   //override val fee: Double = 0.002
@@ -18,55 +28,43 @@ class BittrexTickerEntity(@SerializedName("result")val result: String? = null) :
   override var bid: Double = 0.0
   override var ask: Double = 0.0
 
-  data class ResultData (
-    val Bid: Double,
-    val Ask: Double,
-    val Last: Double
-  )
+  override fun receiveJson(json: String){
+    val gson = Gson()
+    val tickerJson: JsonObject = gson.fromJson(json, JsonObject::class.java)
 
-  init {
-    println(result)
-    if(result != null) {
-      val gson = Gson()
-      val res: ResultData = gson.fromJson(result, ResultData::class.java)
-      bid = res.Bid
-      ask = res.Ask
-    }
+    val resultJson: JsonObject = gson.fromJson(tickerJson.get("result"), JsonObject::class.java)
+    println(resultJson)
+    bid = resultJson.get("Bid").asDouble
+    ask = resultJson.get("Ask").asDouble
   }
+
 
 }
 
-class BitbayTickerEntity(
-  @SerializedName("bid")override val bid: Double = 0.0,
-  @SerializedName("ask")override val ask: Double = 0.0
-) : TickerEntity {
+class BitbayTickerEntity() : TickerEntity() {
 
   override val tickers = arrayOf<String>("LTCBTC", "BTCDOGE", "BTCPOT", "BTCUSD")
 
-  //override val fee = 0.0043
-  override val fee: Double = 0.0001
+  override val fee = 0.0043
+  override var bid: Double = 0.0
+  override var ask: Double = 0.0
 
 }
 
-class BitStampTickerEntity(
-  @SerializedName("bid")override val bid: Double = 0.0,
-  @SerializedName("ask")override val ask: Double = 0.0
-) : TickerEntity {
+class BitStampTickerEntity() : TickerEntity() {
 
   override val tickers: Array<String> = arrayOf<String>("ltcbtc", "ethbtc", "bchbtc", "btcusd")
-  //override val fee: Double = 0.005
-  override val fee: Double = 0.0001
+  override val fee: Double = 0.005
+  override var bid: Double = 0.0
+  override var ask: Double = 0.0
 
 }
 
-class CexTickerEntity(
-  @SerializedName("bid")override val bid: Double = 0.0,
-  @SerializedName("ask")override val ask: Double = 0.0
-) : TickerEntity {
+class CexTickerEntity() : TickerEntity() {
 
   override val tickers: Array<String> = arrayOf<String>("LTC/BTC", "ETH/BTC", "BCH/BTC", "BTC/USD")
-  //override val fee: Double = 0.0025
-  override val fee: Double = 0.0001
-
+  override val fee: Double = 0.002
+  override var bid: Double = 0.0
+  override var ask: Double = 0.0
 
 }

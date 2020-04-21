@@ -7,7 +7,7 @@ class Wallet(var amount: Double, val mainCurrency: String, val investmentCurrenc
       totalProfit += madeOnTransaction
       amount = soldFor
 
-      println("\nBought $amountBought $investmentCurrency for $amount $mainCurrency and sold them for $soldFor $mainCurrency making $madeOnTransaction")
+      println("\nBought $amountBought $investmentCurrency for $amount $mainCurrency and sold them for $soldFor $mainCurrency making $madeOnTransaction $mainCurrency")
       println("Total profit so far: $totalProfit $mainCurrency\nAmount of money in wallet: $amount $mainCurrency")
     }
   }
