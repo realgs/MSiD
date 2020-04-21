@@ -22,7 +22,7 @@ object StockOperations{
 
   }
 
-  fun checkMarkets(stockResults: List<BuySell?>, currencyPair: Pair<String?, String?>): Double {
+  fun checkMarkets(stockResults: List<BuySell?>, currencyPair: Pair<String?, String?>): Pair<BuySell?, BuySell?>? {
     var lowestBuy = Double.MAX_VALUE
     var highestSell = 0.0
     var stockToBuyOn: BuySell? = null
@@ -48,11 +48,11 @@ object StockOperations{
         val profit = Math.round((highestSell - lowestBuy) * 100.00) / 100.00
         println("You might make $profit ${currencyPair.first} if you buy 1 ${currencyPair.second} for $lowestBuy ${currencyPair.first} on ${stockToBuyOn.stockName} " +
           "and sell it for $highestSell ${currencyPair.first} on ${stockToSellOn.stockName}\n")
-        return profit
+        return Pair<BuySell, BuySell>(stockToBuyOn, stockToSellOn)
       }
       else println("Noting to profit on\n")
     }
-    return 0.0
+    return null
   }
 
 }

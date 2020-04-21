@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import java.net.HttpURLConnection
 import java.net.URL
 
-
 data class Response(val statusCode: Int, val body: String)
 data class BuySell( val stockName: String, val buy: Double = 0.0, val sell: Double = 0.0)
 
@@ -48,7 +47,7 @@ fun main(){
 
   val fetch: FetchApi = FetchApi()
   val currencyPair = Pair("USD", "BTC")
-  //val allStocks: List<() -> BuySell> = listOf(fetch.getBittrexBuySell, fetch.getBitBayBuySell, fetch.getBitStampBuySell, fetch.getCexBuySell)
+  val wallet = Wallet(10000.0, currencyPair.first, currencyPair.second )
   val bittrex = fun(): BuySell? { return fetch.getStockBuySell<BittrexTickerEntity>("https://api.bittrex.com/api/v1.1/public/getticker?market={}", "bittrex") }
   val bitbay = fun(): BuySell? { return fetch.getStockBuySell<BitbayTickerEntity>("https://bitbay.net/API/Public/{}/ticker.json", "bitbay") }
   val bitstamp = fun(): BuySell? { return fetch.getStockBuySell<BitStampTickerEntity>("https://www.bitstamp.net/api/v2/ticker/{}", "bitstamp") }
@@ -59,7 +58,10 @@ fun main(){
 
     while(true) {
       val stockResults = StockOperations.watchAllStocks(allStocks)
-      StockOperations.checkMarkets(stockResults, currencyPair)
+      val profitPair = StockOperations.checkMarkets(stockResults, currencyPair)
+      if(profitPair != null) {
+        wallet.transaction(profitPair.first, profitPair.second)
+      }
       delay(5000)
     }
   }
