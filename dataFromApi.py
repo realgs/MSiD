@@ -1,30 +1,30 @@
 import requests
 import json
+import threading
 
-url = "https://bitbay.net/API/Public/BTC/orderbook.json"
-response = requests.get(url)
+def parsedData(url):
+    response = requests.get(url)
+    data = response.text
+    parsed = json.loads(data)
+    return parsed
 
-data = response.text
+def printOfferList(list):
+    for elem in list:
+        print("Rate: " + str(elem[0]) + " Amount of Cryptocurrency: " + str(elem[1]))
 
-parsed = json.loads(data)
 
-buy_list = parsed["bids"]
-sell_list = parsed["asks"]
+def main():
+    url = "https://bitbay.net/API/Public/BTC/orderbook.json"
+    parsed = parsedData(url)
+    buy_list = parsed["bids"]
+    sell_list = parsed["asks"]
+    print("BUY OFFERS")
+    printOfferList(buy_list)
+    print("SELL OFFERS")
+    printOfferList(sell_list)
+    best_buy_offer = buy_list[0][0]
+    best_sell_offer = sell_list[0][0]
+    print((best_sell_offer - best_buy_offer) / (best_buy_offer) * 100)
 
-print(len(buy_list))
-print(len(sell_list))
-
-print("BUY LIST")
-
-for buy in buy_list:
-    print("RATE: " + str(buy[0]) + " AMOUNT OF CRYPTOCURRENCY: " + str(buy[1]))
-
-print("SELL LIST")
-
-for sell in sell_list:
-    print("RATE: " + str(sell[0]) + "AMOUNT OF CRYPTOCURRENCY: " + str(sell[1]))
-
-best_buy_offer = buy_list[0][0]
-best_sell_offer = sell_list[0][0]
-
-print((best_sell_offer - best_buy_offer) / (best_buy_offer) * 100)
+if __name__ == "__main__":
+    main()
