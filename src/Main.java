@@ -1,5 +1,4 @@
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 
 public class Main {
@@ -9,7 +8,6 @@ public class Main {
             Thread thread = new Thread(Main::refresh);
             thread.setDaemon(true);
             thread.start();
-
             thread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

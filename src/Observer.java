@@ -37,11 +37,7 @@ public class Observer {
 
                 }
             }
-
-
         }
         b_reader.close();
     }
-
-
 }
