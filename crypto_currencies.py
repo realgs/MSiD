@@ -1,4 +1,5 @@
 import json
+from time import sleep
 import requests
 
 
@@ -54,11 +55,38 @@ def print_single_offer(offer):
     print("Price:", offer["Price"])
 
 
+def calculate_profitability(list_of_currencies, sleep_time=5):
+    while True:
+        print()
+        for currencies in list_of_currencies:
+            data = get_url_data(create_market_url(currencies))
+            if data is not None:
+                buy_price = -1
+                sell_price = -1
+                found_buy = False
+                found_sell = False
+
+                for offer in data["result"]:
+                    if offer["OrderType"] == "SELL" and not found_sell:
+                        found_sell = True
+                        sell_price = offer["Price"]
+                    elif offer["OrderType"] == "BUY" and not found_buy:
+                        found_buy = True
+                        buy_price = offer["Price"]
+
+                    if found_buy and found_sell:
+                        break
+
+                print_offers(currencies.upper(), offers_amount=3)
+                profit_ratio = (1 - (buy_price - sell_price) / buy_price) * 100
+                print("Best profit ratio for ", currencies.upper(), ": ", profit_ratio, "%", sep="")
+
+        sleep(sleep_time)
+
+
 def main():
     crypto_currencies = ['btc-eth', 'btc-ltc', 'eth-ltc']
-
-    for currencies in crypto_currencies:
-        print_offers(currencies, offers_amount=3)
+    calculate_profitability(crypto_currencies)
 
 
 if __name__ == "__main__":
