@@ -1,14 +1,13 @@
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.google.gson.annotations.SerializedName
-import java.io.Reader
 
 abstract class TickerEntity(){
 
   abstract val tickers: Array<String>
   abstract val fee: Double
-  abstract var bid : Double
-  abstract var ask : Double
+  abstract val url: String
+  open var bid : Double = 0.0
+  open var ask : Double = 0.0
 
   open fun receiveJson(json: String){
     val gson = Gson()
@@ -22,18 +21,14 @@ abstract class TickerEntity(){
 
 class BittrexTickerEntity() : TickerEntity() {
 
-  override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC")
-  //override val fee: Double = 0.002
-  override val fee: Double = 0.0001
-  override var bid: Double = 0.0
-  override var ask: Double = 0.0
+  override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC", "USD-BSV")
+  override val url: String = "https://api.bittrex.com/api/v1.1/public/getticker?market={}"
+  override val fee: Double = 0.002
 
   override fun receiveJson(json: String){
     val gson = Gson()
     val tickerJson: JsonObject = gson.fromJson(json, JsonObject::class.java)
-
     val resultJson: JsonObject = gson.fromJson(tickerJson.get("result"), JsonObject::class.java)
-    println(resultJson)
     bid = resultJson.get("Bid").asDouble
     ask = resultJson.get("Ask").asDouble
   }
@@ -44,27 +39,23 @@ class BittrexTickerEntity() : TickerEntity() {
 class BitbayTickerEntity() : TickerEntity() {
 
   override val tickers = arrayOf<String>("LTCBTC", "BTCDOGE", "BTCPOT", "BTCUSD")
-
+  override val url: String = "https://bitbay.net/API/Public/{}/ticker.json"
   override val fee = 0.0043
-  override var bid: Double = 0.0
-  override var ask: Double = 0.0
 
 }
 
 class BitStampTickerEntity() : TickerEntity() {
 
   override val tickers: Array<String> = arrayOf<String>("ltcbtc", "ethbtc", "bchbtc", "btcusd")
+  override val url: String = "https://www.bitstamp.net/api/v2/ticker/{}"
   override val fee: Double = 0.005
-  override var bid: Double = 0.0
-  override var ask: Double = 0.0
 
 }
 
 class CexTickerEntity() : TickerEntity() {
 
   override val tickers: Array<String> = arrayOf<String>("LTC/BTC", "ETH/BTC", "BCH/BTC", "BTC/USD")
+  override val url: String = "https://cex.io/api/ticker/{}"
   override val fee: Double = 0.002
-  override var bid: Double = 0.0
-  override var ask: Double = 0.0
 
 }
