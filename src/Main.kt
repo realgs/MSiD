@@ -1,6 +1,6 @@
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import kotlin.collections.ArrayList
 
 fun ex1_3(){
 
@@ -19,7 +19,7 @@ fun ex1_3(){
       val stockResults = StockOperations.watchAllStocks(allStocks)
       val profitPair = StockOperations.checkMarkets(stockResults, currencyPair)
       if(profitPair != null) {
-        wallet.transaction(profitPair.first, profitPair.second)
+        wallet.transStockTransaction(profitPair.first, profitPair.second)
       }
       delay(5000)
     }
@@ -41,7 +41,7 @@ fun collectData(freq:Long = 5000){
       val stockResult = StockOperations.watchStock(bittrex)
       if(stockResult != null) {
         StockOperations.printMarket(stockResult)
-        DBHelper.insertData(stockResult)
+        chartCanvas.updateChart(stockResult.sell, stockResult.buy)
       }
       delay(freq)
     }
@@ -52,12 +52,72 @@ fun collectData(freq:Long = 5000){
   }
 }
 
+fun getSublist(from:List<BuySell>?, offset:Int = 0, size:Int = 1): Pair<MutableList<Double>, MutableList<Double>> {
+  val allSell: MutableList<Double> = ArrayList<Double>()
+  val allBuy: MutableList<Double> = ArrayList<Double>()
+  val pieceOfList = from?.subList(offset, offset + size)
+  for(data in pieceOfList!!) {
+    allSell.add(data.sell)
+    allBuy.add(data.buy)
+  }
+  return Pair(allBuy, allSell)
+}
+
 fun ex4(){
 
-//TODO: get predicted value of price using linear regression and compare to actual value. Dynamically change predicted value based on last x measurements
+  val currencyPair = Pair("USD", "BSV")
+  val fetch: FetchApi = FetchApi()
+  val bittrex = fun(): BuySell? { return fetch.getStockBuySell("bittrex", 4,  ::BittrexTickerEntity) }
+  val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
+
+  runBlocking {
+
+    while(true) {
+      val stockResult = StockOperations.watchStock(bittrex)
+      if(stockResult != null) {
+        StockOperations.printMarket(stockResult)
+        chartCanvas.updateChart(stockResult.sell, stockResult.buy)
+        val decisionMade = DecisionAgent.makeDecision(stockResult.sell, stockResult.buy)
+        if(decisionMade != null) {
+          if (decisionMade) {
+            wallet.buy(stockResult.buy)
+          } else {
+            wallet.sell(stockResult.sell)
+          }
+        }
+      }
+      delay(5000)
+    }
+  }
+
+  while(true){
+    Thread.sleep(5000)
+  }
+
+}
+
+fun simulation(){
+  val currencyPair = Pair("USD", "BSV")
+  val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
+  val results = DBHelper.selectBuySell()
+
+    results?.forEach { it ->
+      StockOperations.printMarket(it)
+      chartCanvas.updateChart(it.sell, it.buy)
+      val decisionMade = DecisionAgent.makeDecision(it.sell, it.buy)
+      if (decisionMade != null) {
+        if (decisionMade) {
+          wallet.buy(it.buy)
+        } else {
+          wallet.sell(it.sell)
+        }
+        Thread.sleep(5000)
+      }
+      Thread.sleep(100)
+    }
 
 }
 
 fun main(){
-  ex4()
+  ex1_3()
 }
