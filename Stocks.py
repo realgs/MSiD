@@ -1,66 +1,102 @@
 import requests
+import sys
 from time import sleep
 
+exchanges = [
+    'bitbay',
+    'bitfinex',
+    'bittrex',
+    'bitstamp'
+]
 
-def get_markets():
-    markets = []
-    url = f"https://api.bitbay.net/rest/trading/ticker"
-    headers = {'content-type': 'application/json'}
+exchange_urls = {
+    'bitbay': "https://api.bitbay.net/rest/trading/ticker/",
+    'bitfinex': "https://api-pub.bitfinex.com/v2/ticker/",
+    'bittrex': "https://api.bittrex.com/api/v1.1/public/getticker?market=",
+    'bitstamp': "https://www.bitstamp.net/api/v2/ticker/"
+}
 
-    data = requests.request("GET", url, headers=headers).json()
-    for item in data['items']:
-        markets.append(item)
-    return markets
+trading_pairs = [
+        "BTC for USD",
+        "LTC for USD",
+        "ETH for USD",
+        "XRP for USD"
+]
+
+exchange_pairs = {
+    'bitbay': [
+        "BTC-USD",
+        "LTC-USD",
+        "ETH-USD",
+        "XRP-USD"
+    ],
+    'bitfinex': [
+        "tBTCUSD",
+        "tLTCUSD",
+        "tETHUSD",
+        "tXRPUSD"
+    ],
+    'bittrex': [
+        "USD-BTC",
+        "USD-LTC",
+        "USD-ETH",
+        "USD-XRP"
+    ],
+    'bitstamp': [
+        "btcusd",
+        "ltcusd",
+        "ethusd",
+        "xrpusd"
+    ]
+}
 
 
-def get_all_data():
-    url = "https://api.bitbay.net/rest/trading/ticker"
+def get_data(url):
     headers = {'content-type': 'application/json'}
 
     response = requests.request("GET", url, headers=headers)
     return response.json()
 
 
-def get_data(market):
-    url = f"https://api.bitbay.net/rest/trading/ticker/{market}"
-    headers = {'content-type': 'application/json'}
+def get_sells_and_buys(exchange, pair_index):
+    data = get_data(exchange_urls[exchange] + exchange_pairs[exchange][pair_index])
+    bid_ask_pair = None
+    if exchange == 'bitbay':
+        bid_ask_pair = float(data['ticker']['highestBid']), float(data['ticker']['lowestAsk'])
+    if exchange == 'bitfinex':
+        bid_ask_pair = data[0], data[2]
+    if exchange == 'bittrex':
+        bid_ask_pair = data['result']['Bid'], data['result']['Ask']
+    if exchange == 'bitstamp':
+        bid_ask_pair = float(data['bid']), float(data['ask'])
+    return bid_ask_pair
 
-    response = requests.request("GET", url, headers=headers)
-    return response.json()
-
-
-def get_sells_and_buys_market(market):
-    data = get_data(market)
-    return float(data['ticker']['highestBid']), float(data['ticker']['lowestAsk'])
-
-
-def print_sells_and_buys_market(market):
-    print(get_sells_and_buys_market(market))
-
-
-def print_all_sells_and_buys_():
-    data = get_all_data()
-    for market in data['items']:
-        (bid, ask) = (data['items'][market]['highestBid'], data['items'][market]['lowestAsk'])
-        print("{0}: {1}".format(market, (bid, ask)))
-
-
-def print_sells_and_buys_(markets):
-    for market in markets:
-        print("{0}: {1}".format(market, get_sells_and_buys_market(market)))
-
-
-def calc_diff(bid, ask):
-    return 1 - abs(bid - ask) / ask
-
-
-def print_current_diff(market):
-    while True:
-        (bid, ask) = get_sells_and_buys_market(market)
-        print(calc_diff(bid, ask))
-        sleep(5)
+def look_for_arbitration():
+    for pair_index in range(4):
+        highestBid = 0
+        lowestAsk = sys.maxsize
+        bid_exchange = None
+        ask_exchange = None
+        for exchange in exchanges:
+            (bid, ask) = get_sells_and_buys(exchange, pair_index)
+            if bid > highestBid:
+                highestBid = bid
+                bid_exchange = exchange
+            if ask < lowestAsk:
+                lowestAsk = ask
+                ask_exchange = exchange
+            if lowestAsk < highestBid:
+                print(f"On exchange {ask_exchange} you can buy {trading_pairs[pair_index]} for {lowestAsk} and sell "
+                      f"on exchange {bid_exchange} for {highestBid} making profit of total {highestBid - lowestAsk} "
+                      f"USD")
 
 
-print_all_sells_and_buys_()
 
-print_current_diff('BTC-PLN')
+def printstuff():
+    for exchange in exchanges:
+        for pair in range(0, 4):
+            print(f"{exchange}, {exchange_pairs[exchange][pair]}:")
+            print(get_sells_and_buys(exchange, pair))
+
+while True:
+    look_for_arbitration()
