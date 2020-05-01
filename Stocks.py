@@ -1,6 +1,9 @@
 import requests
 import sys
+import virualBuget
 from time import sleep
+
+budget = virualBuget.VirtualBudget(100)
 
 exchanges = [
     'bitbay',
@@ -17,10 +20,10 @@ exchange_urls = {
 }
 
 trading_pairs = [
-        "BTC for USD",
-        "LTC for USD",
-        "ETH for USD",
-        "XRP for USD"
+    "BTC for USD",
+    "LTC for USD",
+    "ETH for USD",
+    "XRP for USD"
 ]
 
 exchange_pairs = {
@@ -50,6 +53,13 @@ exchange_pairs = {
     ]
 }
 
+fees = {
+    'bitbay': 0.001,
+    'bitfinex': 0.002,
+    'bittrex': 0.002,
+    'bitstamp': 0.005
+}
+
 
 def get_data(url):
     headers = {'content-type': 'application/json'}
@@ -71,25 +81,38 @@ def get_sells_and_buys(exchange, pair_index):
         bid_ask_pair = float(data['bid']), float(data['ask'])
     return bid_ask_pair
 
-def look_for_arbitration():
+
+
+def consider_commisons(exchange, bid_ask):
+    bid, ask = bid_ask
+    bid_ask = bid*(1 - fees[exchange]), ask*(1 + fees[exchange])
+    return bid_ask
+
+
+def look_for_arbitration(commisions=True):
     for pair_index in range(4):
         highestBid = 0
         lowestAsk = sys.maxsize
         bid_exchange = None
         ask_exchange = None
         for exchange in exchanges:
-            (bid, ask) = get_sells_and_buys(exchange, pair_index)
+            if commisions:
+                (bid, ask) = consider_commisons(exchange, get_sells_and_buys(exchange, pair_index))
+            else:
+                (bid, ask) = get_sells_and_buys(exchange, pair_index)
             if bid > highestBid:
                 highestBid = bid
                 bid_exchange = exchange
             if ask < lowestAsk:
                 lowestAsk = ask
                 ask_exchange = exchange
-            if lowestAsk < highestBid:
-                print(f"On exchange {ask_exchange} you can buy {trading_pairs[pair_index]} for {lowestAsk} and sell "
-                      f"on exchange {bid_exchange} for {highestBid} making profit of total {highestBid - lowestAsk} "
-                      f"USD")
 
+        diff = round(highestBid - lowestAsk, 2)
+        if diff > 0:
+            budget.make_transaction(lowestAsk, highestBid)
+            print(f"On exchange {ask_exchange} you can buy 1 {trading_pairs[pair_index]} for {lowestAsk} and sell "
+                  f"on exchange {bid_exchange} for {highestBid} making total profit of {diff} "
+                  f"USD")
 
 
 def printstuff():
@@ -98,5 +121,7 @@ def printstuff():
             print(f"{exchange}, {exchange_pairs[exchange][pair]}:")
             print(get_sells_and_buys(exchange, pair))
 
+
 while True:
-    look_for_arbitration()
+    look_for_arbitration(commisions=True)
+    print(budget.currentMoney)
