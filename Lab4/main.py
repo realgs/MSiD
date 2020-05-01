@@ -3,7 +3,8 @@ from random import randint
 import time
 
 maxRandomMarkets = 5
-customMarkets = ["BTC-LTC", "USD-BSV", "USD-BTC", "USD-LTC", "USD-ETH"]
+#customMarkets = ["BTC-LTC", "USD-BSV", "USD-BTC", "USD-LTC", "USD-ETH"]
+customMarkets = ["USD-BTC"]
 headerString = "|   Name   |      Bid      |      Ask      |      Dif      |      Timestamp     |"
 
 def pickRandomNames(allNames):
