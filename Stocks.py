@@ -82,10 +82,14 @@ def get_sells_and_buys(exchange, pair_index):
     return bid_ask_pair
 
 
+def get_current_currency_value(exchange, pair_index):
+    (bid, ask) = get_sells_and_buys(exchange, pair_index)
+    return (bid + ask) / 2
+
 
 def consider_commisons(exchange, bid_ask):
     bid, ask = bid_ask
-    bid_ask = bid*(1 - fees[exchange]), ask*(1 + fees[exchange])
+    bid_ask = bid * (1 - fees[exchange]), ask * (1 + fees[exchange])
     return bid_ask
 
 
@@ -122,6 +126,7 @@ def printstuff():
             print(get_sells_and_buys(exchange, pair))
 
 
-while True:
-    look_for_arbitration(commisions=True)
-    print(budget.currentMoney)
+if __name__ == '__main__':
+    while True:
+        look_for_arbitration(commisions=True)
+        print(budget.currentMoney)
