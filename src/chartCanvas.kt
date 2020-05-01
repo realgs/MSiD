@@ -1,21 +1,20 @@
-import jdk.jfr.Threshold
 import org.knowm.xchart.SwingWrapper
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.XYChartBuilder
 import javax.swing.SwingUtilities
 
 object chartCanvas{
-  val chart =
+  private val chart =
     XYChartBuilder().width(600).height(400).title("Buy and sell values in time").xAxisTitle("Time")
       .yAxisTitle("Price").build()
 
-  var sellData: MutableList<Double> = ArrayList<Double>()
-  var buyData: MutableList<Double> = ArrayList<Double>()
-  val sw: SwingWrapper<XYChart> = SwingWrapper<XYChart>(chart)
-  val steps = (1..100).toList()
+  private var sellData: MutableList<Double> = ArrayList()
+  private var buyData: MutableList<Double> = ArrayList()
+  private val sw: SwingWrapper<XYChart> = SwingWrapper<XYChart>(chart)
+  private val steps = (1..100).toList()
 
-  var buyExtremeSeriesExists = false
-  var sellExtremeSeriesExists = false
+  private var extremeSeriesExists = false
+
 
   init{
     chart.addSeries("Sell", (1..1).toList(), arrayListOf(0))
@@ -31,52 +30,33 @@ object chartCanvas{
     val newBuyDev = newAverageBuy - newBuyDev
     val newSellDev = newAverageSell + newSellDev
     SwingUtilities.invokeLater {
-      chart.updateXYSeries("AverageSell", DoubleArray(sellData.size){it.toDouble()}, DoubleArray(sellData.size){ i -> newAverageSell}, null)
-      chart.updateXYSeries("AverageBuy", DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ i -> newAverageBuy}, null)
-      chart.updateXYSeries("SellStandardDeviation", DoubleArray(sellData.size){it.toDouble()}, DoubleArray(sellData.size){ i -> newSellDev}, null)
-      chart.updateXYSeries("BuyStandardDeviation", DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ i -> newBuyDev}, null)
+      chart.updateXYSeries("AverageSell", DoubleArray(sellData.size){it.toDouble()}, DoubleArray(sellData.size){ _ -> newAverageSell}, null)
+      chart.updateXYSeries("AverageBuy", DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ _ -> newAverageBuy}, null)
+      chart.updateXYSeries("SellStandardDeviation", DoubleArray(sellData.size){it.toDouble()}, DoubleArray(sellData.size){ _ -> newSellDev}, null)
+      chart.updateXYSeries("BuyStandardDeviation", DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ _ -> newBuyDev}, null)
       sw.repaintChart()
     }
   }
 
-  fun updateBuyingThreshold(newBuyThreshold: Double){
+  fun updateThreshold(newThreshold: Double, name: String){
 
-    if(buyExtremeSeriesExists){
-      chart.updateXYSeries("BuyingThreshold", DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ i -> newBuyThreshold}, null)
+    if(extremeSeriesExists){
+      chart.updateXYSeries(name, DoubleArray(buyData.size){it.toDouble()}, DoubleArray(buyData.size){ _ -> newThreshold}, null)
     }
+
     else {
       chart.addSeries(
-        "BuyingThreshold",
+        name,
         DoubleArray(buyData.size) { it.toDouble() },
-        DoubleArray(buyData.size) { i -> newBuyThreshold })
-        buyExtremeSeriesExists = true
+        DoubleArray(buyData.size) { _ -> newThreshold })
+        extremeSeriesExists = true
     }
     sw.repaintChart()
   }
 
-  fun updateSellingThreshold(newSellThreshold: Double){
-
-    if(sellExtremeSeriesExists){
-      chart.updateXYSeries("SellingThreshold", DoubleArray(sellData.size){it.toDouble()}, DoubleArray(sellData.size){ i -> newSellThreshold}, null)
-    }
-    else {
-      chart.addSeries(
-        "SellingThreshold",
-        DoubleArray(sellData.size) { it.toDouble() },
-        DoubleArray(sellData.size) { i -> newSellThreshold })
-        sellExtremeSeriesExists = true
-    }
-    sw.repaintChart()
-  }
-
-  fun deleteBuyingThreshold(){
-    chart.removeSeries("BuyingThreshold")
-    buyExtremeSeriesExists = false
-  }
-
-  fun deleteSellingThreshold(){
-    chart.removeSeries("SellingThreshold")
-    sellExtremeSeriesExists = false
+  fun deleteThreshold(name:String){
+    chart.removeSeries(name)
+    extremeSeriesExists = false
   }
 
   fun updateChart(newSellVal:Double, newBuyVal:Double){
@@ -85,8 +65,8 @@ object chartCanvas{
       buyData.add(newBuyVal)
 
       SwingUtilities.invokeLater {
-        chart.updateXYSeries("Sell", (1..sellData.size).toList(), sellData, null)
-        chart.updateXYSeries("Buy", (1..buyData.size).toList(), buyData, null)
+        chart.updateXYSeries("Sell", (0..sellData.size-1).toList(), sellData, null)
+        chart.updateXYSeries("Buy", (0..buyData.size-1).toList(), buyData, null)
         sw.repaintChart()
       }
     }

@@ -1,6 +1,5 @@
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlin.collections.ArrayList
 
 fun ex1_3(){
 
@@ -30,34 +29,40 @@ fun ex1_3(){
 
 }
 
-fun ex4(){
+
+fun ex4(stockResult: BuySell?, wallet: Wallet): Boolean {
+  if(stockResult != null) {
+    val realSellVal = stockResult.sell - (stockResult.sell * stockResult.fee)
+    val realBuyVal = stockResult.buy + (stockResult.buy * stockResult.fee)
+    StockOperations.printMarket(stockResult, realBuyVal, realSellVal)
+    chartCanvas.updateChart(realSellVal, realBuyVal)
+    val decisionMade = DecisionAgent.makeDecision(realSellVal, realBuyVal) //if true -> buy, if false -> sell, if null -> do nothing
+    if(decisionMade != null) {
+      if (decisionMade) {
+        wallet.buy(stockResult.buy, stockResult.fee)
+      } else {
+        wallet.sell(stockResult.sell, stockResult.fee)
+      }
+      return true
+    }
+  }
+  return false
+}
+
+fun realTimeEx4(){
 
   val currencyPair = Pair("USD", "BSV")
   val bittrex = fun(): BuySell? { return FetchApi.getStockBuySell("bittrex", 4,  ::BittrexTickerEntity) }
   val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
-  val fee = BittrexTickerEntity().fee
 
   runBlocking {
 
     while(true) {
       val stockResult = StockOperations.watchStock(bittrex)
-      if(stockResult != null) {
-        val newSellVal = stockResult.sell - (stockResult.sell * fee)
-        val newBuyVal = stockResult.buy + (stockResult.buy * fee)
-        StockOperations.printMarket(BuySell(stockResult.stockName, stockResult.fee, newSellVal, newBuyVal))
-        //DBHelper.insertData(stockResult)
-        val decisionMade = DecisionAgent.makeDecision(newSellVal, newBuyVal)
-        chartCanvas.updateChart(newSellVal, newBuyVal)
-        if(decisionMade != null) {
-          if (decisionMade) {
-            wallet.buy(stockResult.buy, stockResult.fee)
-          } else {
-            wallet.sell(stockResult.sell, stockResult.fee)
-          }
-        }
-      }
+      ex4(stockResult, wallet)
       delay(5000)
     }
+
   }
 
   while(true){
@@ -66,33 +71,22 @@ fun ex4(){
 
 }
 
-fun simulation(){
+fun simulationEx4(){
   val currencyPair = Pair("USD", "BSV")
   val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
   val results = DBHelper.selectBuySell()
-  val fee = BittrexTickerEntity().fee
 
     results?.forEach { it ->
-      val newSellVal = it.sell - (it.sell * fee)
-      val newBuyVal = it.buy + (it.buy * fee)
-      StockOperations.printMarket(BuySell(it.stockName, it.fee, newBuyVal, newSellVal))
-      chartCanvas.updateChart(newSellVal, newBuyVal)
-      val decisionMade = DecisionAgent.makeDecision(newSellVal, newBuyVal)
-      if (decisionMade != null) {
-        if (decisionMade) {
-          wallet.buy(it.buy, fee)
-        } else {
-          wallet.sell(it.sell, fee)
-        }
-        Thread.sleep(5000)
-      }
+      if(ex4(it, wallet)) Thread.sleep(5000)
       Thread.sleep(100)
     }
 
-  println(wallet.totalProfit)
+  println("Total money made: " + wallet.totalProfit)
 
 }
 
 fun main(){
-  simulation()
+  //ex1_3()
+  //realTimeEx4()
+  simulationEx4()
 }

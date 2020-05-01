@@ -7,10 +7,10 @@ object StockOperations{
   }
 
   suspend fun watchStock(methodToExecute : () -> BuySell?): BuySell? {
-      val awaitedMethod = GlobalScope.async {
+      val methodToAwait = GlobalScope.async {
         methodToExecute()
       }
-      return awaitedMethod.await()
+      return methodToAwait.await()
   }
 
   suspend fun watchAllStocks(methodsToExecute: List<() -> BuySell?>): List<BuySell?> {
@@ -25,11 +25,16 @@ object StockOperations{
 
   }
 
-  fun printMarket(stock: BuySell?){
+  fun printMarket(stock: BuySell?, realStockBuyVal: Double = 0.0, realStockSellVal: Double = 0.0){
     if(stock != null) {
       println("Name: ${stock.stockName}")
       println("Buy: ${stock.buy} Sell: ${stock.sell}\n")
-      println("percantageDiff: ${StockOperations.getPercantageDiff(stock.buy, stock.sell)}\n")
+      println("percantageDiff: ${getPercantageDiff(stock.buy, stock.sell)}\n")
+      if(realStockBuyVal != 0.0 && realStockSellVal != 0.0) {
+        println("Stock buy price with fees: $realStockBuyVal")
+        println("Stock sell price with fees: $realStockSellVal\n")
+      }
+      println("----------------------------------------\n")
     }
   }
 
@@ -40,13 +45,13 @@ object StockOperations{
     var stockToSellOn: BuySell? = null
     for (stock in stockResults) {
       if(stock != null) {
-        printMarket(stock)
         val realStockBuyVal = stock.buy + (stock.buy * stock.fee)
         if (realStockBuyVal < lowestBuy) {
           lowestBuy = realStockBuyVal
           stockToBuyOn = stock
         }
         val realStockSellVal = stock.sell - (stock.sell * stock.fee)
+        printMarket(stock, realStockBuyVal, realStockSellVal)
         if (realStockSellVal > highestSell) {
           highestSell = realStockSellVal
           stockToSellOn = stock

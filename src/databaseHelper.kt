@@ -2,13 +2,13 @@ import java.sql.*
 import java.util.*
 
 object DBHelper{
-  const val DRIVER = "org.sqlite.JDBC"
-  const val DB_URL = "jdbc:sqlite:buySell.db"
+  private const val DRIVER = "org.sqlite.JDBC"
+  private const val DB_URL = "jdbc:sqlite:buySell.db"
   private val conn: Connection
   private val stat: Statement
 
   init {
-    Class.forName("org.sqlite.JDBC");
+    Class.forName(DRIVER);
     conn = DriverManager.getConnection(DB_URL)
     stat = conn.createStatement()
   }
