@@ -49,7 +49,7 @@ object DBHelper{
         val name = result.getString("stockName")
         val buy = result.getDouble("buy")
         val sell = result.getDouble("sell")
-        buySell.add(BuySell(name, buy, sell))
+        buySell.add(BuySell(name, 0.002, buy, sell))
       }
 
     } catch (e: SQLException) {

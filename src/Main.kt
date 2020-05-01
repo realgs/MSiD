@@ -4,13 +4,12 @@ import kotlin.collections.ArrayList
 
 fun ex1_3(){
 
-  val fetch: FetchApi = FetchApi()
   val currencyPair = Pair("USD", "BTC")
   val wallet = Wallet(10000.0, currencyPair.first, currencyPair.second )
-  val bittrex = fun(): BuySell? { return fetch.getStockBuySell("bittrex", 3, ::BittrexTickerEntity) }
-  val bitbay = fun(): BuySell? { return fetch.getStockBuySell("bitbay", 3, ::BitbayTickerEntity) }
-  val bitstamp = fun(): BuySell? { return fetch.getStockBuySell("bitstamp", 3, ::BitStampTickerEntity) }
-  val cex = fun(): BuySell? { return fetch.getStockBuySell("cex", 3, ::CexTickerEntity) }
+  val bittrex = fun(): BuySell? { return FetchApi.getStockBuySell("bittrex", 3, ::BittrexTickerEntity) }
+  val bitbay = fun(): BuySell? { return FetchApi.getStockBuySell("bitbay", 3, ::BitbayTickerEntity) }
+  val bitstamp = fun(): BuySell? { return FetchApi.getStockBuySell("bitstamp", 3, ::BitStampTickerEntity) }
+  val cex = fun(): BuySell? { return FetchApi.getStockBuySell("cex", 3, ::CexTickerEntity) }
   val allStocks: List<() -> BuySell?> = listOf(bittrex, bitbay, bitstamp, cex)
 
   runBlocking {
@@ -31,58 +30,29 @@ fun ex1_3(){
 
 }
 
-fun collectData(freq:Long = 5000){
-  val fetch: FetchApi = FetchApi()
-  val bittrex = fun(): BuySell? { return fetch.getStockBuySell("bittrex", 4,  ::BittrexTickerEntity) }
-
-  runBlocking {
-
-    while(true) {
-      val stockResult = StockOperations.watchStock(bittrex)
-      if(stockResult != null) {
-        StockOperations.printMarket(stockResult)
-        chartCanvas.updateChart(stockResult.sell, stockResult.buy)
-      }
-      delay(freq)
-    }
-  }
-
-  while(true){
-    Thread.sleep(freq)
-  }
-}
-
-fun getSublist(from:List<BuySell>?, offset:Int = 0, size:Int = 1): Pair<MutableList<Double>, MutableList<Double>> {
-  val allSell: MutableList<Double> = ArrayList<Double>()
-  val allBuy: MutableList<Double> = ArrayList<Double>()
-  val pieceOfList = from?.subList(offset, offset + size)
-  for(data in pieceOfList!!) {
-    allSell.add(data.sell)
-    allBuy.add(data.buy)
-  }
-  return Pair(allBuy, allSell)
-}
-
 fun ex4(){
 
   val currencyPair = Pair("USD", "BSV")
-  val fetch: FetchApi = FetchApi()
-  val bittrex = fun(): BuySell? { return fetch.getStockBuySell("bittrex", 4,  ::BittrexTickerEntity) }
+  val bittrex = fun(): BuySell? { return FetchApi.getStockBuySell("bittrex", 4,  ::BittrexTickerEntity) }
   val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
+  val fee = BittrexTickerEntity().fee
 
   runBlocking {
 
     while(true) {
       val stockResult = StockOperations.watchStock(bittrex)
       if(stockResult != null) {
-        StockOperations.printMarket(stockResult)
-        chartCanvas.updateChart(stockResult.sell, stockResult.buy)
-        val decisionMade = DecisionAgent.makeDecision(stockResult.sell, stockResult.buy)
+        val newSellVal = stockResult.sell - (stockResult.sell * fee)
+        val newBuyVal = stockResult.buy + (stockResult.buy * fee)
+        StockOperations.printMarket(BuySell(stockResult.stockName, stockResult.fee, newSellVal, newBuyVal))
+        //DBHelper.insertData(stockResult)
+        val decisionMade = DecisionAgent.makeDecision(newSellVal, newBuyVal)
+        chartCanvas.updateChart(newSellVal, newBuyVal)
         if(decisionMade != null) {
           if (decisionMade) {
-            wallet.buy(stockResult.buy)
+            wallet.buy(stockResult.buy, stockResult.fee)
           } else {
-            wallet.sell(stockResult.sell)
+            wallet.sell(stockResult.sell, stockResult.fee)
           }
         }
       }
@@ -100,24 +70,29 @@ fun simulation(){
   val currencyPair = Pair("USD", "BSV")
   val wallet = Wallet(1000.0, currencyPair.first, currencyPair.second)
   val results = DBHelper.selectBuySell()
+  val fee = BittrexTickerEntity().fee
 
     results?.forEach { it ->
-      StockOperations.printMarket(it)
-      chartCanvas.updateChart(it.sell, it.buy)
-      val decisionMade = DecisionAgent.makeDecision(it.sell, it.buy)
+      val newSellVal = it.sell - (it.sell * fee)
+      val newBuyVal = it.buy + (it.buy * fee)
+      StockOperations.printMarket(BuySell(it.stockName, it.fee, newBuyVal, newSellVal))
+      chartCanvas.updateChart(newSellVal, newBuyVal)
+      val decisionMade = DecisionAgent.makeDecision(newSellVal, newBuyVal)
       if (decisionMade != null) {
         if (decisionMade) {
-          wallet.buy(it.buy)
+          wallet.buy(it.buy, fee)
         } else {
-          wallet.sell(it.sell)
+          wallet.sell(it.sell, fee)
         }
         Thread.sleep(5000)
       }
       Thread.sleep(100)
     }
 
+  println(wallet.totalProfit)
+
 }
 
 fun main(){
-  ex1_3()
+  simulation()
 }

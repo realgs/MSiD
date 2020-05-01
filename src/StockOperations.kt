@@ -2,16 +2,8 @@ import kotlinx.coroutines.*
 
 object StockOperations{
 
-  fun getPercantageDiff(buySell: BuySell) : Double{
-    return 1 - (buySell.sell - buySell.buy) / buySell.buy
-  }
-
-  fun getAveragePrice(collection: List<Double>): Double {
-    var sum : Double = 0.0
-    for (value in collection){
-      sum += value
-    }
-    return sum / collection.size
+  fun getPercantageDiff(buy: Double, sell: Double) : Double{
+    return 1 - (sell - buy) / sell
   }
 
   suspend fun watchStock(methodToExecute : () -> BuySell?): BuySell? {
@@ -37,7 +29,7 @@ object StockOperations{
     if(stock != null) {
       println("Name: ${stock.stockName}")
       println("Buy: ${stock.buy} Sell: ${stock.sell}\n")
-      println("percantageDiff: ${StockOperations.getPercantageDiff(stock)}\n")
+      println("percantageDiff: ${StockOperations.getPercantageDiff(stock.buy, stock.sell)}\n")
     }
   }
 
@@ -49,12 +41,14 @@ object StockOperations{
     for (stock in stockResults) {
       if(stock != null) {
         printMarket(stock)
-        if (stock.buy < lowestBuy) {
-          lowestBuy = stock.buy
+        val realStockBuyVal = stock.buy + (stock.buy * stock.fee)
+        if (realStockBuyVal < lowestBuy) {
+          lowestBuy = realStockBuyVal
           stockToBuyOn = stock
         }
-        if (stock.sell > highestSell) {
-          highestSell = stock.sell
+        val realStockSellVal = stock.sell - (stock.sell * stock.fee)
+        if (realStockSellVal > highestSell) {
+          highestSell = realStockSellVal
           stockToSellOn = stock
         }
       }
