@@ -3,8 +3,10 @@ Po wprowadzeniu posiadanych zasobów program ma pozwalać na podglądnięcie akt
 Program może być napisany w dowolnej formie- aplikacja standalone na komputer, strona internetowa, skrypt javascriptu, czy nawet rozszerzenie do google chrome lub aplikacja mobilna.
 Forma programu jest Waszym wyborem, ma działać.
 W ramach MVP (minimalny zakres) program ma: 
-- przyjmować walutę bazową, w której wyrażona będzie wartość zasobów / portfela.
-- przyjmować od użytkownika dane o posiadanych zasobach (jaki zasób, jaka ilość). 
+- przyjmować walutę bazową, w której wyrażona będzie wartość zasobów / portfela
+- przyjmować od użytkownika dane o posiadanych zasobach (jaki zasób, jaka ilość) 
+- dane przyjmujecie w dowolnej, wybranej przez siebie formie, np input konsoli czy json czy csv, jednak do programu załączcie plik txt, w którym krótko piszecie jak wprowadzić dane. 
+  Jeśli do programu załącza się plik z danymi wejściowymi- załączcie wzorcowy plik.
 - sprawdzać czy w swoim API ma informację o wartości wprowadzanego zasobu- jeśli nie ma- nie przyjmować i o tym informować
 - kalkulujcie wartości opierając się na cenie ostatnio dokonanej transakcji / zawartego kontraktu
 (6pkt)
