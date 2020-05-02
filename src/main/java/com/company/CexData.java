@@ -8,9 +8,13 @@ import java.util.Collections;
 
 public class CexData extends BitData{
 
+    public static final String BTC_USD = "https://cex.io/api/order_book/BTC/USD/";
+    public static final String LTC_USD = "https://cex.io/api/order_book/LTC/USD/";
+    public static final String BTC_EUR = "https://cex.io/api/order_book/BTC/EUR/";
+    public static final String BTC_ETH = "https://cex.io/api/order_book/LTC/EUR/";
 
     CexData(String title) {
-        super(title);
+        super(title,BTC_USD, LTC_USD, BTC_EUR, BTC_ETH);
     }
 
     @Override
@@ -20,22 +24,26 @@ public class CexData extends BitData{
         try (JsonReader jsonReader = readerFactory.createReader(input)) {
             JsonObject jsonObject = jsonReader.readObject();
 
-            System.out.println(jsonObject);
-
             JsonArray JBids = jsonObject.getJsonArray("bids");
-            bidsUSD = convertToList(JBids);
+            bids = convertToList(JBids);
             JsonArray JAsks = jsonObject.getJsonArray("asks");
-            asksUSD = convertToList(JAsks);
+            asks = convertToList(JAsks);
 
         }
     }
 
     @Override
-    protected ArrayList<Double> convertToList(JsonArray jarr) {
-        ArrayList<Double> arrayList = new ArrayList<>();
+    protected ArrayList<double[]> convertToList(JsonArray jarr) {
+        ArrayList<double[]> arrayList = new ArrayList<>();
+
+        String rateInString, amountInString;
         for (int i = 0; i < jarr.size(); i++) {
-            arrayList.add(Double.parseDouble(jarr.getJsonArray(i).get(0).toString()));
+            rateInString = jarr.getJsonArray(i).get(0).toString();
+            amountInString = jarr.getJsonArray(i).get(1).toString();
+            arrayList.add(new double[]{convertStringToDouble(rateInString),
+                    convertStringToDouble(amountInString)});
         }
+
         return arrayList;
     }
 }

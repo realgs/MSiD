@@ -8,8 +8,13 @@ import java.util.Collections;
 
 public class BittrexData extends BitData{
 
+    public static final String BTC_USD = "https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-BTC&type=both";
+    public static final String LTC_USD = "https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-LTC&type=both";
+    public static final String BTC_EUR = "https://api.bittrex.com/api/v1.1/public/getorderbook?market=EUR-BTC&type=both";
+    public static final String LTC_EUR = "";
+
     BittrexData(String title) {
-        super(title);
+        super(title, BTC_USD, LTC_USD, BTC_EUR, LTC_EUR);
     }
 
     @Override
@@ -18,20 +23,23 @@ public class BittrexData extends BitData{
 
         try (JsonReader jsonReader = readerFactory.createReader(input)) {
             JsonObject jsonObject = jsonReader.readObject();
-
             JsonArray JBids = jsonObject.getJsonObject("result").getJsonArray("buy");
-            bidsUSD = convertToList(JBids);
+            bids = convertToList(JBids);
 
             JsonArray JAsks = jsonObject.getJsonObject("result").getJsonArray("sell");
-            asksUSD = convertToList(JAsks);
+            asks = convertToList(JAsks);
 
         }
     }
 
-    protected ArrayList<Double> convertToList(JsonArray jarr) {
-        ArrayList<Double> arrayList = new ArrayList<>();
+    @Override
+    protected ArrayList<double[]> convertToList(JsonArray jarr) {
+        ArrayList<double[]> arrayList = new ArrayList<>();
         for (int i = 0; i < jarr.size(); i++) {
-            arrayList.add(Double.parseDouble(jarr.getJsonObject(i).get("Rate").toString()));
+            arrayList.add(new double[]{
+                    Double.parseDouble(jarr.getJsonObject(i).get("Rate").toString()),
+                    Double.parseDouble(jarr.getJsonObject(i).get("Quantity").toString())}
+                    );
         }
         return arrayList;
     }

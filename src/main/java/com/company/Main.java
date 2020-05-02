@@ -8,19 +8,28 @@ public class Main {
         BittrexData  bittrex = new BittrexData("bittrex");
         BitBayData  bitbay = new BitBayData("bitbay");
         CexData cex = new CexData("cex");
-        BitstampData bitstamp = new BitstampData("bitstamp");
+        HitbtcData hitbtc = new HitbtcData("hitbtc");
+        CurrencyExchange observer = new CurrencyExchange();
 
-        bitbay.getData("https://bitbay.net/API/Public/BTC/orderbook.json");
+        observer.addMarket(bittrex);
+        observer.addMarket(bitbay);
+        observer.addMarket(cex);
+        observer.addMarket(hitbtc);
+
+
+        bitbay.getDataBTCUSD();
         bitbay.printDiff(10);
 
-        bittrex.getData("https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-BTC&type=both");
+        bittrex.getDataBTCUSD();
         bittrex.printDiff(10);
 
-        cex.getData("https://cex.io/api/order_book/BTC/USD/");
+        cex.getDataBTCUSD();
         cex.printDiff(10);
 
-        bitstamp.getData("https://www.bitstamp.net/api/order_book/btcusd");
-        bitstamp.printDiff(10);
+        hitbtc.getDataBTCUSD();
+        hitbtc.printDiff(10);
+
+        observer.run();
 
 
     }
