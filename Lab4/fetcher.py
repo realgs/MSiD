@@ -22,14 +22,14 @@ class PriceFetcher(threading.Thread):
         return self.value
 
 class MarketInfo():
-    def __init__(self, currency):
-        self.market = ""
+    def __init__(self, currency, market, bids, asks, fee):
+        self.market = market
         self.currency = currency
-        self.bids = [] #[[Quantity, Rate], [Quantity, Rate], ...]
-        self.asks = [] #[[Quantity, Rate], [Quantity, Rate], ...]
+        self.bids = bids #[[Quantity, Rate], [Quantity, Rate], ...]
+        self.asks = asks #[[Quantity, Rate], [Quantity, Rate], ...]
         self.buyForLowest = [] #[Quantity, Rate]
         self.sellForHighest = [] #[Quantity, Rate]
-        self.takerFee = 0
+        self.takerFee = fee
     def __str__(self):
         return f"Name: {self.market}\nCurrency: {self.currency}\nBids: {self.bids}\nAsks: {self.asks}"
 
@@ -55,11 +55,7 @@ def fetchBittrexOrders(market):
         sell.append([float(o['Quantity']), float(o['Rate'])])
     buy.sort(key=lambda tup: tup[1])
     sell.sort(key=lambda tup: tup[1])
-    output = MarketInfo(market)
-    output.market = "Bittrex"
-    output.bids = buy
-    output.asks = sell
-    output.takerFee = 0.0025
+    output = MarketInfo(market, "Bittrex", buy, sell, 0.0025)
     return output
 
 def fetchCexPrice(market):
@@ -73,11 +69,7 @@ def fetchCexPrice(market):
         sell.append([float(o[1]), float(o[0])])
     buy.sort(key=lambda tup: tup[1])
     sell.sort(key=lambda tup: tup[1])
-    output = MarketInfo(market)
-    output.market = "CEX.IO"
-    output.bids = buy
-    output.asks = sell
-    output.takerFee = 0.0025
+    output = MarketInfo(market, "CEX.IO", buy, sell, 0.0025)
     return output
 
 def fetchBitfinexPrice(market):
@@ -93,11 +85,7 @@ def fetchBitfinexPrice(market):
             sell.append([quantity*-1, rate])
     buy.sort(key=lambda tup: tup[1])
     sell.sort(key=lambda tup: tup[1])
-    output = MarketInfo(market)
-    output.market = "Bitfinex"
-    output.bids = buy
-    output.asks = sell
-    output.takerFee = 0.002
+    output = MarketInfo(market, "Bitfinex", buy, sell, 0.002)
     return output
 
 def fetchBitbayPrice(market):
@@ -111,9 +99,5 @@ def fetchBitbayPrice(market):
         sell.append([float(o[1]), float(o[0])])
     buy.sort(key=lambda tup: tup[1])
     sell.sort(key=lambda tup: tup[1])
-    output = MarketInfo(market)
-    output.market = "Bitbay"
-    output.bids = buy
-    output.asks = sell
-    output.takerFee = 0.0043
+    output = MarketInfo(market, "Bitbay", buy, sell, 0.0043)
     return output
