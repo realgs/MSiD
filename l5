@@ -7,6 +7,7 @@ W ramach MVP (minimalny zakres) program ma:
 - przyjmować od użytkownika dane o posiadanych zasobach (jaki zasób, jaka ilość) 
 - dane przyjmujecie w dowolnej, wybranej przez siebie formie, np input konsoli czy json czy csv, jednak do programu załączcie plik txt, w którym krótko piszecie jak wprowadzić dane. 
   Jeśli do programu załącza się plik z danymi wejściowymi- załączcie wzorcowy plik.
+- program ma trwale zapisywać dane o posiadanych zasobach
 - sprawdzać czy w swoim API ma informację o wartości wprowadzanego zasobu- jeśli nie ma- nie przyjmować i o tym informować
 - kalkulujcie wartości opierając się na cenie ostatnio dokonanej transakcji / zawartego kontraktu
 (6pkt)
@@ -14,5 +15,6 @@ W ramach MVP (minimalny zakres) program ma:
 2. Dodatkowo:
 - jeśli jedno API ma zbyt małe spektrum- poszerzcie o dodatkowe API i w przypadku braku informacji w API nr.1 sprawdzajcie kolejne.
 - kalkulujcie wartości w bardziej rzeczywisty sposób, czyli patrząc na oferty kupna danego waloru oraz ich ceny. Zwróćcie uwagę na ilości. Jeśli mamy do sprzedania 0.5BTC i chcemy wycenić je w USD, to musimy spojrzeć prawdopodobnie na kilka najlepszych ofert kupna (najlepsze === najwyższa cena), bo prawdopodobnie jedna oferta nie wypełni całego naszego zapotrzebowania.
+- wprowadzić możliwość edycji posiadanych zasobów- dodania / usunięcia / zmiany ilości
 - własny feature - dołóżcie coś fajnego z własnej wyobraźni, co potencjalnie mogłoby się przydać użytkownikowi Waszej apki:)
 (4pkt)
