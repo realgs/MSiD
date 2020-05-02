@@ -29,6 +29,7 @@ class MarketInfo():
         self.asks = [] #[[Quantity, Rate], [Quantity, Rate], ...]
         self.buyForLowest = [] #[Quantity, Rate]
         self.sellForHighest = [] #[Quantity, Rate]
+        self.takerFee = 0
     def __str__(self):
         return f"Name: {self.market}\nCurrency: {self.currency}\nBids: {self.bids}\nAsks: {self.asks}"
 
@@ -58,6 +59,7 @@ def fetchBittrexOrders(market):
     output.market = "Bittrex"
     output.bids = buy
     output.asks = sell
+    output.takerFee = 0.0025
     return output
 
 def fetchCexPrice(market):
@@ -75,6 +77,7 @@ def fetchCexPrice(market):
     output.market = "CEX.IO"
     output.bids = buy
     output.asks = sell
+    output.takerFee = 0.0025
     return output
 
 def fetchBitfinexPrice(market):
@@ -94,6 +97,7 @@ def fetchBitfinexPrice(market):
     output.market = "Bitfinex"
     output.bids = buy
     output.asks = sell
+    output.takerFee = 0.002
     return output
 
 def fetchBitbayPrice(market):
@@ -111,7 +115,5 @@ def fetchBitbayPrice(market):
     output.market = "Bitbay"
     output.bids = buy
     output.asks = sell
+    output.takerFee = 0.0043
     return output
-
-if __name__ == "__main__":
-    print(fetchPrices("USD-BTC"))
