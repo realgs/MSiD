@@ -14,6 +14,14 @@ trading_pairs = [
 ]
 
 def gather_data():
+    for pair_index in range(4):
+        (bid, ask) = Stocks.get_sells_and_buys('bitbay', pair_index)
+        val = (bid + ask) / 2
+        cursor.execute("INSERT INTO data VALUES (?,?,?)",
+                       (datetime.now().strftime("%m/%d/%Y %H:%M:%S"), val, trading_pairs[pair_index]))
+        connection.commit()
+
+def gather_data_loop():
     while True:
         for pair_index in range(4):
             (bid, ask) = Stocks.get_sells_and_buys('bitbay', pair_index)
@@ -23,10 +31,5 @@ def gather_data():
         time.sleep(60)
 
 
-def print_db():
-
-    cursor.execute('SELECT * FROM data')
-    print(cursor.fetchall())
-
 if __name__ == '__main__':
-    gather_data()
+    gather_data_loop()

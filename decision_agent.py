@@ -2,6 +2,7 @@ import Stocks
 import time
 import algoritm
 import sqlite3
+import datagatherer
 
 trading_pairs = [
     "BTC-USD",
@@ -19,6 +20,7 @@ cryptos_in_order = [
 
 
 def fetch_data():
+    datagatherer.gather_data()
     connection = sqlite3.connect('data.db')
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM data')
@@ -38,15 +40,16 @@ class DecisionAgent:
 
     def __init__(self):
         self.cryptos = {
-            'BTC': 1,
-            'LTC': 1,
-            'ETH': 1,
-            'XRP': 1
+            'BTC': 0,
+            'LTC': 0,
+            'ETH': 0,
+            'XRP': 0
         }
-        self.USD = 10000
+        self.USD = 100000
         self.data = fetch_data()
 
-    def get_current_richness_estimate(self):
+    #wealthness = current estimated value of cryptos as if they were sold in this moment in USD + USD left
+    def get_current_wealthness_estimate(self):
         crypto_val = 0
         for pair_index in range(4):
             crypto_val += self.cryptos[cryptos_in_order[pair_index]] * Stocks.get_current_currency_value('bitbay',
@@ -68,25 +71,34 @@ class DecisionAgent:
 
     def make_transaction(self):
         for pair_index in range(4):
+            self.data = fetch_data()
             decision = algoritm.decide_if_buy_or_sell(extract_prices(self.data, trading_pairs[pair_index]),
                                                       Stocks.get_current_currency_value('bitbay', pair_index))
-            buy_amount = self.USD
-            sell_amount = self.cryptos[cryptos_in_order[pair_index]] / 5
+
+            diff_percent = algoritm.get_diff_percent(extract_prices(self.data, trading_pairs[pair_index]),
+                                                      Stocks.get_current_currency_value('bitbay', pair_index))
+
+            buy_amount = self.USD * diff_percent
+            sell_amount = self.cryptos[cryptos_in_order[pair_index]] * diff_percent
             if decision == 'BUY' and buy_amount > 0:
                 self.buy(pair_index, buy_amount)
-                print(f"Current richness {self.get_current_richness_estimate()}")
+                print(f"Current wealthness {self.get_current_wealthness_estimate()}")
             elif decision == 'SELL' and sell_amount > 0:
                 self.sell(pair_index, sell_amount)
-                print(f"Current richness {self.get_current_richness_estimate()}")
+                print(f"Current wealthness {self.get_current_wealthness_estimate()}")
 
-
-    def go(self):
-        print(f"Current richness {self.get_current_richness_estimate()}")
+    def run(self):
+        print(f"Current wealthness {self.get_current_wealthness_estimate()}")
         while True:
             self.make_transaction()
-            time.sleep(60)
+            time.sleep(1200)
 
 
 if __name__ == '__main__':
     ag = DecisionAgent()
-    ag.go()
+    #buy some starting cryptos
+    ag.buy(0, 2000)
+    ag.buy(1, 2000)
+    ag.buy(2, 2000)
+    ag.buy(3, 2000)
+    ag.run()

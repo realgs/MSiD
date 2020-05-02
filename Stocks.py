@@ -114,19 +114,13 @@ def look_for_arbitration(commisions=True):
         diff = round(highestBid - lowestAsk, 2)
         if diff > 0:
             budget.make_transaction(lowestAsk, highestBid)
+            budget.print_budget()
             print(f"On exchange {ask_exchange} you can buy 1 {trading_pairs[pair_index]} for {lowestAsk} and sell "
                   f"on exchange {bid_exchange} for {highestBid} making total profit of {diff} "
                   f"USD")
 
 
-def printstuff():
-    for exchange in exchanges:
-        for pair in range(0, 4):
-            print(f"{exchange}, {exchange_pairs[exchange][pair]}:")
-            print(get_sells_and_buys(exchange, pair))
-
 
 if __name__ == '__main__':
     while True:
         look_for_arbitration(commisions=True)
-        print(budget.currentMoney)
