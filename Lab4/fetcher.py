@@ -21,15 +21,16 @@ class PriceFetcher(threading.Thread):
         threading.Thread.join(self, *args)
         return self.value
 
-
 class MarketInfo():
-    def __init(self, currency):
+    def __init__(self, currency):
         self.market = ""
         self.currency = currency
-        self.bids = []
-        self.asks = []
-        self.lowSell = []
-        self.highBuy = []
+        self.bids = [] #[[Quantity, Rate], [Quantity, Rate], ...]
+        self.asks = [] #[[Quantity, Rate], [Quantity, Rate], ...]
+        self.buyForLowest = [] #[Quantity, Rate]
+        self.sellForHighest = [] #[Quantity, Rate]
+    def __str__(self):
+        return f"Name: {self.market}\nCurrency: {self.currency}\nBids: {self.bids}\nAsks: {self.asks}"
 
 def fetchPrices(market):
     threads = []
@@ -51,6 +52,8 @@ def fetchBittrexOrders(market):
     sell = []
     for o in orders['sell']:
         sell.append([float(o['Quantity']), float(o['Rate'])])
+    buy.sort(key=lambda tup: tup[1])
+    sell.sort(key=lambda tup: tup[1])
     output = MarketInfo(market)
     output.market = "Bittrex"
     output.bids = buy
@@ -66,6 +69,8 @@ def fetchCexPrice(market):
     sell = []
     for o in orders['asks']:
         sell.append([float(o[1]), float(o[0])])
+    buy.sort(key=lambda tup: tup[1])
+    sell.sort(key=lambda tup: tup[1])
     output = MarketInfo(market)
     output.market = "CEX.IO"
     output.bids = buy
@@ -82,8 +87,9 @@ def fetchBitfinexPrice(market):
         if quantity > 0:
             buy.append([quantity, rate])
         else:
-            sell.append([quantity, rate])
-
+            sell.append([quantity*-1, rate])
+    buy.sort(key=lambda tup: tup[1])
+    sell.sort(key=lambda tup: tup[1])
     output = MarketInfo(market)
     output.market = "Bitfinex"
     output.bids = buy
@@ -99,8 +105,13 @@ def fetchBitbayPrice(market):
     sell = []
     for o in orders['asks']:
         sell.append([float(o[1]), float(o[0])])
+    buy.sort(key=lambda tup: tup[1])
+    sell.sort(key=lambda tup: tup[1])
     output = MarketInfo(market)
     output.market = "Bitbay"
     output.bids = buy
     output.asks = sell
     return output
+
+if __name__ == "__main__":
+    print(fetchPrices("USD-BTC"))
