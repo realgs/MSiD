@@ -13,9 +13,10 @@ public class BitBayData extends BitData{
     public static final String LTC_USD =  "https://bitbay.net/API/Public/LTC/orderbook.json";
     public static final String BTC_EUR = "https://bitbay.net/API/Public/BTCEUR/orderbook.json";
     public static final String BTC_ETH = "https://bitbay.net/API/Public/LTCEUR/orderbook.json";
+    public static final double FEE = 0.0043;
 
     BitBayData(String title) {
-        super(title, BTC_USD, LTC_USD, BTC_EUR, BTC_ETH);
+        super(title, BTC_USD, LTC_USD, BTC_EUR, BTC_ETH, FEE);
     }
 
     public void readData(InputStream input) throws IOException {

@@ -9,7 +9,8 @@ public class Main {
         BitBayData  bitbay = new BitBayData("bitbay");
         CexData cex = new CexData("cex");
         HitbtcData hitbtc = new HitbtcData("hitbtc");
-        CurrencyExchange observer = new CurrencyExchange();
+        VirtualBudget account = new VirtualBudget(1000, 1000);
+        CurrencyExchange observer = new CurrencyExchange(account);
 
         observer.addMarket(bittrex);
         observer.addMarket(bitbay);
@@ -17,16 +18,16 @@ public class Main {
         observer.addMarket(hitbtc);
 
 
-        bitbay.getDataBTCUSD();
+        bitbay.getDataBTCEUR();
         bitbay.printDiff(10);
 
-        bittrex.getDataBTCUSD();
+        bittrex.getDataBTCEUR();
         bittrex.printDiff(10);
 
-        cex.getDataBTCUSD();
+        cex.getDataBTCEUR();
         cex.printDiff(10);
 
-        hitbtc.getDataBTCUSD();
+        hitbtc.getDataBTCEUR();
         hitbtc.printDiff(10);
 
         observer.run();

@@ -10,6 +10,14 @@ public class CurrencyExchange {
     public static final int BTC_USD=1, BTC_EUR=2, LTC_USD=3, LTC_EUR=4;
 
     ArrayList<BitData> markets = new ArrayList<>();
+    public VirtualBudget funds = null;
+
+    public CurrencyExchange() {
+    }
+
+    public CurrencyExchange(VirtualBudget funds) {
+        this.funds = funds;
+    }
 
     public void run() throws InterruptedException, IOException {
         if(markets.size()>0){
@@ -20,6 +28,7 @@ public class CurrencyExchange {
                 exchangeObserver(LTC_USD);
                 exchangeObserver(LTC_EUR);
                 TimeUnit.SECONDS.sleep(10);
+                if(funds!=null) funds.printRaport();
             }
         }
     }
@@ -59,8 +68,9 @@ public class CurrencyExchange {
             }
         }
         if(bestAskPrice<bestBidPrice) {
-            arbitrage(option, bestAskPrice, bestBidPrice, bestAskAmount, bestBidAmount, marketIdAsk, marketIdBid);
+            arbitrage(option, bestAskPrice, bestBidPrice, bestAskAmount, bestBidAmount, marketIdAsk, marketIdBid,true);
         }
+
     }
 
     private boolean getData(int option, int marketId) throws IOException, InterruptedException {
@@ -85,30 +95,44 @@ public class CurrencyExchange {
         return success;
     }
 
-    private void arbitrage(int option, double bestAskPrice, double bestBidPrice,
-                           double askAmount, double bidAmount, int askMarketId, int bidMarketId) {
+    private void arbitrage(int option, double bestAskPrice, double bestBidPrice, double askAmount, double bidAmount,
+                           int askMarketId, int bidMarketId, boolean verbose) {
+        String status ="unprofitable";
         double amount = Math.min(askAmount,bidAmount);
-        double gain = (bestBidPrice - bestAskPrice) * amount;
+        double bidPrice = amount * bestBidPrice;
+        double askPrice = amount * bestAskPrice;
+        double fee = bidPrice*markets.get(bidMarketId).getFee() + askPrice*markets.get(askMarketId).getFee();
+        double gain = (bestBidPrice - bestAskPrice) * amount - fee;
+        if(gain>0) status = "profitable";
+
         switch (option) {
             case BTC_USD:
-                System.out.printf("On market %s buy %.2fBTC at the exchange rate: %.2f sell on market %s at the exchange rate: %.2f, gain: %.2fUSD \n",
+                if(verbose) System.out.printf("On market %s buy %.2fBTC at the exchange rate: %.2f sell on market %s at the exchange" +
+                                " rate: %.2f, fee: %.2f, gain: %.2fUSD, status: %s \n",
                         markets.get(askMarketId).getTitle(), amount, bestAskPrice, markets.get(bidMarketId).getTitle(),
-                        bestBidPrice, gain);
+                        bestBidPrice, fee, gain, status);
+                        if(gain>0&&funds!=null&&askPrice<funds.getCurrentUSD()) funds.addGainUsd(gain, true);
                 break;
             case BTC_EUR:
-                System.out.printf("On market %s buy %.2fBTC at the exchange rate: %.2f sell on market %s at the exchange rate: %.2f, gain: %.2fEUR \n",
+                if(verbose) System.out.printf("On market %s buy %.2fBTC at the exchange rate: %.2f sell on market %s at the exchange" +
+                                " rate: %.2f, fee: %.2f, gain: %.2fEUR, status: %s \n",
                         markets.get(askMarketId).getTitle(), amount, bestAskPrice, markets.get(bidMarketId).getTitle(),
-                        bestBidPrice, gain);
+                        bestBidPrice, fee, gain, status);
+                if(gain>0&&funds!=null&&askPrice<funds.getCurrentEUR()) funds.addGainEur(gain, true);
                 break;
             case LTC_USD:
-                System.out.printf("On market %s buy %.2fLTC at the exchange rate: %.2f sell on market %s at the exchange rate: %.2f, gain: %.2fUSD \n",
+                if(verbose) System.out.printf("On market %s buy %.2fLTC at the exchange rate: %.2f sell on market %s at the exchange" +
+                                " rate: %.2f, fee: %.2f, gain: %.2fUSD, status: %s \n",
                         markets.get(askMarketId).getTitle(), amount, bestAskPrice, markets.get(bidMarketId).getTitle(),
-                        bestBidPrice, gain);
+                        bestBidPrice, fee, gain, status);
+                if(gain>0&&funds!=null&&askPrice<funds.getCurrentUSD()) funds.addGainUsd(gain, true);
                 break;
             case LTC_EUR:
-                System.out.printf("On market %s buy %.2fLTC at the exchange rate: %.2f sell on market %s at the exchange rate: %.2f, gain: %.2fEUR \n",
+                if(verbose) System.out.printf("On market %s buy %.2fLTC at the exchange rate: %.2f sell on market %s at the exchange" +
+                                " rate: %.2f, fee: %.2f, gain: %.2fEUR, status: %s \n",
                         markets.get(askMarketId).getTitle(), amount, bestAskPrice, markets.get(bidMarketId).getTitle(),
-                        bestBidPrice, gain);
+                        bestBidPrice, fee, gain, status);
+                if(gain>0&&funds!=null&&askPrice<funds.getCurrentEUR()) funds.addGainEur(gain, true);
                 break;
             default:
                 return;

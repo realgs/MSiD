@@ -12,9 +12,10 @@ public class CexData extends BitData{
     public static final String LTC_USD = "https://cex.io/api/order_book/LTC/USD/";
     public static final String BTC_EUR = "https://cex.io/api/order_book/BTC/EUR/";
     public static final String BTC_ETH = "https://cex.io/api/order_book/LTC/EUR/";
+    public static final double FEE = 0.0025;
 
     CexData(String title) {
-        super(title,BTC_USD, LTC_USD, BTC_EUR, BTC_ETH);
+        super(title,BTC_USD, LTC_USD, BTC_EUR, BTC_ETH, FEE);
     }
 
     @Override

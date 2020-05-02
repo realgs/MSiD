@@ -12,9 +12,10 @@ public class HitbtcData extends BitData {
     public static final String LTC_USD = "https://api.hitbtc.com/api/2/public/orderbook/LTCUSD";
     public static final String BTC_EUR = "https://api.hitbtc.com/api/2/public/orderbook/BTCEURS";
     public static final String BTC_ETH = "https://api.hitbtc.com/api/2/public/orderbook/LTCEURS";
+    public static final double FEE = 0.002;
 
     HitbtcData(String title) {
-        super(title, BTC_USD, LTC_USD, BTC_EUR, BTC_ETH);
+        super(title, BTC_USD, LTC_USD, BTC_EUR, BTC_ETH, FEE);
     }
 
     @Override

@@ -17,13 +17,15 @@ public abstract class BitData {
     protected ArrayList<double[]> asks = new ArrayList<>();
     protected ArrayList<double[]> bids = new ArrayList<>();
     protected LocalDateTime timeOfLastFetch;
+    protected double takerFee = 0.0;
 
-    BitData(String title, String endpointBTCUSD, String endpointLTCUSD, String endpointBTCEUR, String endpointLTCEUR){
+    BitData(String title, String endpointBTCUSD, String endpointLTCUSD, String endpointBTCEUR, String endpointLTCEUR, double takerFee){
         this.title = title;
         this.endpointBTCUSD = endpointBTCUSD;
         this.endpointLTCUSD = endpointLTCUSD;
         this.endpointBTCEUR = endpointBTCEUR;
         this.endpointLTCEUR = endpointLTCEUR;
+        this.takerFee = takerFee;
     }
 
     public boolean getDataBTCUSD() throws IOException, InterruptedException {
@@ -142,5 +144,9 @@ public abstract class BitData {
 
     public String getTitle(){
         return title;
+    }
+
+    public double getFee(){
+        return takerFee;
     }
 }
