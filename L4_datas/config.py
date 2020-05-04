@@ -20,3 +20,10 @@ TAKER_BITTREX = 0.2
 
 LINK_INFO_BITBAY = "https://bitbay.net/en/helpdesk/exchange/what-is-maker-and-taker-fee"
 LINK_INFO_BITTREX = "https://bittrex.zendesk.com/hc/en-us/articles/115000199651-What-fees-does-Bittrex-charge-"
+
+#profit we can get in 3 currencies
+#operations with index 1 => profit in USD, 2 => EUR, 3 =>BTC; 4 => USD
+virtual_budget_profil = dict({"USD": 0, "EUR": 0, "BTC": 0})
+
+#wirtual_budget_profil_bittrex["BTC"]
+#wirtual_budget_profil_bitbay.get["BTC"] = value

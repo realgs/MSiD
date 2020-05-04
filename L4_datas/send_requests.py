@@ -29,6 +29,7 @@ def get_possible_profit_bitbay_sel_bittrex_buy(parsed_string_bitbay_sell, parsed
             if (buy_price > sell_price):
                 #count_profit(sell_price, buy_price, sell_quantity, buy_quantity, index)
                 count_profit_consider_take_commision(sell_price, buy_price, sell_quantity, buy_quantity, index, config.BITTBAY_SELLER_BITTREX_BUYER)
+            print("not found \n")
 
 def get_possible_profit_bittrex_sell_bitbay_buy(parsed_string_bittrex_sell, parsed_string_bitbay_buy, index):
     sell_list = parsed_string_bittrex_sell['result']['sell']
@@ -40,8 +41,9 @@ def get_possible_profit_bittrex_sell_bitbay_buy(parsed_string_bittrex_sell, pars
             buy_price = float(buy['ra'])
             buy_quantity = float(buy['ca'])
             if (buy_price > sell_price):
-                #without commision: count_profit(sell_price, buy_price, sell_quantity, buy_quantity, index)
+                #count_profit(sell_price, buy_price, sell_quantity, buy_quantity, index)
                 count_profit_consider_take_commision(sell_price, buy_price, sell_quantity, buy_quantity, index, config.BITTREX_SELLER_BITBAY_BUYER)
+            print("not found \n")
 
 def get_possible_profits(define_sides, url_bittrex, url_bitbay, index):
     if(define_sides == config.BITTBAY_SELLER_BITTREX_BUYER):
@@ -67,6 +69,20 @@ def count_profit(sell_price_propos, buy_price_propos, sell_quantity, buy_quantit
     print("currencies: " + config.LIST_BITBAY_ARGS[index] + "quantity: " + str(result_quantity) + "zyzk: " + str(result_profit))
     return result_profit
 
+def to_store_getted_profit(currenciesIndex, currenciesProfit):
+    if(currenciesIndex == 1 or currenciesIndex == 4):
+        config.virtual_budget_profil["USD"] = config.virtual_budget_profil["USD"] + currenciesProfit
+    elif (currenciesIndex == 2):
+        config.virtual_budget_profil["EUR"] = config.virtual_budget_profil["EUR"] + currenciesProfit
+    else:
+        config.virtual_budget_profil["BTC"] = config.virtual_budget_profil["BTC"] + currenciesProfit
+def to_print_getted_profit():
+    print("\ngetted profit in next currencies")
+    print("\ngetted profit in USD " + str(config.virtual_budget_profil["BTC"]))
+    print("\ngetted profit in EUR " + str(config.virtual_budget_profil["EUR"]))
+    print("\ngetted profit in BTC " + str(config.virtual_budget_profil["BTC"]))
+
+
 def count_profit_consider_take_commision(sell_price_propos, buy_price_propos, sell_quantity, buy_quantity, index, def_seller_buyer):
     if (def_seller_buyer == config.BITTBAY_SELLER_BITTREX_BUYER):
         firstCommision = config.MIN_TAKER_BITBAY
@@ -85,6 +101,9 @@ def count_profit_consider_take_commision(sell_price_propos, buy_price_propos, se
     result_profit = earned_by_me_price - spend_by_me_price
     if (result_profit > 0):
         print("currencies: " + config.LIST_BITBAY_ARGS[index] + "quantity: " + str(result_quantity) + "zyzk: " + str(result_profit))
+        to_store_getted_profit(index, result_profit)
+        to_print_getted_profit()
+
     return result_profit
 
 if( __name__ == '__main__'):
