@@ -9,10 +9,10 @@ public class bitbay_observer extends market_observer
 
     public bitbay_observer(String currency)
     {
-        super(currency, "bitbay");
+        super(currency, "bitbay", 0.005f);
         try
         {
-            currency_url = new URL("https://bitbay.net/API/Public/"+  currency + "/ticker.json");
+            currency_url = new URL("https://bitbay.net/API/Public/"+  currency + "/orderbook.json");
             update_data();
         }
         catch (MalformedURLException e)
@@ -48,21 +48,28 @@ public class bitbay_observer extends market_observer
     private void get_data_from_json_string(String json_string)
     {
 //        System.out.println(json_string);
+//        return;
         if(json_string == null) return;
 
         try
         {
-            float bid = Float.parseFloat( json_string.substring( json_string.indexOf("\"bid\":") + 6,
-                    json_string.indexOf(',', json_string.indexOf( "\"bid\":" ) ) ) );
-            float ask = Float.parseFloat( json_string.substring( json_string.indexOf("\"ask\":") + 6,
-                    json_string.indexOf(',', json_string.indexOf( "\"ask\":") ) ) );
+            int bid_price_start_position = json_string.indexOf("\"bids\":[[") + 9;
+            int bid_price_end_position = json_string.indexOf(',', bid_price_start_position );
+            int bid_amount_end_position = json_string.indexOf(']', bid_price_end_position );
 
-            bid_price = bid;
-            ask_price = ask;
+            int ask_price_start_position = json_string.indexOf("\"asks\":[[") + 9;
+            int ask_price_end_position = json_string.indexOf(',', ask_price_start_position );
+            int ask_amount_end_position = json_string.indexOf(']', ask_price_end_position );
 
-//            System.out.println("bid: "+ bid + ", ask: " + ask);
+            bid_price = Float.parseFloat( json_string.substring(bid_price_start_position, bid_price_end_position ) );
+            bid_amount = Float.parseFloat( json_string.substring(bid_price_end_position + 1, bid_amount_end_position ) );
+
+            ask_price = Float.parseFloat( json_string.substring(ask_price_start_position, ask_price_end_position ) );
+            ask_amount = Float.parseFloat( json_string.substring(ask_price_end_position + 1, ask_amount_end_position ) );
+
+//            System.out.println("bid: " + bid_amount + " ✖️ " + bid_price + "; ask: " + ask_amount + " ✖️ " + ask_price);
         }
-        catch (java.lang.NumberFormatException ignored){}
+        catch (java.lang.NumberFormatException ignored){ /* System.out.println(ignored); */ }
 
     }
 }
