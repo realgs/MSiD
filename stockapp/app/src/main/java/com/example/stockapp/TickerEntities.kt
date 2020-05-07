@@ -21,7 +21,7 @@ abstract class TickerEntity(){
 
 class BittrexTickerEntity() : TickerEntity() {
 
-  override val tickers = arrayOf<String>("BTC-LTC", "BTC-DOGE", "BTC-POT", "USD-BTC", "USD-BSV")
+  override val tickers = arrayOf<String>("BTC-LTC", "USD-BTC", "USD-LTC")
   override val url: String = "https://api.bittrex.com/api/v1.1/public/getticker?market={}"
   override val fee: Double = 0.002
 
@@ -38,7 +38,7 @@ class BittrexTickerEntity() : TickerEntity() {
 
 class BitbayTickerEntity() : TickerEntity() {
 
-  override val tickers = arrayOf<String>("LTCBTC", "BTCDOGE", "BTCPOT", "BTCUSD")
+  override val tickers = arrayOf<String>("LTCBTC", "BTCUSD", "LTCUSD")
   override val url: String = "https://bitbay.net/API/Public/{}/ticker.json"
   override val fee = 0.0043
 
@@ -46,7 +46,7 @@ class BitbayTickerEntity() : TickerEntity() {
 
 class BitStampTickerEntity() : TickerEntity() {
 
-  override val tickers: Array<String> = arrayOf<String>("ltcbtc", "ethbtc", "bchbtc", "btcusd")
+  override val tickers: Array<String> = arrayOf<String>("ltcbtc", "btcusd","ltcusd")
   override val url: String = "https://www.bitstamp.net/api/v2/ticker/{}"
   override val fee: Double = 0.005
 
@@ -54,7 +54,7 @@ class BitStampTickerEntity() : TickerEntity() {
 
 class CexTickerEntity() : TickerEntity() {
 
-  override val tickers: Array<String> = arrayOf<String>("LTC/BTC", "ETH/BTC", "BCH/BTC", "BTC/USD")
+  override val tickers: Array<String> = arrayOf<String>("LTC/BTC", "BTC/USD", "LTC/USD")
   override val url: String = "https://cex.io/api/ticker/{}"
   override val fee: Double = 0.002
 
