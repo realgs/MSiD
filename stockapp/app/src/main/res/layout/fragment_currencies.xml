@@ -5,16 +5,16 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="@color/screenBackground"
-  tools:context=".SecondFragment">
+  tools:context=".CurrenciesFragment">
 
   <TextView
-    android:id="@+id/textview_header"
+    android:id="@+id/currencies_header"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginStart="24dp"
     android:layout_marginLeft="24dp"
     android:layout_marginTop="24dp"
-    android:text="@string/random_heading"
+    android:text="@string/currencies_header"
     android:textColor="@color/colorPrimaryDark"
     android:textSize="24sp"
     app:layout_constraintEnd_toEndOf="parent"
@@ -22,14 +22,14 @@
     app:layout_constraintTop_toTopOf="parent" />
 
   <Button
-    android:id="@+id/button_second"
+    android:id="@+id/wallet_button_cur"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/previous"
+    android:text="@string/wallet_button_text"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/textview_header" />
+    app:layout_constraintTop_toBottomOf="@id/currencies_header" />
 
   <TextView
     android:id="@+id/textview_random"
@@ -39,9 +39,31 @@
     android:textColor="@android:color/white"
     android:textSize="72sp"
     android:textStyle="bold"
-    app:layout_constraintBottom_toTopOf="@+id/button_second"
+    app:layout_constraintBottom_toTopOf="@+id/wallet_button_cur"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/textview_header"
+    app:layout_constraintTop_toBottomOf="@+id/currencies_header"
     app:layout_constraintVertical_bias="0.45" />
+
+  <Spinner
+    android:id="@+id/spinnerCurrencies"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toTopOf="@+id/wallet_button_cur"
+    app:layout_constraintStart_toEndOf="@+id/textview_random"
+    app:layout_constraintTop_toBottomOf="@+id/currencies_header" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/addCurrency"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:src="@drawable/ic_add"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.881"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/wallet_button_cur"
+    app:layout_constraintVertical_bias="0.797"
+    android:focusable="true" />
 </androidx.constraintlayout.widget.ConstraintLayout>

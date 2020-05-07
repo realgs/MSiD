@@ -46,7 +46,7 @@ fun collectData(freq:Long = 5000){
       val stockResult = StockOperations.watchStock(bittrex)
       if(stockResult != null) {
         StockOperations.printMarket(stockResult)
-        DBHelper.insertData(stockResult)
+        //DBHelper.insertData(stockResult)
       }
       delay(freq)
     }
