@@ -6,6 +6,8 @@ import requests
 
 market_currencies = [("LTC", "BTC"), ("ETH", "BTC"), ("BTC", "USD"), ("XRP", "BTC")]
 time_period = 25  # 25 - minimalny czas
+bitbay_fee = 0.1  # brak informacji do pobrania w API
+bitstamp_fee = 0.1  # brak informacji do pobrania w API
 
 
 def get_bittrex_orderbook(market_currency, base_currency):
@@ -45,10 +47,31 @@ def get_bitstamp_orderbook(market_currency, base_currency):
     return result
 
 
-def get_profitable_arbitration_table(waluta1, waluta2):
-    bittrex_orderbook = get_bittrex_orderbook(waluta2, waluta1)
-    bitbay_orderbook = get_bitbay_orderbook(waluta1, waluta2)
-    bitstamp_orderbook = get_bitstamp_orderbook(waluta1, waluta2)
+def get_bittrex_fee(currency):
+    currency = currency.upper()
+    currencies = requests.get("https://api.bittrex.com/api/v1.1/public/getcurrencies")
+    currencies_json = currencies.json()
+    result = currencies_json["result"]
+    fee = 0
+    for information in result:
+        if information["Currency"] == currency:
+            fee = information["TxFee"]
+    return fee
+
+
+def get_transaction_fee(currency, exchange):
+    if exchange == "bitbay":
+        return bitbay_fee
+    elif exchange == "bitstamp":
+        return bitstamp_fee
+    elif exchange == "bittrex":
+        return get_bittrex_fee(currency)
+
+
+def get_profitable_arbitration_table(currency1, currency2):
+    bittrex_orderbook = get_bittrex_orderbook(currency2, currency1)
+    bitbay_orderbook = get_bitbay_orderbook(currency1, currency2)
+    bitstamp_orderbook = get_bitstamp_orderbook(currency1, currency2)
     all_orderbook = [bittrex_orderbook, bitbay_orderbook, bitstamp_orderbook]
     profitable_arbitration_table = []
 
@@ -57,19 +80,22 @@ def get_profitable_arbitration_table(waluta1, waluta2):
         if market_offer_sell[4] < the_cheapest_offer_to_buy[2]:
             the_cheapest_offer_to_buy = (market_offer_sell[0], market_offer_sell[3], market_offer_sell[4])
     for offer_to_sell in all_orderbook:
-        zysk = check_profit_from_arbitration(the_cheapest_offer_to_buy, offer_to_sell)
-        if zysk[0] > 0:
-            profitable_arbitration_table.append([the_cheapest_offer_to_buy[0], zysk[1], the_cheapest_offer_to_buy[2],
-                                                 offer_to_sell[0], offer_to_sell[1], offer_to_sell[2], zysk[0]])
+        profit = check_profit_from_arbitration(the_cheapest_offer_to_buy, offer_to_sell, currency1, currency2)
+        if profit[0] > 0:
+            profitable_arbitration_table.append([the_cheapest_offer_to_buy[0], profit[1], the_cheapest_offer_to_buy[2],
+                                                 offer_to_sell[0], offer_to_sell[1], offer_to_sell[2], profit[0]])
     return profitable_arbitration_table
 
 
-def check_profit_from_arbitration(the_cheapest_offer_to_buy, offer_to_sell):
+def check_profit_from_arbitration(the_cheapest_offer_to_buy, offer_to_sell, waluta1, waluta2):
     if the_cheapest_offer_to_buy[1] < offer_to_sell[1]:
         amount_of_currency = the_cheapest_offer_to_buy[1]
     else:
         amount_of_currency = offer_to_sell[1]
-    earned_difference = amount_of_currency*offer_to_sell[2] - amount_of_currency*the_cheapest_offer_to_buy[2]
+    buy_fee = get_transaction_fee(waluta2, the_cheapest_offer_to_buy[0])
+    sell_fee = get_transaction_fee(waluta1, offer_to_sell[0])
+    earned_difference = (amount_of_currency*offer_to_sell[2]*(1-buy_fee)) - \
+                        (amount_of_currency*the_cheapest_offer_to_buy[2]*(1+sell_fee))
     return earned_difference, amount_of_currency
 
 
