@@ -25,16 +25,15 @@ def getData(url, api):
     else:
         return (parsed["bids"],parsed["asks"])
     
-def fetchData(url, api, currency):
+def fetchData(api, currency):
     if api == "bitbay":
-        return getData("https://bitbay.net/API/Public/{currency}USD/orderbook.json",api)
+        return getData("https://bitbay.net/API/Public/{}USD/orderbook.json".format(currency),api)
     if api == "binance":
-        return getData("https://api.binance.com/api/v3/depth?symbol={currency}TUSD",api)
+        return getData("https://api.binance.com/api/v3/depth?symbol={}TUSD".format(currency),api)
     if api == "bitstamp":
-        return getData("https://www.bitstamp.net/api/v2/order_book/{currency}USD/",api)
+        return getData("https://www.bitstamp.net/api/v2/order_book/{}USD/".format(currency),api)
     if api == "bittrex":
-        return getData("https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-{currency}&type=both",api)
-
+        return getData("https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-{}&type=both".format(currency),api)
 
 def runMainEvery5Seconds():
     try:
@@ -46,6 +45,6 @@ def runMainEvery5Seconds():
 
 if __name__ == "__main__":
     #runMainEvery5Seconds()
-    data = getBittrexData()
+    data = fetchData("bitbay", "BTC")
     #printOfferList("Sell","Sell",data[1])
     print(data[1][0])
