@@ -8,6 +8,7 @@ market_currencies = [("LTC", "BTC"), ("ETH", "BTC"), ("BTC", "USD"), ("XRP", "BT
 time_period = 25  # 25 - minimalny czas
 bitbay_fee = 0.1  # brak informacji do pobrania w API
 bitstamp_fee = 0.1  # brak informacji do pobrania w API
+wallet = [["BTC", 10], ["USD", 100]]
 
 
 def get_bittrex_orderbook(market_currency, base_currency):
@@ -112,13 +113,31 @@ def explore_stock_exchanges():
                 print(f"\t Na giełdzie {result[0]} można kupić {result[1]} {pair_currencies[0]} za {pair_currencies[1]}"
                       f" po kursie {result[2]:>.8f} i sprzedać na giełdzie {result[3]} po kursie {result[5]:>.8f},"
                       f" zyskując {result[6]:>.8f}{pair_currencies[1]}.")
-    print()
+                update_your_wallet(pair_currencies[1], result[6])
+
+
+def print_info_about_wallet():
+    print(f'KryptoPortfel:')
+    for i in range(len(wallet)):
+        print(f'\t {wallet[i][0]}: {wallet[i][1]}')
+
+
+def update_your_wallet(currency, amount):
+    currency = currency.upper()
+    for i in range(len(wallet)):
+        if wallet[i][0] == currency:
+            wallet[i][1] = float(wallet[i][1]) + amount
 
 
 def main():
+    print("Dane wstępne: ")
+    print_info_about_wallet()
+    print("\n\n")
     while True:
         explore_stock_exchanges()
+        print_info_about_wallet()
         time.sleep(time_period)
+        print()
 
 
 if __name__ == '__main__':
