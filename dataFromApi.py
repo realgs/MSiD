@@ -18,35 +18,23 @@ def getDiffPercentage(buy_list, sell_list):
     best_sell_offer = sell_list[0][0]
     print("BUY/SELL PERCENT DIFFERENCE " + str((best_sell_offer - best_buy_offer) / (best_buy_offer) * 100))
 
-def getBitbayData():
-    url = "https://bitbay.net/API/Public/BTC/orderbook.json"
+def getData(url, api):
     parsed = parsedData(url)
-    buy_list = parsed["bids"][0]
-    sell_list = parsed["asks"][0]
-    return (buy_list, sell_list)
-
-def getBittrexData():
-    url = "https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-BTC&type=both"
-    parsed = parsedData(url)
-    sell_list = parsed["result"]["sell"]
-    buy_list = parsed["result"]["buy"]
-    return (buy_list, sell_list)
-
-def getBinanceData():
-    url = "https://api.binance.com/api/v3/depth?symbol=BTCTUSD"
-    parsed = parsedData(url)
-    #print(parsed)
-    sell_list = parsed["asks"]
-    buy_list = parsed["bids"]
-    return (buy_list, sell_list)
+    if api == "bittrex":
+        return (parsed["result"]["buy"],parsed["result"]["sell"])
+    else:
+        return (parsed["bids"],parsed["asks"])
     
-def getBitstampData():
-    url = "https://www.bitstamp.net/api/v2/order_book/BTCUSD/""
-    parsed = parsedData(url)
-    #print(parsed)
-    sell_list = parsed["asks"]
-    buy_list = parsed["bids"]
-    return (buy_list, sell_list)
+def fetchData(url, api, currency):
+    if api == "bitbay":
+        return getData("https://bitbay.net/API/Public/{currency}USD/orderbook.json",api)
+    if api == "binance":
+        return getData("https://api.binance.com/api/v3/depth?symbol={currency}TUSD",api)
+    if api == "bitstamp":
+        return getData("https://www.bitstamp.net/api/v2/order_book/{currency}USD/",api)
+    if api == "bittrex":
+        return getData("https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-{currency}&type=both",api)
+
 
 def runMainEvery5Seconds():
     try:
@@ -57,4 +45,7 @@ def runMainEvery5Seconds():
         pass
 
 if __name__ == "__main__":
-    runMainEvery5Seconds()
+    #runMainEvery5Seconds()
+    data = getBittrexData()
+    #printOfferList("Sell","Sell",data[1])
+    print(data[1][0])
