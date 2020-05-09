@@ -57,16 +57,34 @@ def get_buy_sell_list(api, market):
         return (float(data['bids'][0][0]), float(data['bids'][0][1])), (float(data['asks'][0][0]),float(data['asks'][0][1]))
 
 
+def find_best_buy(buy):
+    max_b = buy[0]
+    for b in buy:
+        if b[0] - b[0] * taker[b[2]] > max_b[0] - max_b[0] * taker[max_b[2]]:
+            max_b = b
+
+    return max_b
+
+
+def find_best_sell(sell):
+    min_b = sell[0]
+    for s in sell:
+        if s[0] - s[0] * taker[s[2]] < min_b[0] - min_b[0] * taker[min_b[2]]:
+            min_b = s
+
+    return min_b
+
+
 def get_best_arbitrage(buy, sell, market):
-    buy.sort(reverse=True)
-    sell.sort()
-    quantity = min(buy[0][1], sell[0][1])
-    if quantity * sell[0][0] > budget[market[1]]:
-        quantity = budget[market[1]] / sell[0][0]
-    profit = quantity * (buy[0][0] - sell[0][0] - buy[0][0] * taker[buy[0][2]] - sell[0][0] * taker[sell[0][2]])
+    buy = find_best_buy(buy)
+    sell = find_best_sell(sell)
+    quantity = min(buy[1], sell[1])
+    if quantity * sell[0] > budget[market[1]]:
+        quantity = budget[market[1]] / sell[0]
+    profit = quantity * (buy[0] - sell[0] - buy[0] * taker[buy[2]] - sell[0] * taker[sell[2]])
     if profit > 0:
-        print(f'You can buy {quantity} of {market[0]} in {market[1]} on {sell[0][2]} for {sell[0][0]} '
-              f'and sell on {buy[0][2]} for {buy[0][0]} '
+        print(f'You can buy {quantity} of {market[0]} in {market[1]} on {sell[2]} for {sell[0]} '
+              f'and sell on {buy[2]} for {buy[0]} '
               f'gaining {profit} {market[1]}')
         budget[market[1]] += profit
 
