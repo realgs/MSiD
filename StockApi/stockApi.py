@@ -16,6 +16,10 @@ apis = [
 ]
 
 taker = {
+    'bittrex': 0.002,
+    'bitbay': 0.001,
+    'bitfinex': 0.002,
+    'bitstamp': 0.005,
 
 }
 
@@ -26,6 +30,14 @@ urls = {
     'bitstamp': 'https://www.bitstamp.net/api/v2/order_book/{0}{1}',
 }
 
+budget = {
+    'USD': 1000.0,
+    'BTC': 0.1,
+    'LTC': 20.0,
+    'XRP': 4500.0,
+    'ETH': 5.0
+}
+
 
 def get_buy_sell_list(api, market):
     if api == 'bitstamp':
@@ -34,30 +46,46 @@ def get_buy_sell_list(api, market):
         url = urls[api].format(market[0], market[1])
     resp = requests.get(url)
     data = resp.json()
+
     if api == 'bittrex':
-        return ((data['result']['buy'][0]['Rate'], data['result']['buy'][0]['Quantity']), (data['result']['sell'][0]['Rate'],data['result']['sell'][0]['Quantity']))
+        return (data['result']['buy'][0]['Rate'], data['result']['buy'][0]['Quantity']), (data['result']['sell'][0]['Rate'],data['result']['sell'][0]['Quantity'])
     if api == 'bitbay':
-        return ((data['bids'][0][0], data['bids'][0][1]),( data['asks'][0][0],data['asks'][0][1]))
+        return (data['bids'][0][0], data['bids'][0][1]),( data['asks'][0][0],data['asks'][0][1])
     if api == 'bitfinex':
-        return ((data[0][0], data[0][2]), (data[1][0], -data[1][2]))
+        return (data[0][0], data[0][2]), (data[1][0], -data[1][2])
     if api == 'bitstamp':
-        return ((data['bids'][0][0], data['bids'][0][1]), (data['asks'][0][0],data['asks'][0][1]))
+        return (float(data['bids'][0][0]), float(data['bids'][0][1])), (float(data['asks'][0][0]),float(data['asks'][0][1]))
 
 
-#def get_best_arbitrage(data):
+def get_best_arbitrage(buy, sell, market):
+    buy.sort(reverse=True)
+    sell.sort()
+    quantity = min(buy[0][1], sell[0][1])
+    profit = quantity * (buy[0][0]-sell[0][0])
+    if buy[0][0] > sell[0][0]:
+        print(f'You can buy {quantity} of {market} on {sell[0][2]} for {sell[0][0]} '
+              f'and sell on {buy[0][2]} for {buy[0][0]} '
+              f'gaining {profit}')
 
 
-def arb():
-    buy = []
-    sell = []
+def calculate_best_arbitrage():
     for market in markets:
+        buy = []
+        sell = []
         for api in apis:
             data = get_buy_sell_list(api, market)
-            buy.append(data[0])
-            sell.append(data[1])
+            buy.append(data[0]+(api,))
+            sell.append(data[1]+(api,))
+        get_best_arbitrage(buy, sell, market)
 
 
-#list 3
+def update_best_arbitrage():
+    while True:
+        calculate_best_arbitrage()
+        sleep(5)
+
+
+# list 3
 def print_buy_sell_list():
     for market in markets:
         data = get_buy_sell_list(market)
@@ -83,6 +111,6 @@ def update_percent_list():
 # print_buy_sell_list()
 # print_buy_sell_percent()
 # update_percent_list()
-arb()
+update_best_arbitrage()
 
 
