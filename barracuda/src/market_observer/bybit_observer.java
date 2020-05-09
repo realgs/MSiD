@@ -1,18 +1,23 @@
 package market_observer;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class bitbay_observer extends market_observer
+public class bybit_observer extends market_observer
 {
     private URL currency_url;
 
-    public bitbay_observer(String currency)
+    public bybit_observer(String currency)
     {
-        super(currency, "bitbay", 0.003f);
+        super(currency, "bybit", 0.0007f);
         try
         {
-            currency_url = new URL("https://bitbay.net/API/Public/"+  currency + "/orderbook.json");
+            currency_url = new URL("https://api.bybit.com/v2/public/orderBook/L2?symbol="+  currency + "USD");
             update_data();
             print_status();
         }
@@ -54,23 +59,25 @@ public class bitbay_observer extends market_observer
 
         try
         {
-            int bid_price_start_position = json_string.indexOf("\"bids\":[[") + 9;
-            int bid_price_end_position = json_string.indexOf(',', bid_price_start_position );
-            int bid_amount_end_position = json_string.indexOf(']', bid_price_end_position );
+            int bid_price_start_position = json_string.indexOf("\"price\":\"") + 9;
+            int bid_price_end_position = json_string.indexOf("\",\"size\":", bid_price_start_position );
+            int bid_amount_end_position = json_string.indexOf(',', bid_price_end_position + 9);
 
-            int ask_price_start_position = json_string.indexOf("\"asks\":[[") + 9;
-            int ask_price_end_position = json_string.indexOf(',', ask_price_start_position );
-            int ask_amount_end_position = json_string.indexOf(']', ask_price_end_position );
+            int first_sell_position = json_string.indexOf("Sell") - 40;
+
+            int ask_price_start_position = json_string.indexOf("\"price\":\"", first_sell_position ) + 9;
+            int ask_price_end_position = json_string.indexOf("\",\"size\":", ask_price_start_position );
+            int ask_amount_end_position = json_string.indexOf(',', ask_price_end_position + 9);
 
             bid_price = Float.parseFloat( json_string.substring(bid_price_start_position, bid_price_end_position ) );
-            bid_amount = Float.parseFloat( json_string.substring(bid_price_end_position + 1, bid_amount_end_position ) );
+            bid_amount = Float.parseFloat( json_string.substring(bid_price_end_position + 9, bid_amount_end_position ) ) / bid_price;
 
             ask_price = Float.parseFloat( json_string.substring(ask_price_start_position, ask_price_end_position ) );
-            ask_amount = Float.parseFloat( json_string.substring(ask_price_end_position + 1, ask_amount_end_position ) );
+            ask_amount = Float.parseFloat( json_string.substring(ask_price_end_position + 9, ask_amount_end_position ) ) / ask_price;
 
 //            System.out.println("bid: " + bid_amount + " ✖️ " + bid_price + "; ask: " + ask_amount + " ✖️ " + ask_price);
         }
-        catch (java.lang.NumberFormatException ignored){ /* System.out.println(ignored); */ }
+        catch (NumberFormatException ignored){ /* System.out.println(ignored); */ }
 
     }
 }

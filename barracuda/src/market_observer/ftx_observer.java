@@ -1,18 +1,23 @@
 package market_observer;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class bitbay_observer extends market_observer
+public class ftx_observer extends market_observer
 {
     private URL currency_url;
 
-    public bitbay_observer(String currency)
+    public ftx_observer(String currency)
     {
-        super(currency, "bitbay", 0.003f);
+        super(currency, "ftx", 0.0007f);
         try
         {
-            currency_url = new URL("https://bitbay.net/API/Public/"+  currency + "/orderbook.json");
+            currency_url = new URL("https://ftx.com/api//markets/"+  currency + "_USD/orderbook");
             update_data();
             print_status();
         }
@@ -70,7 +75,7 @@ public class bitbay_observer extends market_observer
 
 //            System.out.println("bid: " + bid_amount + " ✖️ " + bid_price + "; ask: " + ask_amount + " ✖️ " + ask_price);
         }
-        catch (java.lang.NumberFormatException ignored){ /* System.out.println(ignored); */ }
+        catch (NumberFormatException ignored){ /* System.out.println(ignored); */ }
 
     }
 }

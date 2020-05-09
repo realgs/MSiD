@@ -38,14 +38,18 @@ public class Main
 
     public static void main(String[] args)
     {
-        refresh_interval = 4950;
+        refresh_interval = 4000;
 
         market_observers.add(new bitbay_observer("BTC"));
-        market_observers.add(new bitbay_observer("LTC"));
-        market_observers.add(new bitbay_observer("LSK"));
-        market_observers.add(new bitbay_observer("GAME"));
-        market_observers.add(new bitbay_observer("REP"));
-        market_observers.add(new bitbay_observer("PAY"));
+        market_observers.add(new bybit_observer("BTC"));
+        market_observers.add(new bitfinex_observer("BTC"));
+//        market_observers.add(new whitebit_observer("BTC"));
+//        market_observers.add(new bitbay_observer("LTC"));
+//        market_observers.add(new bitbay_observer("LSK"));
+//        market_observers.add(new bitbay_observer("GAME"));
+//        market_observers.add(new bitbay_observer("REP"));
+//        market_observers.add(new bitbay_observer("PAY"));
+
 
         Thread thread = new Thread(Main::refresh_periodically);
         thread.setDaemon(true);
