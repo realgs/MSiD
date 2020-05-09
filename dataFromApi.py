@@ -2,6 +2,8 @@ import requests
 import json
 import threading
 
+currencies = ["BTC","ETH","LTC","BCH"]
+
 def parsedData(url):
     response = requests.get(url)
     data = response.text
@@ -20,6 +22,7 @@ def getDiffPercentage(buy_list, sell_list):
 
 def getData(url, api):
     parsed = parsedData(url)
+    print(parsed)
     if api == "bittrex":
         return (parsed["result"]["buy"],parsed["result"]["sell"])
     else:
@@ -30,8 +33,10 @@ def fetchData(api, currency):
         return getData("https://bitbay.net/API/Public/{}USD/orderbook.json".format(currency),api)
     if api == "binance":
         return getData("https://api.binance.com/api/v3/depth?symbol={}TUSD".format(currency),api)
-    if api == "bitstamp":
-        return getData("https://www.bitstamp.net/api/v2/order_book/{}USD/".format(currency),api)
+    if api == "kraken" and currency == "BTC":
+        return getData("https://api.kraken.com/0/public/Depth?pair=XBTUSD".format(currency),api)
+    elif api == "kraken":
+        return getData("https://api.kraken.com/0/public/Depth?pair={}USD".format(currency),api)
     if api == "bittrex":
         return getData("https://api.bittrex.com/api/v1.1/public/getorderbook?market=USD-{}&type=both".format(currency),api)
 
@@ -45,6 +50,7 @@ def runMainEvery5Seconds():
 
 if __name__ == "__main__":
     #runMainEvery5Seconds()
-    data = fetchData("bitbay", "BTC")
+    #data = fetchData("kraken", "USD","BTC")
+    print(parsedData("https://api.kraken.com/0/public/Depth?pair=BCHUSD"))
     #printOfferList("Sell","Sell",data[1])
-    print(data[1][0])
+    #print(data[1][0])
