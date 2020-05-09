@@ -3,7 +3,7 @@ import json
 import threading
 
 currencies = ["BTC","ETH","LTC","BCH"]
-apis = ["bitbay","binance","kraken", "bitrex"]
+apis = ["bitbay","binance","kraken", "bittrex"]
 wallet = 10000
 
 def parsedData(url):
@@ -55,32 +55,50 @@ def fetchData(api, currency):
 
 def format(buy_and_sell):
     return (float(buy_and_sell[0]),float(buy_and_sell[1]))
-    
-            
-    
 
+def calculate_fee(buy_and_sell,api):
+    if api == "binance" or "bitbay":
+        fee = 0.001
+    elif api == "bittrex":
+        fee = 0.002
+    elif api == "kraken":
+        fee = 0.0026
+    return (buy_and_sell[0]*(1-fee),buy_and_sell[1]*(1+fee))
+    
 def checkArbitrage():
+    global wallet
     for currency in currencies:
-        bitbayData = format(fetchData("bitbay", currency))
-        binanceData = format(fetchData("binance", currency))
-        krakenData = format(fetchData("kraken", currency))
-        bittrexData = format(fetchData("bittrex", currency))
-        print(bitbayData)
-        print(binanceData)
-        print(krakenData)
-        print(bittrexData)
+        data = {"bitbay" : [],"binance" : [],"kraken" : [],"bittrex" : []}
+        data["bitbay"] = format(fetchData("bitbay", currency))
+        data["binance"] = format(fetchData("binance", currency))
+        data["kraken"] = format(fetchData("kraken", currency))
+        data["bittrex"] = format(fetchData("bittrex", currency))
+        
+        for api in apis:
+            data[api] = calculate_fee(data[api],api)
+
+        expensive_crypto = max(data, key=lambda x: data[x][0])
+        cheapest_crypto = min(data, key=lambda x: data[x][1])
+
+        if data[cheapest_crypto][1] < data[expensive_crypto][0] and data[cheapest_crypto][1] < wallet:
+            print("Deal made on " + currency)
+            wallet += expensive_crypto - cheapest_crypto
+            print("Gained " + str(expensive_crypto - cheapest_crypto))
+        else:
+            print("No deal on " + currency)
+        print("Wallet: "+str(wallet))
         
 
 def runMainEvery5Seconds():
     try:
         threading.Timer(5.0, runMainEvery5Seconds).start()
-        main()
+        checkArbitrage()
         print("CTRL+C TO STOP")
     except KeyboardInterrupt:
         pass
 
 if __name__ == "__main__":
-    #runMainEvery5Seconds()
+    runMainEvery5Seconds()
     #data = fetchData("kraken", "USD","BTC")
     #print(parsedData("https://bitbay.net/API/Public/BTCUSD/ticker.json"))
     #print(parsedData("https://api.binance.com/api/v3/ticker/bookTicker?symbol=BTCTUSD"))
@@ -88,4 +106,4 @@ if __name__ == "__main__":
     #print(parsedData("https://api.bittrex.com/api/v1.1/public/getticker?market=USD-BTC"))
     #printOfferList("Sell","Sell",data[1])
     #print(data[1][0])
-    checkArbitrage()
+    #checkArbitrage()
