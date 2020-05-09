@@ -61,8 +61,8 @@ def get_best_arbitrage(buy, sell, market):
     buy.sort(reverse=True)
     sell.sort()
     quantity = min(buy[0][1], sell[0][1])
-    profit = quantity * (buy[0][0]-sell[0][0])
-    if buy[0][0] > sell[0][0]:
+    profit = quantity * (buy[0][0] - sell[0][0] - buy[0][0] * taker[buy[0][2]] - sell[0][0] * taker[sell[0][2]])
+    if profit > 0:
         print(f'You can buy {quantity} of {market} on {sell[0][2]} for {sell[0][0]} '
               f'and sell on {buy[0][2]} for {buy[0][0]} '
               f'gaining {profit}')
