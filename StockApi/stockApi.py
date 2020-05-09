@@ -61,11 +61,14 @@ def get_best_arbitrage(buy, sell, market):
     buy.sort(reverse=True)
     sell.sort()
     quantity = min(buy[0][1], sell[0][1])
+    if quantity * sell[0][0] > budget[market[1]]:
+        quantity = budget[market[1]] / sell[0][0]
     profit = quantity * (buy[0][0] - sell[0][0] - buy[0][0] * taker[buy[0][2]] - sell[0][0] * taker[sell[0][2]])
     if profit > 0:
-        print(f'You can buy {quantity} of {market} on {sell[0][2]} for {sell[0][0]} '
+        print(f'You can buy {quantity} of {market[0]} in {market[1]} on {sell[0][2]} for {sell[0][0]} '
               f'and sell on {buy[0][2]} for {buy[0][0]} '
-              f'gaining {profit}')
+              f'gaining {profit} {market[1]}')
+        budget[market[1]] += profit
 
 
 def calculate_best_arbitrage():
@@ -77,6 +80,7 @@ def calculate_best_arbitrage():
             buy.append(data[0]+(api,))
             sell.append(data[1]+(api,))
         get_best_arbitrage(buy, sell, market)
+    print(budget)
 
 
 def update_best_arbitrage():
@@ -108,9 +112,7 @@ def update_percent_list():
         sleep(5)
 
 
-# print_buy_sell_list()
-# print_buy_sell_percent()
-# update_percent_list()
-update_best_arbitrage()
+if __name__ == "__main__":
+    update_best_arbitrage()
 
 
