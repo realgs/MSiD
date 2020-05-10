@@ -1,8 +1,7 @@
+import com.example.stockapp.BuySell
+import com.example.stockapp.Response
 import java.net.HttpURLConnection
 import java.net.URL
-
-data class Response(val statusCode: Int, val body: String)
-data class BuySell(val stockName: String, val fee: Double, val buy: Double = 0.0, val sell: Double = 0.0, val buyCur: String, val curBuyFor: String)
 
 object FetchApi {
   fun sendRequest(url: String): Response {

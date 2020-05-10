@@ -3,9 +3,13 @@ package com.example.stockapp
 import BitStampTickerEntity
 import BitbayTickerEntity
 import BittrexTickerEntity
-import BuySell
 import CexTickerEntity
 import Wallet
+import java.util.*
+
+data class Response(val statusCode: Int, val body: String)
+data class BuySell(val stockName: String, val fee: Double, val buy: Double = 0.0, val sell: Double = 0.0, val buyCur: String, val curBuyFor: String)
+data class Logs(val walletName: String, val time: Calendar, val exchanged: String, val bought: String, val howMuchExchanged: Double, val howMuchBought: Double, val atWhatRate: Double)
 
 object Globals {
 
@@ -126,15 +130,11 @@ object Globals {
   val possibleCurrencies = listOf<String>("USD", "BTC", "LTC")
   val possiblePairs = listOf<Pair<String, String>>(Pair(possibleCurrencies[2], possibleCurrencies[1]), Pair(possibleCurrencies[1], possibleCurrencies[0]), Pair(possibleCurrencies[2], possibleCurrencies[0]))
 
-  val bittrexWallet = Wallet()
-  val bitbayWallet = Wallet()
-  val bitstampWallet = Wallet()
-  val cexWallet = Wallet()
+  val wallets = mutableListOf<Wallet>()
 
-
-  var currentWallet = bittrexWallet
+  var currentWallet = Wallet("", "", null)
   var currentValueToConvertTo = possibleCurrencies[0]
 
-  val stockWalletMap = mapOf<Wallet, List<() -> BuySell?>>(bittrexWallet to bittrexStocks, bitbayWallet to bitbayStocks, bitstampWallet to bitstampStocks, cexWallet to cexStocks)
+  val mapOfWalletStockFuns = mapOf<String, List<() -> BuySell?>>("bittrex" to bittrexStocks, "bitbay" to bitbayStocks, "bitstamp" to bitstampStocks, "cex" to cexStocks)
 
 }

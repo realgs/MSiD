@@ -1,6 +1,9 @@
+import com.example.stockapp.BuySell
 import com.example.stockapp.Globals
 
-class Wallet() {
+class Wallet(val name: String, val stockName: String,
+             private val stockUpdateSource: List<() -> BuySell?>?
+) {
 
   val currencies = mutableMapOf<String, Double>(Globals.possibleCurrencies[0] to 0.0, Globals.possibleCurrencies[1] to 1.0, Globals.possibleCurrencies[2] to 0.0)
 
@@ -53,18 +56,19 @@ class Wallet() {
     return (amountToBuy / buyPrice) + ((amountToBuy / buyPrice) * fee)
   }
 
-  suspend fun walletWorth(currencyToDisplay: String, currentStockUpdateSource: List<() -> BuySell?>): Double {
+  suspend fun walletWorth(currencyToDisplay: String): Double {
     var totalWorth = currencies[currencyToDisplay]!!
-    val stockResults = StockOperations.watchAllStocks(currentStockUpdateSource)
-    stockResults.forEach{
-      if(it != null){
-        if(it.buyCur == currencyToDisplay){
-          println("$it selling")
-          totalWorth += calculatePotentialBuyVal(currencies[it.curBuyFor]!!, it.buy, it.fee)
-        }
-        else if(it.curBuyFor == currencyToDisplay){
-          println("$it buying")
-          totalWorth += calculatePotentialSellVal(currencies[it.buyCur]!!, it.sell, it.fee)
+    if(stockUpdateSource != null) {
+      val stockResults = StockOperations.watchAllStocks(stockUpdateSource)
+      stockResults.forEach {
+        if (it != null) {
+          if (it.buyCur == currencyToDisplay) {
+            println("$it selling")
+            totalWorth += calculatePotentialBuyVal(currencies[it.curBuyFor]!!, it.buy, it.fee)
+          } else if (it.curBuyFor == currencyToDisplay) {
+            println("$it buying")
+            totalWorth += calculatePotentialSellVal(currencies[it.buyCur]!!, it.sell, it.fee)
+          }
         }
       }
     }

@@ -1,5 +1,7 @@
 package com.example.stockapp
 
+import DBHelper
+import Wallet
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +18,15 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     setSupportActionBar(toolbar)
+    val db = DBHelper(this)
+    val wal = db.selectWallets()
+    if(wal.isNullOrEmpty()) db.insertDataIntoWallets("MyWallet", "bittrex")
+    db.selectWallets()?.forEach {
+      db.selectMoney(it)
+      Globals.wallets.add(it)
+    }
+    Globals.currentWallet = Globals.wallets[0]
+
   }
 
   override fun onCreateOptionsMenu(menu: Menu): Boolean {

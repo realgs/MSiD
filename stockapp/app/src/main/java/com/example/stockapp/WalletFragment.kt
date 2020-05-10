@@ -78,10 +78,8 @@ class WalletFragment : Fragment() {
 
   suspend fun updateWorthLabel(view: View) {
       while (true) {
-        Globals.stockWalletMap[Globals.currentWallet]?.let {
-          val newVal = Globals.currentWallet.walletWorth(Globals.currentValueToConvertTo, it)
-          view.findViewById<TextView>(R.id.walletWorth).text = String.format("%.2f", newVal)
-        }
+        val newVal = Globals.currentWallet.walletWorth(Globals.currentValueToConvertTo)
+        view.findViewById<TextView>(R.id.walletWorth).text = String.format("%.2f", newVal)
         delay(5000)
     }
   }
