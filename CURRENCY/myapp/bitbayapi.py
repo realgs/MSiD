@@ -1,10 +1,11 @@
 import requests
 import time
 
+
 import json
 
 url = "https://api.bitbay.net/rest/trading/transactions/BTC-PLN"
-url2 = "https://api.bitbay.net/rest/trading/ticker/BTC-PLN"
+url2 = "https://api.bitbay.net/rest/trading/ticker"
 headers = {'content-type': 'application/json'}
 def operate():
     while True:
@@ -22,11 +23,12 @@ def operate():
         time.sleep(5)
 
 def show_Full_offers():
-    response = requests.request("GET", url, headers=headers).json()
-    for el in response["items"]:
-        print (el)
+    response = requests.request("GET", url2, headers=headers).json()
+    #for el in response["items"]:
+    print (response)
     
 
 show_Full_offers()
-operate()
+#operate()
+
 
