@@ -67,13 +67,13 @@ def findCycle(number):
     responseBitbay=loadResponse(urlBITBAY, bitbayCURR,number)
     responseBittrex=loadResponse(urlBITTREX, bittrexCURR,number)
     responseBitfinex=loadResponse(urlBITFINEX, bitfinexCURR,number)
-    geminiBid=separateGEM(responseGemini,"kids")
+    geminiBid=separateGEM(responseGemini,"bids")
     geminiAsk=separateGEM(responseGemini,"asks")
-    bitbayBid=seperateBITB(responseBitbay, "kids")
+    bitbayBid=seperateBITB(responseBitbay, "bids")
     bitbayAsk=seperateBITB(responseBitbay, "asks")
     bittrexBid=separateBITT(responseBittrex, "buy")
     bittrexAsk=separateBITT(responseBittrex, "sell")
-    bitfinexBid=separateBITF(responseBitfinex, "")
+    bitfinexBid=separateBITF(responseBitfinex, "bids")
     bitfinexAsk=separateBITF(responseBitfinex, "asks")
     buy=[geminiBid, bitbayBid, bitfinexBid]
     sell=[geminiAsk, bitbayAsk, bitfinexAsk]
@@ -109,9 +109,9 @@ def countAllCurrency():
     
     
 
-print(loadResponse(urlBITBAY,bitbayCURR, 0))
-#countAllCurrency()
-    
+#print(loadResponse(urlBITBAY,bitbayCURR, 0))
+countAllCurrency()
+   #asks kupuję bid sprzedaję do poprawy jutro 
 
     
 
