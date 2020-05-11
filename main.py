@@ -3,10 +3,28 @@ import json
 import requests
 from time import sleep
 
-
 refresh_period = 5
-currency_pairs = [('LTC', 'BTC'), ('ETH', 'BTC'), ('XLM', 'BTC'), ('OMG', 'BTC')]
+currency_pairs = [('LTC', 'BTC'), ('ETH', 'BTC'), ('XRP', 'BTC'), ('DASH', 'BTC')]
 api_names = ['bitbay', 'bittrex', 'cex', 'binance']
+
+wallet = []
+
+
+def add_currency_to_wallet(currency_name, currency_amount):
+    currency_exist = False
+    for currency in wallet:
+        if currency[0] == currency_name:
+            currency_exist = True
+            currency[1] += currency_amount
+
+    if not currency_exist:
+        wallet.append([currency_name, currency_amount])
+
+
+def take_currency_from_wallet(currency_name, currency_amount):
+    for currency in wallet:
+        if currency[0] == currency_name:
+            currency[1] -= currency_amount
 
 
 def get_url_data(url):
@@ -25,7 +43,7 @@ def create_market_url(base_currency, exchange_currency, api_name):
 
     if api_name == 'bittrex':
         return 'https://api.bittrex.com/api/v1.1/public/getmarkethistory?market=' + base_currency + '-' + \
-                                                                                    exchange_currency
+               exchange_currency
     if api_name == 'bitbay':
         return f'https://bitbay.net/API/Public/{base_currency}{exchange_currency}/orderbook.json'
     if api_name == 'cex':
@@ -78,6 +96,21 @@ def get_market_fee(api_name):
     return fee
 
 
+def get_wallet_currency_amount(currency_name):
+    for currency in wallet:
+        if currency[0] == currency_name:
+            return currency[1]
+
+    return 0
+
+
+def print_wallet_state():
+    print("\tWallet: ", end="| ")
+    for currency in wallet:
+        print(currency, end=" | ")
+    print()
+
+
 def search_for_arbitrage():
     for currency_pair in currency_pairs:
         markets = []
@@ -92,14 +125,21 @@ def search_for_arbitrage():
         best_ask_market = ''
         buy_quantity = 0
         best_profit = 0
-        bid_exchange_rate = 0
+        ask_exchange_rate = 0
         avg_exchange_rate = 0
 
         for market in markets:
             for ask in market[0][1]:
+                currency_amount = get_wallet_currency_amount(currency_pair[1])
                 quantity = float(ask[0])
+                cost = (quantity * float(ask[1]))
+
+                if currency_amount < cost:
+                    quantity = currency_amount / float(ask[1])
+                    cost = (quantity * float(ask[1]))
+
                 current_quantity = quantity
-                cost = (quantity * float(ask[1])) * (1 + get_market_fee(market[1]))
+                quantity *= (1 - get_market_fee(market[1]))
                 for m in markets:
                     profit = 0
                     exchange_rates = 0
@@ -130,7 +170,7 @@ def search_for_arbitrage():
 
                                     buy_quantity = current_quantity
                                     best_profit = profit - cost
-                                    bid_exchange_rate = ask[1]
+                                    ask_exchange_rate = ask[1]
 
                                     numerator = 0
                                     for pw in price_and_weight:
@@ -148,11 +188,39 @@ def search_for_arbitrage():
             print(f"Nie ma możliwości arbitrażu")
         else:
             print(f"Na giełdzie {best_ask_market} można kupić {buy_quantity} {currency_pair[0]} za {currency_pair[1]}"
-                  f" po kursie {bid_exchange_rate} i sprzedać na giełdzie {best_bid_market} "
+                  f" po kursie {ask_exchange_rate} i sprzedać na giełdzie {best_bid_market} "
                   f"po kursie {avg_exchange_rate}, zyskując {best_profit} {currency_pair[1]}")
+
+            for currency in wallet:
+                if currency[0] == currency_pair[1]:
+                    make_transaction(ask_exchange_rate, buy_quantity, avg_exchange_rate, currency_pair[0],
+                                     currency_pair[1])
+
+
+def buy_currency(base_currency, exchange_currency, currency_amount, bid):
+    currency_amount = float(currency_amount)
+    take_currency_from_wallet(base_currency, currency_amount * float(bid))
+    add_currency_to_wallet(exchange_currency, currency_amount)
+
+
+def sell_currency(base_currency, exchange_currency, currency_amount, bid):
+    currency_amount = float(currency_amount)
+    take_currency_from_wallet(base_currency, currency_amount)
+    add_currency_to_wallet(exchange_currency, currency_amount * float(bid))
+
+
+def make_transaction(ask_price, ask_quantity, bid_price, base_currency, exchange_currency):
+    print("Buy:")
+    buy_currency(exchange_currency, base_currency, ask_quantity, ask_price)
+    print_wallet_state()
+    print("Sell:")
+    sell_currency(base_currency, exchange_currency, ask_quantity, bid_price)
+    print_wallet_state()
 
 
 def main():
+    add_currency_to_wallet('BTC', 0.5)
+
     while True:
         search_for_arbitrage()
         sleep(refresh_period)
