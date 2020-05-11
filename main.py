@@ -63,6 +63,21 @@ def get_buy_sell_data(base_currency, exchange_currency, api_name):
     return buy_offers, sell_offers
 
 
+def get_market_fee(api_name):
+    fee = 0.1
+
+    if api_name == 'bittrex':
+        fee = 0.0045
+    if api_name == 'bitbay':
+        fee = 0.0041
+    if api_name == 'cex':
+        fee = 0.0025
+    if api_name == 'binance':
+        fee = 0.001
+
+    return fee
+
+
 def search_for_arbitrage():
     for currency_pair in currency_pairs:
         markets = []
@@ -84,7 +99,7 @@ def search_for_arbitrage():
             for ask in market[0][1]:
                 quantity = float(ask[0])
                 current_quantity = quantity
-                cost = quantity * float(ask[1])
+                cost = (quantity * float(ask[1])) * (1 + get_market_fee(market[1]))
                 for m in markets:
                     profit = 0
                     exchange_rates = 0
@@ -95,13 +110,14 @@ def search_for_arbitrage():
                         for bid in m[0][0]:
                             price = float(bid[1])
                             qty = float(bid[0])
+                            fee = get_market_fee(m[1])
 
                             if quantity >= qty:
-                                profit += qty * price
+                                profit += qty * price * (1 - fee)
                                 quantity -= qty
                                 exchange_rates += price
                             else:
-                                profit += (quantity * price) / qty
+                                profit += ((quantity * price) / qty) * (1 - fee)
                                 quantity = 0
                                 exchange_rates += price
 
@@ -127,7 +143,7 @@ def search_for_arbitrage():
                                     avg_exchange_rate = numerator / denominator
                                 break
 
-        print(datetime.now().strftime('%H:%M:%S'), end=' ')
+        print(datetime.now().strftime('[%H:%M:%S]'), end=' ')
         if best_profit <= 0:
             print(f"Nie ma możliwości arbitrażu")
         else:
