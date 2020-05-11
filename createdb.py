@@ -2,13 +2,13 @@ import sqlite3
 import os
 
 
-if os.path.exists("data.db"):
-    os.remove("data.db")
+if os.path.exists("wallet.db"):
+    os.remove("wallet.db")
     print("Old database removed.")
-connection = sqlite3.connect("data.db")
+connection = sqlite3.connect("wallet.db")
 cursor = connection.cursor()
-cursor.execute('''CREATE TABLE data
-             (date text, price real, pair text)''')
+cursor.execute('''CREATE TABLE wallet
+             (resource text, amount real)''')
 connection.commit()
 connection.close()
 print("New database created.")
