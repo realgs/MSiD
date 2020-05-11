@@ -1,7 +1,12 @@
 import sys
 import time
-
 import requests
+
+
+fees = {'bitbay': 0.001,
+        'bittrex': 0.0025,
+        'bitstamp': 0.005,
+        'bitfinex': 0.002}
 
 
 def get_bitbay_orderbook(currency0, currency1):
@@ -75,16 +80,18 @@ def check_arbitrage(currency0, currency1):
     offers = get_stocks_offers(currency0, currency1)
     best_buy_stock, best_sell_stock = get_best_offers(offers)
     quantity = min(offers[best_buy_stock][3], offers[best_sell_stock][1])
-    profit = quantity * (offers[best_sell_stock][0] - offers[best_buy_stock][2])
+    profit = quantity * (offers[best_sell_stock][0] * (1 - fees[best_sell_stock]) -
+                         offers[best_buy_stock][2] * (1 + fees[best_buy_stock]))
     if profit > 0:
         print(f'On {best_buy_stock} you can buy {quantity} {currency0}'
               f' for {currency1} at the rate {offers[best_buy_stock][2]}'
               f' and sell on {best_sell_stock} at the rate {offers[best_sell_stock][0]}'
               f' to earn {profit} {currency1}')
-    else:
-        print(f'No profitable operation on {currency0} - {currency1} market')
+    # else:
+    #     print(f'No profitable operation on {currency0} - {currency1} market')
+    return profit
 
 
 while True:
-    check_arbitrage('btc', 'usd')
+    print(check_arbitrage('btc', 'usd'))
     time.sleep(5)
