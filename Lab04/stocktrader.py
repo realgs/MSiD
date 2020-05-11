@@ -91,24 +91,31 @@ def get_best_offers(stocks_offers):
 def get_arbitrage(currency0, currency1):
     offers = get_stocks_offers(currency0, currency1)
     best_buy_stock, best_sell_stock = get_best_offers(offers)
-    quantity = min(offers[best_buy_stock][3], offers[best_sell_stock][1])
-    quantity = min(quantity, wallet[currency0])
-    profit = quantity * (offers[best_sell_stock][0] * (1 - fees[best_sell_stock]) -
-                         offers[best_buy_stock][2] * (1 + fees[best_buy_stock]))
+    buy_offer = offers[best_buy_stock]
+    sell_offer = offers[best_sell_stock]
+
+    quantity = min(buy_offer[3], sell_offer[1])
+    quantity = min(quantity, wallet[currency1] / buy_offer[2] / (1 + fees[best_buy_stock]))
+    profit = quantity * (sell_offer[0] * (1 - fees[best_sell_stock]) -
+                         buy_offer[2] * (1 + fees[best_buy_stock]))
+
     if profit > 0:
         print(f'On {best_buy_stock} you can buy {quantity} {currency0}'
-              f' for {currency1} at the rate {offers[best_buy_stock][2]}'
-              f' and sell on {best_sell_stock} at the rate {offers[best_sell_stock][0]}'
+              f' for {currency1} at the rate {buy_offer[2]}'
+              f' and sell on {best_sell_stock} at the rate {sell_offer[0]}'
               f' to earn {profit} {currency1}')
-        wallet[currency0] -= quantity
-        wallet[currency1] += quantity
-    # else:
-    #     print(f'No profitable operation on {currency0} - {currency1} market')
+        wallet[currency1] += profit
+
     return profit
 
 
-while True:
-    for market in markets:
-        print(get_arbitrage(market[0], market[1]))
-        print(market[0], market[1])
-    time.sleep(5)
+def main():
+    while True:
+        for m in markets:
+            get_arbitrage(m[0], m[1])
+        print(wallet)
+        time.sleep(5)
+
+
+if __name__ == '__main__':
+    main()
