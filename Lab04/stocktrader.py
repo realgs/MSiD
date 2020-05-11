@@ -9,6 +9,18 @@ fees = {'bitbay': 0.001,
         'bitfinex': 0.002}
 
 
+wallet = {'USD': 1000,
+          'BTC': 0.5,
+          'LTC': 30,
+          'ETH': 5}
+
+
+markets = [('BTC', 'USD'),
+           ('LTC', 'BTC'),
+           ('LTC', 'USD'),
+           ('ETH', 'USD')]
+
+
 def get_bitbay_orderbook(currency0, currency1):
     market = (currency0 + currency1).upper()
     url = f'https://bitbay.net/API/Public/{market}/orderbook.json'
@@ -76,10 +88,11 @@ def get_best_offers(stocks_offers):
     return best_buy_stock, best_sell_stock
 
 
-def check_arbitrage(currency0, currency1):
+def get_arbitrage(currency0, currency1):
     offers = get_stocks_offers(currency0, currency1)
     best_buy_stock, best_sell_stock = get_best_offers(offers)
     quantity = min(offers[best_buy_stock][3], offers[best_sell_stock][1])
+    quantity = min(quantity, wallet[currency0])
     profit = quantity * (offers[best_sell_stock][0] * (1 - fees[best_sell_stock]) -
                          offers[best_buy_stock][2] * (1 + fees[best_buy_stock]))
     if profit > 0:
@@ -87,11 +100,15 @@ def check_arbitrage(currency0, currency1):
               f' for {currency1} at the rate {offers[best_buy_stock][2]}'
               f' and sell on {best_sell_stock} at the rate {offers[best_sell_stock][0]}'
               f' to earn {profit} {currency1}')
+        wallet[currency0] -= quantity
+        wallet[currency1] += quantity
     # else:
     #     print(f'No profitable operation on {currency0} - {currency1} market')
     return profit
 
 
 while True:
-    print(check_arbitrage('btc', 'usd'))
+    for market in markets:
+        print(get_arbitrage(market[0], market[1]))
+        print(market[0], market[1])
     time.sleep(5)
