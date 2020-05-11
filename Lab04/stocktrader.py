@@ -9,7 +9,7 @@ fees = {'bitbay': 0.001,
         'bitfinex': 0.002}
 
 
-wallet = {'USD': 1000,
+wallet = {'USD': 100,
           'BTC': 0.5,
           'LTC': 30,
           'ETH': 5}
@@ -70,6 +70,14 @@ def get_stocks_offers(currency0, currency1):
               'bittrex': get_bittrex_orderbook(currency0, currency1),
               'bitstamp': get_bitstamp_orderbook(currency0, currency1),
               'bitfinex': get_bitfinex_orderbook(currency0, currency1)}
+    offers = apply_fees(offers)
+    return offers
+
+
+def apply_fees(offers):
+    for offer in offers:
+        offers[offer][0] -= offers[offer][0] * fees[offer]
+        offers[offer][2] += offers[offer][0] * fees[offer]
     return offers
 
 
@@ -95,9 +103,8 @@ def get_arbitrage(currency0, currency1):
     sell_offer = offers[best_sell_stock]
 
     quantity = min(buy_offer[3], sell_offer[1])
-    quantity = min(quantity, wallet[currency1] / buy_offer[2] / (1 + fees[best_buy_stock]))
-    profit = quantity * (sell_offer[0] * (1 - fees[best_sell_stock]) -
-                         buy_offer[2] * (1 + fees[best_buy_stock]))
+    quantity = min(quantity, wallet[currency1] / buy_offer[2])
+    profit = quantity * (sell_offer[0] - buy_offer[2])
 
     if profit > 0:
         print(f'On {best_buy_stock} you can buy {quantity} {currency0}'
