@@ -42,8 +42,8 @@ def create_market_url(base_currency, exchange_currency, api_name):
     exchange_currency = exchange_currency.upper()
 
     if api_name == 'bittrex':
-        return 'https://api.bittrex.com/api/v1.1/public/getmarkethistory?market=' + base_currency + '-' + \
-               exchange_currency
+        return 'https://api.bittrex.com/api/v1.1/public/getorderbook?market=' + base_currency + '-' + \
+               exchange_currency + "&type=both"
     if api_name == 'bitbay':
         return f'https://bitbay.net/API/Public/{base_currency}{exchange_currency}/orderbook.json'
     if api_name == 'cex':
@@ -59,14 +59,10 @@ def get_buy_sell_data(base_currency, exchange_currency, api_name):
     sell_offers = []
 
     if api_name == 'bittrex':
-        for offer in data['result']:
-            if offer['OrderType'] == 'BUY':
-                buy_offers.append((offer['Quantity'], offer['Price']))
-            elif offer['OrderType'] == 'SELL':
-                sell_offers.append((offer['Quantity'], offer['Price']))
-
-        buy_offers.sort(key=lambda single_offer: single_offer[1], reverse=True)
-        sell_offers.sort(key=lambda single_offer: single_offer[1])
+        for bid in data['result']['buy']:
+            buy_offers.append((bid['Quantity'], bid['Rate']))
+        for ask in data['result']['sell']:
+            sell_offers.append((ask['Quantity'], ask['Rate']))
 
     if api_name == 'cex' or api_name == 'bitbay':
         for bid in data['bids']:
@@ -142,7 +138,6 @@ def search_for_arbitrage():
                 quantity *= (1 - get_market_fee(market[1]))
                 for m in markets:
                     profit = 0
-                    exchange_rates = 0
                     price_and_weight = []
 
                     highest_sell_price = float(m[0][0][0][1])
@@ -155,11 +150,9 @@ def search_for_arbitrage():
                             if quantity >= qty:
                                 profit += qty * price * (1 - fee)
                                 quantity -= qty
-                                exchange_rates += price
                             else:
                                 profit += ((quantity * price) / qty) * (1 - fee)
                                 quantity = 0
-                                exchange_rates += price
 
                             price_and_weight.append((price, qty))
 
@@ -184,7 +177,7 @@ def search_for_arbitrage():
                                 break
 
         print(datetime.now().strftime('[%H:%M:%S]'), end=' ')
-        if best_profit <= 0:
+        if best_profit <= 0 or float(ask_exchange_rate) >= avg_exchange_rate:
             print(f"Nie ma możliwości arbitrażu")
         else:
             print(f"Na giełdzie {best_ask_market} można kupić {buy_quantity} {currency_pair[0]} za {currency_pair[1]}"
