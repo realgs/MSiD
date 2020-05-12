@@ -8,6 +8,7 @@ market_currencies = [("LTC", "BTC"), ("ETH", "BTC"), ("BTC", "USD"), ("XRP", "BT
 time_period = 25  # 25 - minimalny czas
 bitbay_fee = 0.1  # brak informacji do pobrania w API
 bitstamp_fee = 0.1  # brak informacji do pobrania w API
+bittrex_fee = 0.25 # informacja w API bledna
 wallet = [["BTC", 10], ["USD", 100]]
 
 
@@ -48,25 +49,13 @@ def get_bitstamp_orderbook(market_currency, base_currency):
     return result
 
 
-def get_bittrex_fee(currency):
-    currency = currency.upper()
-    currencies = requests.get("https://api.bittrex.com/api/v1.1/public/getcurrencies")
-    currencies_json = currencies.json()
-    result = currencies_json["result"]
-    fee = 0
-    for information in result:
-        if information["Currency"] == currency:
-            fee = information["TxFee"]
-    return fee
-
-
-def get_transaction_fee(currency, exchange):
+def get_transaction_fee(exchange):
     if exchange == "bitbay":
-        return bitbay_fee
+        return bitbay_fee*0.01
     elif exchange == "bitstamp":
-        return bitstamp_fee
+        return bitstamp_fee*0.01
     elif exchange == "bittrex":
-        return get_bittrex_fee(currency)
+        return bittrex_fee*0.01
 
 
 def get_profitable_arbitration_table(currency1, currency2):
@@ -93,8 +82,8 @@ def check_profit_from_arbitration(the_cheapest_offer_to_buy, offer_to_sell, walu
         amount_of_currency = the_cheapest_offer_to_buy[1]
     else:
         amount_of_currency = offer_to_sell[1]
-    buy_fee = get_transaction_fee(waluta2, the_cheapest_offer_to_buy[0])
-    sell_fee = get_transaction_fee(waluta1, offer_to_sell[0])
+    buy_fee = get_transaction_fee(the_cheapest_offer_to_buy[0])
+    sell_fee = get_transaction_fee(offer_to_sell[0])
     earned_difference = (amount_of_currency*offer_to_sell[2]*(1-buy_fee)) - \
                         (amount_of_currency*the_cheapest_offer_to_buy[2]*(1+sell_fee))
     return earned_difference, amount_of_currency
