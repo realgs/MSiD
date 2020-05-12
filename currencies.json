@@ -1,0 +1,16 @@
+{
+    "currencies": [
+        {
+            "type": "BTC",
+            "quantity": 1.04
+        },
+        {
+            "type": "ETH",
+            "quantity": 1.333
+        }
+    ],
+    "exchanges": [
+        "Binance",
+        "Bittrex"
+    ]
+}
