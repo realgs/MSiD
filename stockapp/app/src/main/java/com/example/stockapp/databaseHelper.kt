@@ -92,7 +92,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
   }
 
-  fun insertDataIntoMoney(walletName : String, stockName : String, currency:String, amount:Double) {
+  fun insertDataIntoMoney(walletName : String, currency:String, amount:Double) {
 
     val db = this.writableDatabase
 
@@ -158,11 +158,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
     c?.moveToFirst();
 
-    do {
+    if(c.moveToFirst()) {
+      do {
         val walletName = c.getString(c.getColumnIndex("walletName"))
         val stockName = c.getString(c.getColumnIndex("stockName"))
         wallets.add(Wallet(walletName, stockName, Globals.mapOfWalletStockFuns[stockName]))
-      }while(c.moveToNext())
+      } while (c.moveToNext())
+    }
 
     c.close()
     closeDB()
@@ -172,7 +174,6 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
   fun selectMoney(wallet : Wallet){
     val db = this.readableDatabase
-    val wallets: MutableList<Wallet> = mutableListOf<Wallet>()
     val query = "SELECT * FROM money WHERE walletName = '${wallet.name}'"
     val c = db.rawQuery(query, null)
 

@@ -18,8 +18,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bittrex",
         0,
-        "BTC",
-        "LTC",
+        possiblePairs[0].first,
+        possiblePairs[0].second,
         ::BittrexTickerEntity
       )
     },
@@ -27,8 +27,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bittrex",
         1,
-        "BTC",
-        "USD",
+        possiblePairs[1].first,
+        possiblePairs[1].second,
         ::BittrexTickerEntity
       )
     },
@@ -36,8 +36,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bittrex",
         2,
-        "LTC",
-        "USD",
+        possiblePairs[2].first,
+        possiblePairs[2].second,
         ::BittrexTickerEntity
       )
     }
@@ -48,8 +48,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitbay",
         0,
-        "BTC",
-        "LTC",
+        possiblePairs[0].first,
+        possiblePairs[0].second,
         ::BitbayTickerEntity
       )
     },
@@ -57,8 +57,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitbay",
         1,
-        "BTC",
-        "USD",
+        possiblePairs[1].first,
+        possiblePairs[1].second,
         ::BitbayTickerEntity
       )
     },
@@ -66,8 +66,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitbay",
         2,
-        "LTC",
-        "USD",
+        possiblePairs[2].first,
+        possiblePairs[2].second,
         ::BitbayTickerEntity
       )
     }
@@ -78,8 +78,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitstamp",
         0,
-        "BTC",
-        "LTC",
+        possiblePairs[0].first,
+        possiblePairs[0].second,
         ::BitStampTickerEntity
       )
     },
@@ -87,8 +87,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitstamp",
         1,
-        "BTC",
-        "USD",
+        possiblePairs[1].first,
+        possiblePairs[1].second,
         ::BitStampTickerEntity
       )
     },
@@ -96,8 +96,8 @@ object Globals {
       return FetchApi.getStockBuySell(
         "bitstamp",
         2,
-        "LTC",
-        "USD",
+        possiblePairs[2].first,
+        possiblePairs[2].second,
         ::BitStampTickerEntity
       )
     }
@@ -108,22 +108,22 @@ object Globals {
       return FetchApi.getStockBuySell(
         "cex",
         0,
-        "BTC",
-        "LTC",
+        possiblePairs[0].first,
+        possiblePairs[0].second,
         ::CexTickerEntity) },
     fun(): BuySell? {
       return FetchApi.getStockBuySell(
         "cex",
         1,
-        "BTC",
-        "USD",
+        possiblePairs[1].first,
+        possiblePairs[1].second,
         ::CexTickerEntity) },
     fun(): BuySell? {
       return FetchApi.getStockBuySell(
         "cex",
         2,
-        "LTC",
-        "USD",
+        possiblePairs[2].first,
+        possiblePairs[2].second,
         ::CexTickerEntity) }
   )
 
@@ -133,7 +133,6 @@ object Globals {
   val wallets = mutableListOf<Wallet>()
 
   var currentWallet = Wallet("", "", null)
-  var currentValueToConvertTo = possibleCurrencies[0]
 
   val mapOfWalletStockFuns = mapOf<String, List<() -> BuySell?>>("bittrex" to bittrexStocks, "bitbay" to bitbayStocks, "bitstamp" to bitstampStocks, "cex" to cexStocks)
 

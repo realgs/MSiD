@@ -32,10 +32,10 @@
     app:layout_constraintTop_toBottomOf="@id/currencies_header" />
 
   <TextView
-    android:id="@+id/textview_random"
+    android:id="@+id/currency_amount"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="R"
+    android:text="N"
     android:textColor="@android:color/white"
     android:textSize="72sp"
     android:textStyle="bold"
@@ -46,24 +46,27 @@
     app:layout_constraintVertical_bias="0.45" />
 
   <Spinner
-    android:id="@+id/spinnerCurrencies"
+    android:id="@+id/spinnerCurrenciesToExchange"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:layout_constraintBottom_toTopOf="@+id/wallet_button_cur"
-    app:layout_constraintStart_toEndOf="@+id/textview_random"
-    app:layout_constraintTop_toBottomOf="@+id/currencies_header" />
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/currency_amount" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/addCurrency"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginEnd="24dp"
+    android:layout_marginRight="24dp"
+    android:layout_marginBottom="24dp"
     android:clickable="true"
+    android:focusable="true"
     android:src="@drawable/ic_add"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.881"
+    app:layout_constraintHorizontal_bias="1.0"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/wallet_button_cur"
-    app:layout_constraintVertical_bias="0.797"
-    android:focusable="true" />
+    app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

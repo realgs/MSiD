@@ -18,10 +18,30 @@
     android:textSize="72sp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintHorizontal_bias="0.501"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0.3" />
+    app:layout_constraintVertical_bias="0.338" />
+
+  <Spinner
+    android:id="@+id/spinnerWorth"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:scrollbarSize="24sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/walletWorth" />
+
+  <Spinner
+    android:id="@+id/spinnerWallet"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:scrollbarSize="24sp"
+    app:layout_constraintBottom_toTopOf="@+id/walletHeader"
+    app:layout_constraintStart_toEndOf="@+id/TextCurrenctWallet"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0" />
 
   <Button
     android:id="@+id/speculation_button"
@@ -51,23 +71,47 @@
 
   <TextView
     android:id="@+id/walletHeader"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="368dp"
+    android:layout_height="81dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginLeft="24dp"
     android:text="@string/wallet_header"
     android:textSize="32sp"
     app:layout_constraintBottom_toTopOf="@+id/walletWorth"
     app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.39" />
 
-  <Spinner
-    android:id="@+id/spinner"
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/addWallet"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:scrollbarSize="24sp"
+    android:layout_marginEnd="24dp"
+    android:layout_marginRight="24dp"
+    android:layout_marginBottom="24dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:src="@drawable/ic_add"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toEndOf="@+id/walletWorth"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0.32" />
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/speculation_button"
+    app:layout_constraintVertical_bias="1.0" />
+
+  <TextView
+    android:id="@+id/TextCurrenctWallet"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginLeft="24dp"
+    android:text="Current wallet"
+    app:layout_constraintBottom_toTopOf="@+id/walletHeader"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

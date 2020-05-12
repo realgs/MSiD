@@ -72,6 +72,14 @@ object StockOperations{
     return null
   }
 
+  fun calculatePotentialSellVal(amountToSell: Double, sellPrice:Double, fee:Double): Double {
+    return sellPrice * amountToSell - (sellPrice * amountToSell * fee)
+  }
+
+  fun calculatePotentialBuyVal(amountToBuy: Double, buyPrice:Double, fee:Double): Double {
+    return (amountToBuy / buyPrice) + ((amountToBuy / buyPrice) * fee)
+  }
+
 }
 
 

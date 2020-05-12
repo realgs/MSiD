@@ -1,34 +1,23 @@
 package com.example.stockapp
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
+import android.widget.AdapterView.OnItemSelectedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.coroutines.*
-import java.math.BigDecimal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class WalletFragment : Fragment() {
-
-  private fun countMe(view: View) {
-    val showCountTextView = view.findViewById<TextView>(R.id.walletWorth)
-    val countString = showCountTextView.text.toString()
-    var count = countString.toInt()
-    count++
-    showCountTextView.text = count.toString()
-  }
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +29,9 @@ class WalletFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    setWorthSpinner(view)
+    setWalletSpinner(view)
 
     val job = GlobalScope.launch(Dispatchers.Main) {
       updateWorthLabel(view)
@@ -62,23 +54,49 @@ class WalletFragment : Fragment() {
       findNavController().navigate(R.id.action_WalletFragment_to_CurrenciesFragment)
     }
 
-    val spinner: Spinner = view.findViewById(R.id.spinner)
-// Create an ArrayAdapter using the string array and a default spinner layout
+  }
+
+  private fun setWorthSpinner(view: View){
+    val spinnerWorth: Spinner = view.findViewById(R.id.spinnerWorth)
     ArrayAdapter.createFromResource(
       view.context,
       R.array.currencies,
       android.R.layout.simple_spinner_item
     ).also { adapter ->
-      // Specify the layout to use when the list of choices appears
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-      // Apply the adapter to the spinner
-      spinner.adapter = adapter
+      spinnerWorth.adapter = adapter
     }
+
+    spinnerWorth.onItemSelectedListener = object : OnItemSelectedListener {
+      override fun onItemSelected(
+        parentView: AdapterView<*>?,
+        selectedItemView: View,
+        position: Int,
+        id: Long
+      ) {
+        view.findViewById<TextView>(R.id.walletWorth).text = "Wait for it"
+      }
+
+      override fun onNothingSelected(parentView: AdapterView<*>?) {}
+    }
+
   }
 
-  suspend fun updateWorthLabel(view: View) {
+  private fun setWalletSpinner(view: View){
+    val spinnerWallet: Spinner = view.findViewById(R.id.spinnerWallet)
+
+    val adapter = ArrayAdapter<String>(view.context, android.R.layout.simple_spinner_item,
+      Globals.wallets.map{ it -> it.name})
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+    spinnerWallet.adapter = adapter
+
+  }
+
+  private suspend fun updateWorthLabel(view: View) {
       while (true) {
-        val newVal = Globals.currentWallet.walletWorth(Globals.currentValueToConvertTo)
+        val currentValue = view.findViewById<Spinner>(R.id.spinnerWorth).selectedItem.toString()
+        val newVal = Globals.currentWallet.walletWorth(currentValue)
         view.findViewById<TextView>(R.id.walletWorth).text = String.format("%.2f", newVal)
         delay(5000)
     }

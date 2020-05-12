@@ -11,16 +11,14 @@
   <string name="currencies_header">Amount of each currency in wallet: </string>
   <string name="currencies_button_text">Currencies</string>
   <string name="wallet_header">Current worth of whole wallet:</string>
-  <string name="speculation_header">Start speculation on a pair</string>
+  <string name="speculation_header">Exchange currencies</string>
   <string name="amount_textfield">Amount</string>
-  <string name="start_button">Start</string>
+  <string name="exchange_button">Exchange</string>
 
   <string-array name="currencies">
     <item>USD</item>
-    <item>BSV</item>
-    <item>BTC</item>
     <item>LTC</item>
-    <item>DOGE</item>
+    <item>BTC</item>
   </string-array>
 
 </resources>

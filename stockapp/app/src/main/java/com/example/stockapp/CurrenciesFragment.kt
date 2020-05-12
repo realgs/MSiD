@@ -1,5 +1,5 @@
 package com.example.stockapp
-
+import DBHelper
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 
 
 /**
@@ -28,26 +27,6 @@ class CurrenciesFragment : Fragment() {
 
   //val args: CurrenciesFragmentArgs by navArgs()
 
-  fun addAmountOfCurrency(view: View){
-    var amount = 0
-
-    Toast.makeText(context, "Adding currency", Toast.LENGTH_SHORT).show()
-    val builder: AlertDialog.Builder = AlertDialog.Builder(view.context)
-    builder.setTitle("Title")
-
-
-    val input = EditText(context)
-    input.inputType = InputType.TYPE_NUMBER_FLAG_DECIMAL
-    builder.setView(input)
-
-    builder.setPositiveButton("OK",
-      DialogInterface.OnClickListener { dialog, which -> amount = input.text.toString().toInt() })
-    builder.setNegativeButton("Cancel",
-      DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
-
-    builder.show()
-  }
-
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
@@ -55,27 +34,79 @@ class CurrenciesFragment : Fragment() {
       findNavController().navigate(R.id.action_CurrenciesFragment_to_WalletFragment)
     }
 
-    view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.addCurrency).setOnClickListener {
+    setCurrenciesSpinner(view)
 
+    setCurrencyAmountLabel(view, view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange))
+
+    view.findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.addCurrency).setOnClickListener {
+      addAmountOfCurrency(view)
     }
 
-//    val count = args.myArg
-//    val countText = getString(R.string.currencies_header, count)
-//    view.findViewById<TextView>(R.id.currencies_header).text = countText
 
+  }
 
-    val spinner: Spinner = view.findViewById(R.id.spinnerCurrencies)
-// Create an ArrayAdapter using the string array and a default spinner layout
+  private fun setCurrencyAmountLabel(view: View, spinner: Spinner){
+    val currentCurrency = spinner.selectedItem.toString()
+    val amount = Globals.currentWallet.currencies[currentCurrency]
+    view.findViewById<TextView>(R.id.currency_amount).text = amount.toString()
+  }
+
+  private fun setCurrenciesSpinner(view: View){
+    val spinnerCurrencies: Spinner = view.findViewById(R.id.spinnerCurrenciesToExchange)
     ArrayAdapter.createFromResource(
       view.context,
       R.array.currencies,
       android.R.layout.simple_spinner_item
     ).also { adapter ->
-      // Specify the layout to use when the list of choices appears
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-      // Apply the adapter to the spinner
-      spinner.adapter = adapter
+      spinnerCurrencies.adapter = adapter
     }
 
+    spinnerCurrencies.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+      override fun onItemSelected(
+        parentView: AdapterView<*>?,
+        selectedItemView: View,
+        position: Int,
+        id: Long
+      ) {
+        setCurrencyAmountLabel(view, spinnerCurrencies)
+      }
+
+      override fun onNothingSelected(parentView: AdapterView<*>?) {}
+    }
   }
+
+  fun addAmountOfCurrency(view: View){
+    var amount = 0.0
+    val currency = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
+
+    Toast.makeText(context, "Adding currency", Toast.LENGTH_SHORT).show()
+    val builder: AlertDialog.Builder = AlertDialog.Builder(view.context)
+    builder.setTitle("Add amount of $currency to ${Globals.currentWallet.name}")
+
+
+    val input = EditText(context)
+    input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+    builder.setView(input)
+
+    builder.setPositiveButton("OK",
+      DialogInterface.OnClickListener { dialog, which -> run {
+        amount = input.text.toString().toDouble()
+        addAmountAfterConfirm(view, amount, currency)
+        view.findViewById<TextView>(R.id.currency_amount).text = Globals.currentWallet.currencies[currency].toString()
+      }
+      })
+    builder.setNegativeButton("Cancel",
+      DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+
+    builder.show()
+  }
+
+  fun addAmountAfterConfirm(view: View, amount: Double, currency: String){
+    Globals.currentWallet.currencies[currency] = Globals.currentWallet.currencies[currency]!! + amount
+    val db = DBHelper(view.context)
+    db.insertDataIntoMoney(Globals.currentWallet.name, currency, amount)
+    db.closeDB()
+  }
+
 }
