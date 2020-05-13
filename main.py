@@ -54,6 +54,21 @@ def get_orderbook(base_currency, wanted_currency, name):
         return result
 
 
+def get_fee(api_name):
+    fee = 0.1
+
+    if api_name == 'bittrex':
+        fee = 0.0045
+    if api_name == 'bitbay':
+        fee = 0.0041
+    if api_name == 'bitstamp':
+        fee = 0.001
+    if api_name == 'cex':
+        fee = 0.0025
+
+    return fee
+
+
 def get_arbitration_table(currency1, currency2, names):
     arbitration_table = []
 
@@ -80,7 +95,10 @@ def check_profit(the_cheapest_offer_to_buy, offer_to_sell):
         amount = the_cheapest_offer_to_buy[1]
     else:
         amount = offer_to_sell[1]
-    profit = amount*offer_to_sell[2] - amount*the_cheapest_offer_to_buy[2]
+    buy_fee = get_fee(the_cheapest_offer_to_buy[0])
+    sell_fee = get_fee(offer_to_sell[0])
+    profit = (amount * offer_to_sell[2] * (1 - buy_fee)) - \
+                        (amount * the_cheapest_offer_to_buy[2] * (1 + sell_fee))
     return profit, amount
 
 
