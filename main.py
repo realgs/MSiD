@@ -7,6 +7,7 @@ import sys
 refresh_period = 20
 currency_pairs = [('LTC', 'BTC'), ('ETH', 'BTC'), ('BTC', 'EUR'), ('XRP', 'BTC')]
 api_names = ['bittrex', 'bitbay', 'bitstamp', 'cex']
+wallet = [["BTC", 5], ["USD", 500]]
 
 
 def get_answer(url):
@@ -69,6 +70,19 @@ def get_fee(api_name):
     return fee
 
 
+def print_wallet_info():
+    print(f'Portfel:')
+    for i in range(len(wallet)):
+        print(f'\t {wallet[i][0]}: {wallet[i][1]}')
+
+
+def update_wallet(currency, amount):
+    currency = currency.upper()
+    for i in range(len(wallet)):
+        if wallet[i][0] == currency:
+            wallet[i][1] = float(wallet[i][1]) + amount
+
+
 def get_arbitration_table(currency1, currency2, names):
     arbitration_table = []
 
@@ -114,13 +128,15 @@ def check_markets():
                 print(f"\t Na giełdzie {arbitration[0]} można kupić {arbitration[1]} {pair[0]} za "
                       f"{pair[1]} po kursie {arbitration[2]:>.8f} i sprzedać na giełdzie {arbitration[3]} "
                       f" po kursie {arbitration[5]:>.8f}, zyskując {arbitration[6]:>.8f}{pair[1]}.")
-    print()
+                update_wallet(pair[1], arbitration[6])
 
 
 def loop():
     while True:
         check_markets()
+        print_wallet_info()
         sleep(refresh_period)
+        print()
 
 
 if __name__ == "__main__":
