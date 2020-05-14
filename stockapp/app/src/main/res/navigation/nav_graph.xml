@@ -15,7 +15,7 @@
       android:id="@+id/action_WalletFragment_to_CurrenciesFragment"
       app:destination="@id/CurrenciesFragment" />
     <action
-      android:id="@+id/action_WalletFragment_to_speculationFragment"
+      android:id="@+id/action_WalletFragment_to_exchangeFragment"
       app:destination="@id/SpeculationFragment" />
   </fragment>
   <fragment

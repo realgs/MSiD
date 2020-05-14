@@ -130,9 +130,11 @@ object Globals {
   val possibleCurrencies = listOf<String>("USD", "BTC", "LTC")
   val possiblePairs = listOf<Pair<String, String>>(Pair(possibleCurrencies[2], possibleCurrencies[1]), Pair(possibleCurrencies[1], possibleCurrencies[0]), Pair(possibleCurrencies[2], possibleCurrencies[0]))
 
-  val wallets = mutableListOf<Wallet>()
+  val wallets = mutableMapOf<String, Wallet>()
 
   var currentWallet = Wallet("", "", null)
+  var spinnerIdOfCurrentWallet = 0
+  var internetConnection = false
 
   val mapOfWalletStockFuns = mapOf<String, List<() -> BuySell?>>("bittrex" to bittrexStocks, "bitbay" to bitbayStocks, "bitstamp" to bitstampStocks, "cex" to cexStocks)
 

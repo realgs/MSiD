@@ -48,7 +48,7 @@ class CurrenciesFragment : Fragment() {
   private fun setCurrencyAmountLabel(view: View, spinner: Spinner){
     val currentCurrency = spinner.selectedItem.toString()
     val amount = Globals.currentWallet.currencies[currentCurrency]
-    view.findViewById<TextView>(R.id.currency_amount).text = amount.toString()
+    view.findViewById<TextView>(R.id.currency_amount).text = String.format("%.4f", amount)
   }
 
   private fun setCurrenciesSpinner(view: View){
@@ -56,7 +56,7 @@ class CurrenciesFragment : Fragment() {
     ArrayAdapter.createFromResource(
       view.context,
       R.array.currencies,
-      android.R.layout.simple_spinner_item
+      R.layout.item_spinner
     ).also { adapter ->
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
       spinnerCurrencies.adapter = adapter
@@ -77,35 +77,34 @@ class CurrenciesFragment : Fragment() {
   }
 
   fun addAmountOfCurrency(view: View){
-    var amount = 0.0
+    var amount: Double
     val currency = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
 
-    Toast.makeText(context, "Adding currency", Toast.LENGTH_SHORT).show()
     val builder: AlertDialog.Builder = AlertDialog.Builder(view.context)
     builder.setTitle("Add amount of $currency to ${Globals.currentWallet.name}")
-
 
     val input = EditText(context)
     input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
     builder.setView(input)
 
-    builder.setPositiveButton("OK",
-      DialogInterface.OnClickListener { dialog, which -> run {
+    builder.setPositiveButton("OK"
+    ) { _, _ -> run {
         amount = input.text.toString().toDouble()
         addAmountAfterConfirm(view, amount, currency)
-        view.findViewById<TextView>(R.id.currency_amount).text = Globals.currentWallet.currencies[currency].toString()
-      }
-      })
-    builder.setNegativeButton("Cancel",
-      DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+        view.findViewById<TextView>(R.id.currency_amount).text = String.format("%.4f", Globals.currentWallet.currencies[currency])
+    }
+    }
+    builder.setNegativeButton("Cancel"
+    ) { dialog, _ -> dialog.cancel() }
 
     builder.show()
   }
 
   fun addAmountAfterConfirm(view: View, amount: Double, currency: String){
-    Globals.currentWallet.currencies[currency] = Globals.currentWallet.currencies[currency]!! + amount
+    val newValue = Globals.currentWallet.currencies[currency]!! + amount
+    Globals.currentWallet.currencies[currency] = newValue
     val db = DBHelper(view.context)
-    db.insertDataIntoMoney(Globals.currentWallet.name, currency, amount)
+    db.insertDataIntoMoney(Globals.currentWallet.name, currency, newValue)
     db.closeDB()
   }
 

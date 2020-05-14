@@ -18,7 +18,6 @@ object FetchApi {
 
 
   inline fun < reified T : TickerEntity> getStockBuySell(stockName: String, currency: Int, buyCur: String, sellCur: String, entityConstructor: () -> T): BuySell? {
-
     val tickerEntity : T = entityConstructor()
     val currency = tickerEntity.tickers[currency]
     val response = sendRequest(tickerEntity.url.replace("{}", currency))
@@ -28,7 +27,7 @@ object FetchApi {
     }
     else{
       println("Failed to receive data from $stockName market!")
-      null
+      return null
     }
   }
 

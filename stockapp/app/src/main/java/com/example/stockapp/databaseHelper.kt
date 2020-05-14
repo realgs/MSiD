@@ -22,9 +22,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     println("Created successfully")
   }
 
-  override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {
-    TODO("Not yet implemented")
-  }
+  override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {}
 
   fun createBuySellTable(db: SQLiteDatabase?){
     val createTable ="CREATE TABLE IF NOT EXISTS buySellData (stockName text, fee double, " +
@@ -90,6 +88,10 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
     closeDB()
 
+    Globals.possibleCurrencies.forEach {
+      insertDataIntoMoney(walletName, it, 0.0)
+    }
+
   }
 
   fun insertDataIntoMoney(walletName : String, currency:String, amount:Double) {
@@ -105,6 +107,18 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
     closeDB()
 
+  }
+
+  fun updateMoneyInWallet(walletName : String, currency:String, amount:Double){
+
+    val db = this.writableDatabase
+
+    val values = ContentValues()
+    values.put("walletName", walletName)
+    values.put("currency", currency)
+    values.put("amount", amount)
+
+    db.update("money", values, "currency='$currency'", null)
   }
 
   fun insertDataIntoLogs(walletName : String, exchanged: String, bought: String, howMuchExchanged: Double, howMuchBought: Double, atWhatRate: Double) {
@@ -156,7 +170,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val query = "SELECT * FROM wallets"
     val c = db.rawQuery(query, null)
 
-    c?.moveToFirst();
+    c?.moveToFirst()
 
     if(c.moveToFirst()) {
       do {
@@ -212,6 +226,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val db = this.writableDatabase
     db.delete("buySellData", null, null)
     closeDB()
+  }
+
+  fun clearDB(){
+    deleteWalletData()
+    deleteMoneyData()
+    deleteLogsData()
+    deleteBuySellData()
   }
 
   fun closeDB() {

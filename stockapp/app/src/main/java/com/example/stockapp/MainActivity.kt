@@ -7,6 +7,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
 
 class MainActivity : AppCompatActivity() {
   var backPressedTime: Long = 0
@@ -32,9 +34,9 @@ class MainActivity : AppCompatActivity() {
     if(wal.isNullOrEmpty()) db.insertDataIntoWallets("MyWallet", "bittrex")
     db.selectWallets()?.forEach {
       db.selectMoney(it)
-      Globals.wallets.add(it)
+      Globals.wallets[it.name] = it
     }
-    Globals.currentWallet = Globals.wallets[0]
+    Globals.currentWallet = Globals.wallets["MyWallet"]!!
     db.closeDB()
 
   }

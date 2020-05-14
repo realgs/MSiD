@@ -1,5 +1,6 @@
 package com.example.stockapp
 
+import DBHelper
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -51,6 +52,7 @@ class ExchangeCurrenciesFragment : Fragment() {
   suspend fun checkValue(view: View): Double {
     var amountToReceive: Double?
     while (true) {
+      delay(5000)
       val currencyToExchange = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
       val currencyToReceive = view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
       val amount = view.findViewById<EditText>(R.id.amountToExchange).text
@@ -66,7 +68,6 @@ class ExchangeCurrenciesFragment : Fragment() {
           updateReceiveText(view, amount.toString().toDouble())
         }
       }
-      delay(5000)
     }
   }
 
@@ -148,27 +149,34 @@ class ExchangeCurrenciesFragment : Fragment() {
             lastStockResults?.forEach {
               if (it != null) {
                 if (it.curBuyFor == currencyToExchange && it.buyCur == currencyToReceive) {
-                  Globals.currentWallet.buy(
+                  val enoughMoney = Globals.currentWallet.buy(
                     exchangeAmount.toString().toDouble(),
                     currencyToExchange,
                     currencyToReceive,
                     it.buy,
                     it.fee
                   )
-                  Toast.makeText(context, "Exchange successful!", Toast.LENGTH_SHORT).show()
-                  updateExchangeText(view)
+                  if(enoughMoney) {
+                    updateMoneyInDB(view, currencyToExchange, currencyToReceive)
+                  }
+                  else{
+                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                  }
 
                 } else if (it.curBuyFor == currencyToReceive && it.buyCur == currencyToExchange) {
-                  val res = Globals.currentWallet.sell(
+                  val enoughMoney = Globals.currentWallet.sell(
                     exchangeAmount.toString().toDouble(),
                     currencyToExchange,
                     currencyToReceive,
                     it.sell,
                     it.fee
                   )
-                  println(res)
-                  Toast.makeText(context, "Exchange successful!", Toast.LENGTH_SHORT).show()
-                  updateExchangeText(view)
+                  if(enoughMoney) {
+                    updateMoneyInDB(view, currencyToExchange, currencyToReceive)
+                  }
+                  else{
+                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                  }
                 }
               } else {
                 Toast.makeText(
@@ -184,12 +192,22 @@ class ExchangeCurrenciesFragment : Fragment() {
       }
   }
 
+  fun updateMoneyInDB(view: View, currencyToExchange: String, currencyToReceive: String){
+    val db = DBHelper(view.context)
+    Toast.makeText(context, "Exchange successful", Toast.LENGTH_SHORT).show()
+    updateExchangeText(view)
+    db.updateMoneyInWallet(Globals.currentWallet.name, currencyToReceive,
+      Globals.currentWallet.currencies[currencyToReceive]!!)
+    db.updateMoneyInWallet(Globals.currentWallet.name, currencyToExchange,
+      Globals.currentWallet.currencies[currencyToExchange]!!)
+  }
+
   fun addCurrenciesToExchangeSpinner(view: View){
     val spinner: Spinner = view.findViewById(R.id.spinnerCurrenciesToExchange)
     ArrayAdapter.createFromResource(
       view.context,
       R.array.currencies,
-      android.R.layout.simple_spinner_item
+      R.layout.item_spinner
     ).also { adapter ->
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
       spinner.adapter = adapter
@@ -214,7 +232,7 @@ class ExchangeCurrenciesFragment : Fragment() {
     ArrayAdapter.createFromResource(
       view.context,
       R.array.currencies,
-      android.R.layout.simple_spinner_item
+      R.layout.item_spinner
     ).also { adapter ->
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
       spinner.adapter = adapter
@@ -237,7 +255,7 @@ class ExchangeCurrenciesFragment : Fragment() {
         }
         else{
           val receiveAmount = getWorthiness(currencyToExchange, currencyToReceive, amount)
-          field.append(receiveAmount.toString())
+          updateReceiveText(view, receiveAmount)
         }
 
       }

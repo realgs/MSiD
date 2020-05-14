@@ -4,21 +4,30 @@
   <!-- Strings used for fragments for navigation -->
   <string name="wallet_fragment_label">First Fragment</string>
   <string name="currencies_fragment_label">Second Fragment</string>
-  <string name="speculation_button_text">Speculations</string>
+  <string name="exchange_button_text">Exchanges</string>
   <string name="wallet_button_text">Wallet</string>
 
-  <string name="hello_first_fragment">0</string>
+  <string name="total_worth_text">0</string>
   <string name="currencies_header">Amount of each currency in wallet: </string>
   <string name="currencies_button_text">Currencies</string>
   <string name="wallet_header">Current worth of whole wallet:</string>
   <string name="speculation_header">Exchange currencies</string>
   <string name="amount_textfield">Amount</string>
   <string name="exchange_button">Exchange</string>
+  <string name="AwaitingText">Wait for it</string>
+  <string name="current_wallet">Current wallet</string>
 
   <string-array name="currencies">
     <item>USD</item>
     <item>LTC</item>
     <item>BTC</item>
+  </string-array>
+
+  <string-array name="stocks">
+    <item>bittrex</item>
+    <item>bitbay</item>
+    <item>bitstamp</item>
+    <item>cex</item>
   </string-array>
 
 </resources>

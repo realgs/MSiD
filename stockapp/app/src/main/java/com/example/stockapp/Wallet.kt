@@ -15,35 +15,35 @@ class Wallet(val name: String, val stockName: String,
     }
   }
 
-  fun buy(amount: Double, toExchange: String, boughtCur: String, buyPrice:Double, fee:Double): String {
+  fun buy(amount: Double, toExchange: String, boughtCur: String, buyPrice:Double, fee:Double): Boolean {
 
     if(currencies[toExchange] != null && currencies[toExchange]!! >= amount) {
       val amountBought = StockOperations.calculatePotentialBuyVal(amount, buyPrice, fee)
       currencies[boughtCur] = currencies[boughtCur]!! + amountBought
-      val retVal = "\nBought $amountBought $boughtCur for ${currencies[toExchange]} $toExchange with price ${buyPrice + buyPrice * fee} $toExchange/$boughtCur"
+      //val oldRetVal = "\nBought $amountBought $boughtCur for ${currencies[toExchange]} $toExchange with price ${buyPrice + buyPrice * fee} $toExchange/$boughtCur"
       currencies[toExchange] = currencies[toExchange]!! - amount
       // save log to database
       // modify wallet in database
-      return retVal
+      return true
     }
     else{
-      return "Not enough $toExchange to exchange"
+      return false
     }
   }
 
-  fun sell(amount: Double, sellingCur: String, exchangedCur: String, sellPrice:Double, fee:Double): String {
+  fun sell(amount: Double, sellingCur: String, exchangedCur: String, sellPrice:Double, fee:Double): Boolean {
     val soldFor = StockOperations.calculatePotentialSellVal(amount, sellPrice, fee)
     if(currencies[sellingCur] != null && currencies[sellingCur]!! >= amount) {
      currencies[exchangedCur] = currencies[exchangedCur]!! + soldFor
 
-      val retVal = "\nSold ${currencies[sellingCur]} $sellingCur for $soldFor $exchangedCur with price ${sellPrice - sellPrice * fee} $exchangedCur/$sellingCur"
+      //val oldRetVal = "\nSold ${currencies[sellingCur]} $sellingCur for $soldFor $exchangedCur with price ${sellPrice - sellPrice * fee} $exchangedCur/$sellingCur"
 
       currencies[sellingCur] = currencies[sellingCur]!! - amount
 
-      return retVal
+      return true
     }
     else{
-      return "Not enough $sellingCur to sell"
+      return false
     }
   }
 
