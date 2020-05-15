@@ -9,70 +9,66 @@ import java.util.*
 
 class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase", null, 1) {
 
-  override fun onCreate(db: SQLiteDatabase?) {
-    db?.execSQL("CREATE TABLE IF NOT EXISTS buySellData (stockName text, fee double, " +
-      "buy double, sell double, buyCur text, curBuyFor text)")
-    db?.execSQL("CREATE TABLE IF NOT EXISTS wallets " +
-      "(walletName text PRIMARY KEY NOT NULL, stockName text);")
-    db?.execSQL("CREATE TABLE IF NOT EXISTS money (walletName text, currency text, amount double," +
-      "FOREIGN KEY(walletName) REFERENCES wallets)")
-    db?.execSQL("CREATE TABLE IF NOT EXISTS transactionLogs (walletName text, time timestamp, exchanged text, bought text, howMuchExchanged double, howMuchBought double, atWhatRate double," +
-      "FOREIGN KEY(walletName) REFERENCES wallets)")
+  object buySellTable {
+    const val name = "buySellData"
+    const val stockName = "stockName"
+    const val fee = "fee"
+    const val buy = "buy"
+    const val sell = "sell"
+    const val buyCur = "buyCur"
+    const val curBuyFor = "curBuyFor"
+  }
 
-    println("Created successfully")
+  object walletTable {
+    const val name = "wallets"
+    const val walletName = "walletName"
+    const val stockName = "stockName"
+  }
+
+  object moneyTable {
+    const val name = "money"
+    const val walletName = "walletName"
+    const val currency = "currency"
+    const val amount = "amount"
+  }
+
+  object logs {
+    const val name = "transactionLogs"
+    const val walletName = "walletName"
+    const val time = "time"
+    const val exchanged = "exchanged"
+    const val bought = "exchanged"
+    const val howMuchExchanged = "exchanged"
+    const val howMuchBought = "exchanged"
+    const val atWhatRate = "exchanged"
+  }
+
+  override fun onCreate(db: SQLiteDatabase?) {
+    db?.execSQL("CREATE TABLE IF NOT EXISTS ${buySellTable.name} (${buySellTable.stockName} text, ${buySellTable.fee} double, " +
+      "${buySellTable.buy} double, ${buySellTable.sell} double, ${buySellTable.buyCur} text, ${buySellTable.curBuyFor} text)")
+    db?.execSQL("CREATE TABLE IF NOT EXISTS ${walletTable.name} " +
+      "(${walletTable.walletName} text PRIMARY KEY NOT NULL, ${walletTable.stockName} text);")
+    db?.execSQL("CREATE TABLE IF NOT EXISTS ${moneyTable.name} (${moneyTable.walletName} text, ${moneyTable.currency} text, ${moneyTable.amount} double," +
+      "FOREIGN KEY(${walletTable.walletName}) REFERENCES ${walletTable.name})")
+    db?.execSQL("CREATE TABLE IF NOT EXISTS ${logs.name} (${logs.walletName} text, ${logs.time} timestamp, ${logs.exchanged} text, ${logs.bought} text, ${logs.howMuchExchanged} double, ${logs.howMuchBought} double, ${logs.atWhatRate} double," +
+      "FOREIGN KEY(${walletTable.walletName}) REFERENCES ${walletTable.name})")
   }
 
   override fun onUpgrade(db: SQLiteDatabase?, p1: Int, p2: Int) {}
-
-  fun createBuySellTable(db: SQLiteDatabase?){
-    val createTable ="CREATE TABLE IF NOT EXISTS buySellData (stockName text, fee double, " +
-      "buy double, sell double, buyCur text, curBuyFor text)"
-      db?.execSQL(createTable)
-    closeDB()
-  }
-
-  fun createWalletsTable(db: SQLiteDatabase?){
-    val createTable = "CREATE TABLE IF NOT EXISTS wallets " +
-    "(walletName text PRIMARY KEY NOT NULL, stockName text);"
-      db?.execSQL(createTable)
-
-    closeDB()
-
-    if(selectWallets().isNullOrEmpty()){
-      insertDataIntoWallets("myWallet", "bittrex")
-    }
-
-  }
-
-  fun createMoneyTable(db: SQLiteDatabase?){
-    val createTable =
-      "CREATE TABLE IF NOT EXISTS money (walletName text, currency text, amount double," +
-        "FOREIGN KEY(walletName) REFERENCES wallets)"
-    db?.execSQL(createTable)
-    closeDB()
-  }
-
-  fun createTransactionLogs(db: SQLiteDatabase?){
-    val createTable =
-      "CREATE TABLE IF NOT EXISTS transactionLogs (walletName text, time timestamp, exchanged text, bought text, howMuchExchanged double, howMuchBought double, atWhatRate double," +
-        "FOREIGN KEY(walletName) REFERENCES wallets)"
-    db?.execSQL(createTable)
-    closeDB()
-  }
 
   fun insertDataIntoBuySell(buySell: BuySell) {
 
     val db = this.writableDatabase
 
     val values = ContentValues()
-    values.put("stockName", buySell.stockName)
-    values.put("fee", buySell.fee)
-    values.put("buy", buySell.buy)
-    values.put("sell", buySell.sell)
-    values.put("buyCur", buySell.buyCur)
-    values.put("curBuyFor", buySell.curBuyFor)
+    values.put(buySellTable.stockName, buySell.stockName)
+    values.put(buySellTable.fee, buySell.fee)
+    values.put(buySellTable.buy, buySell.buy)
+    values.put(buySellTable.sell, buySell.sell)
+    values.put(buySellTable.buyCur, buySell.buyCur)
+    values.put(buySell.curBuyFor, buySell.curBuyFor)
 
-    db.insert("buySellData", null, values)
+    db.insert(buySellTable.name, null, values)
 
   }
 
@@ -81,10 +77,10 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val db = this.writableDatabase
 
     val values = ContentValues()
-    values.put("walletName", walletName)
-    values.put("stockName", stockName)
+    values.put(walletTable.walletName, walletName)
+    values.put(walletTable.stockName, stockName)
 
-    db.insert("wallets", null, values)
+    db.insert(walletTable.name, null, values)
 
     closeDB()
 
@@ -99,11 +95,11 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val db = this.writableDatabase
 
     val values = ContentValues()
-    values.put("walletName", walletName)
-    values.put("currency", currency)
-    values.put("amount", amount)
+    values.put(moneyTable.walletName, walletName)
+    values.put(moneyTable.currency, currency)
+    values.put(moneyTable.amount, amount)
 
-    db.insert("money", null, values)
+    db.insert(moneyTable.name, null, values)
 
     closeDB()
 
@@ -114,11 +110,9 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val db = this.writableDatabase
 
     val values = ContentValues()
-    values.put("walletName", walletName)
-    values.put("currency", currency)
-    values.put("amount", amount)
+    values.put(moneyTable.amount, amount)
 
-    db.update("money", values, "currency='$currency'", null)
+    db.update(moneyTable.name, values, "${moneyTable.walletName}='$walletName' AND ${moneyTable.currency}='$currency'", null)
   }
 
   fun insertDataIntoLogs(walletName : String, exchanged: String, bought: String, howMuchExchanged: Double, howMuchBought: Double, atWhatRate: Double) {
@@ -126,14 +120,14 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     val db = this.writableDatabase
 
     val values = ContentValues()
-    values.put("walletName", walletName)
-    values.put("exchanged", exchanged)
-    values.put("bought", bought)
-    values.put("howMuchExchanged", howMuchExchanged)
-    values.put("howMuchBought", howMuchBought)
-    values.put("atWhatRate", atWhatRate)
+    values.put(logs.walletName, walletName)
+    values.put(logs.exchanged, exchanged)
+    values.put(logs.bought, bought)
+    values.put(logs.howMuchExchanged, howMuchExchanged)
+    values.put(logs.howMuchBought, howMuchBought)
+    values.put(logs.atWhatRate, atWhatRate)
 
-    db.insert("transactionLogs", null, values)
+    db.insert(logs.name, null, values)
 
     closeDB()
 
@@ -142,18 +136,18 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
   fun selectBuySell(): List<BuySell>? {
     val db = this.readableDatabase
     val buySell: MutableList<BuySell> = ArrayList<BuySell>()
-    val query = "SELECT * FROM buySellData"
+    val query = "SELECT * FROM ${buySellTable.name}"
 
     val c = db.rawQuery(query, null)
 
       if(c.moveToFirst()) {
         do {
-          val name = c.getString(c.getColumnIndex("stockName"))
-          val fee = c.getDouble(c.getColumnIndex("fee"))
-          val buy = c.getDouble(c.getColumnIndex("buy"))
-          val sell = c.getDouble(c.getColumnIndex("sell"))
-          val curBuy = c.getString(c.getColumnIndex("curBuy"))
-          val buyCurFor = c.getString(c.getColumnIndex("buyCurFor"))
+          val name = c.getString(c.getColumnIndex(buySellTable.stockName))
+          val fee = c.getDouble(c.getColumnIndex(buySellTable.fee))
+          val buy = c.getDouble(c.getColumnIndex(buySellTable.buy))
+          val sell = c.getDouble(c.getColumnIndex(buySellTable.sell))
+          val curBuy = c.getString(c.getColumnIndex(buySellTable.buyCur))
+          val buyCurFor = c.getString(c.getColumnIndex(buySellTable.curBuyFor))
           buySell.add(BuySell(name, fee, buy, sell, curBuy, buyCurFor))
         } while (c.moveToNext())
       }
@@ -167,15 +161,15 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
     val db = this.readableDatabase
     val wallets: MutableList<Wallet> = mutableListOf<Wallet>()
-    val query = "SELECT * FROM wallets"
+    val query = "SELECT * FROM ${walletTable.name}"
     val c = db.rawQuery(query, null)
 
-    c?.moveToFirst()
+    //c?.moveToFirst()
 
     if(c.moveToFirst()) {
       do {
-        val walletName = c.getString(c.getColumnIndex("walletName"))
-        val stockName = c.getString(c.getColumnIndex("stockName"))
+        val walletName = c.getString(c.getColumnIndex(walletTable.walletName))
+        val stockName = c.getString(c.getColumnIndex(walletTable.stockName))
         wallets.add(Wallet(walletName, stockName, Globals.mapOfWalletStockFuns[stockName]))
       } while (c.moveToNext())
     }
@@ -188,13 +182,13 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
   fun selectMoney(wallet : Wallet){
     val db = this.readableDatabase
-    val query = "SELECT * FROM money WHERE walletName = '${wallet.name}'"
+    val query = "SELECT * FROM ${moneyTable.name} WHERE ${moneyTable.walletName} = '${wallet.name}'"
     val c = db.rawQuery(query, null)
 
     if(c.moveToFirst()) {
       do {
-        val currency = c.getString(c.getColumnIndex("currency"))
-        val amount = c.getDouble(c.getColumnIndex("amount"))
+        val currency = c.getString(c.getColumnIndex(moneyTable.currency))
+        val amount = c.getDouble(c.getColumnIndex(moneyTable.amount))
         wallet.currencies[currency] = amount
       } while (c.moveToNext())
     }
@@ -205,26 +199,26 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
 
   fun deleteLogsData(){
     val db = this.writableDatabase
-    db.delete("transactionLogs", null, null)
+    db.delete(logs.name, null, null)
     closeDB()
   }
 
   fun deleteWalletData(){
     val db = this.writableDatabase
-    db.delete("wallets", null, null)
-    db.delete("money", null, null)
+    db.delete(walletTable.name, null, null)
+    db.delete(moneyTable.name, null, null)
     closeDB()
   }
 
   fun deleteMoneyData(){
     val db = this.writableDatabase
-    db.delete("money", null, null)
+    db.delete(moneyTable.name, null, null)
     closeDB()
   }
 
   fun deleteBuySellData(){
     val db = this.writableDatabase
-    db.delete("buySellData", null, null)
+    db.delete(buySellTable.name, null, null)
     closeDB()
   }
 

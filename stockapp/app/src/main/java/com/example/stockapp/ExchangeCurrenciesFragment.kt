@@ -1,14 +1,15 @@
 package com.example.stockapp
 
 import DBHelper
+import StockOperations
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,7 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ExchangeCurrenciesFragment : Fragment() {
-  var lastStockResults : List <BuySell?>? = null
+  var lastStockResults: List<BuySell?>? = null
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -53,31 +54,40 @@ class ExchangeCurrenciesFragment : Fragment() {
     var amountToReceive: Double?
     while (true) {
       delay(5000)
-      val currencyToExchange = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
-      val currencyToReceive = view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
+      val currencyToExchange =
+        view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
+      val currencyToReceive =
+        view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
       val amount = view.findViewById<EditText>(R.id.amountToExchange).text
       if (amount.isNotEmpty()) {
         lastStockResults = StockOperations.watchAllStocks(Globals.currentWallet.stockUpdateSource!!)
-        if (currencyToExchange != currencyToReceive) {
-          amountToReceive =
-            getWorthiness(currencyToExchange, currencyToReceive, amount.toString().toDouble())
-          if (amountToReceive != null) {
-            updateReceiveText(view, amountToReceive)
+        if (amount.toString() != ".") {
+          if (currencyToExchange != currencyToReceive) {
+            amountToReceive =
+              getWorthiness(currencyToExchange, currencyToReceive, amount.toString().toDouble())
+            if (amountToReceive != null) {
+              updateReceiveText(view, amountToReceive)
+            }
+          } else {
+            updateReceiveText(view, amount.toString().toDouble())
           }
         } else {
-          updateReceiveText(view, amount.toString().toDouble())
+          updateReceiveText(view, null)
         }
       }
     }
   }
 
-  fun getWorthiness(currencyToExchange: String, currencyToReceive: String, amount: Double): Double? {
-    lastStockResults?.forEach{
-      if(it != null) {
-        if (it.curBuyFor == currencyToExchange && it.buyCur == currencyToReceive){
+  fun getWorthiness(
+    currencyToExchange: String,
+    currencyToReceive: String,
+    amount: Double
+  ): Double? {
+    lastStockResults?.forEach {
+      if (it != null) {
+        if (it.curBuyFor == currencyToExchange && it.buyCur == currencyToReceive) {
           return StockOperations.calculatePotentialBuyVal(amount, it.sell, it.fee)
-        }
-        else if (it.curBuyFor == currencyToReceive && it.buyCur == currencyToExchange){
+        } else if (it.curBuyFor == currencyToReceive && it.buyCur == currencyToExchange) {
           return StockOperations.calculatePotentialSellVal(amount, it.sell, it.fee)
         }
       }
@@ -85,27 +95,27 @@ class ExchangeCurrenciesFragment : Fragment() {
     return null
   }
 
-  fun configureExchangeText(view: View){
-    view.findViewById<EditText>(R.id.amountToExchange).addTextChangedListener(object: TextWatcher{
+  fun configureExchangeText(view: View) {
+    view.findViewById<EditText>(R.id.amountToExchange).addTextChangedListener(object : TextWatcher {
       override fun afterTextChanged(p0: Editable?) {}
 
       override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
       override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        val curToExchange = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
-        val curToReceive = view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
+        val curToExchange =
+          view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
+        val curToReceive =
+          view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
         val amount = view.findViewById<EditText>(R.id.amountToExchange).text
-        if(amount.isNotEmpty()) {
-          if(curToExchange == curToReceive){
+        if (amount.isNotEmpty() && amount.toString() != ".") {
+          if (curToExchange == curToReceive) {
             updateReceiveText(view, amount.toString().toDouble())
-          }
-          else {
+          } else {
             val newReceiveAmount =
               getWorthiness(curToExchange, curToReceive, amount.toString().toDouble())
             updateReceiveText(view, newReceiveAmount)
           }
-        }
-        else{
+        } else {
           updateReceiveText(view, null)
         }
 
@@ -114,20 +124,20 @@ class ExchangeCurrenciesFragment : Fragment() {
     })
   }
 
-  fun updateExchangeText(view: View){
-    val currency = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
+  fun updateExchangeText(view: View) {
+    val currency =
+      view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
     val field = view.findViewById<EditText>(R.id.amountToExchange)
     field.text.clear()
     field.append(Globals.currentWallet.currencies[currency].toString())
   }
 
-  fun updateReceiveText(view: View, amount: Double?){
+  fun updateReceiveText(view: View, amount: Double?) {
     val field = view.findViewById<EditText>(R.id.amountReceived)
     field.text.clear()
-    if(amount != null){
+    if (amount != null) {
       field.append(amount.toString())
-    }
-    else{
+    } else {
       field.append("Unknown")
     }
 
@@ -146,44 +156,44 @@ class ExchangeCurrenciesFragment : Fragment() {
             Toast.makeText(context, "It is indeed an exquisite transaction", Toast.LENGTH_SHORT)
               .show()
           } else {
-            lastStockResults?.forEach {
-              if (it != null) {
-                if (it.curBuyFor == currencyToExchange && it.buyCur == currencyToReceive) {
-                  val enoughMoney = Globals.currentWallet.buy(
-                    exchangeAmount.toString().toDouble(),
-                    currencyToExchange,
-                    currencyToReceive,
-                    it.buy,
-                    it.fee
-                  )
-                  if(enoughMoney) {
-                    updateMoneyInDB(view, currencyToExchange, currencyToReceive)
-                  }
-                  else{
-                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
-                  }
+            if (exchangeAmount.toString() != "." && exchangeAmount.isNotEmpty()) {
+              lastStockResults?.forEach {
+                if (it != null) {
+                  if (it.curBuyFor == currencyToExchange && it.buyCur == currencyToReceive) {
+                    val enoughMoney = Globals.currentWallet.buy(
+                      exchangeAmount.toString().toDouble(),
+                      currencyToExchange,
+                      currencyToReceive,
+                      it.buy,
+                      it.fee
+                    )
+                    if (enoughMoney) {
+                      updateMoneyInDB(view, currencyToExchange, currencyToReceive)
+                    } else {
+                      Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                    }
 
-                } else if (it.curBuyFor == currencyToReceive && it.buyCur == currencyToExchange) {
-                  val enoughMoney = Globals.currentWallet.sell(
-                    exchangeAmount.toString().toDouble(),
-                    currencyToExchange,
-                    currencyToReceive,
-                    it.sell,
-                    it.fee
-                  )
-                  if(enoughMoney) {
-                    updateMoneyInDB(view, currencyToExchange, currencyToReceive)
+                  } else if (it.curBuyFor == currencyToReceive && it.buyCur == currencyToExchange) {
+                    val enoughMoney = Globals.currentWallet.sell(
+                      exchangeAmount.toString().toDouble(),
+                      currencyToExchange,
+                      currencyToReceive,
+                      it.sell,
+                      it.fee
+                    )
+                    if (enoughMoney) {
+                      updateMoneyInDB(view, currencyToExchange, currencyToReceive)
+                    } else {
+                      Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
+                    }
                   }
-                  else{
-                    Toast.makeText(context, "Insufficient funds", Toast.LENGTH_SHORT).show()
-                  }
+                } else {
+                  Toast.makeText(
+                    context,
+                    "Stock is not available for some reason. Try again later",
+                    Toast.LENGTH_SHORT
+                  ).show()
                 }
-              } else {
-                Toast.makeText(
-                  context,
-                  "Stock is not available for some reason. Try again later",
-                  Toast.LENGTH_SHORT
-                ).show()
               }
             }
           }
@@ -192,17 +202,21 @@ class ExchangeCurrenciesFragment : Fragment() {
       }
   }
 
-  fun updateMoneyInDB(view: View, currencyToExchange: String, currencyToReceive: String){
+  fun updateMoneyInDB(view: View, currencyToExchange: String, currencyToReceive: String) {
     val db = DBHelper(view.context)
     Toast.makeText(context, "Exchange successful", Toast.LENGTH_SHORT).show()
     updateExchangeText(view)
-    db.updateMoneyInWallet(Globals.currentWallet.name, currencyToReceive,
-      Globals.currentWallet.currencies[currencyToReceive]!!)
-    db.updateMoneyInWallet(Globals.currentWallet.name, currencyToExchange,
-      Globals.currentWallet.currencies[currencyToExchange]!!)
+    db.updateMoneyInWallet(
+      Globals.currentWallet.name, currencyToReceive,
+      Globals.currentWallet.currencies[currencyToReceive]!!
+    )
+    db.updateMoneyInWallet(
+      Globals.currentWallet.name, currencyToExchange,
+      Globals.currentWallet.currencies[currencyToExchange]!!
+    )
   }
 
-  fun addCurrenciesToExchangeSpinner(view: View){
+  fun addCurrenciesToExchangeSpinner(view: View) {
     val spinner: Spinner = view.findViewById(R.id.spinnerCurrenciesToExchange)
     ArrayAdapter.createFromResource(
       view.context,
@@ -227,7 +241,7 @@ class ExchangeCurrenciesFragment : Fragment() {
     }
   }
 
-  fun addCurrenciesToReceiveSpinner(view: View){
+  fun addCurrenciesToReceiveSpinner(view: View) {
     val spinner: Spinner = view.findViewById(R.id.spinnerCurrenciesToReceive)
     ArrayAdapter.createFromResource(
       view.context,
@@ -245,19 +259,22 @@ class ExchangeCurrenciesFragment : Fragment() {
         position: Int,
         id: Long
       ) {
-        val currencyToExchange = view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
-        val currencyToReceive = view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
-        val amount = view.findViewById<EditText>(R.id.amountToExchange).text.toString().toDouble()
-        val field = view.findViewById<EditText>(R.id.amountReceived)
-        field.text.clear()
-        if(currencyToExchange == currencyToReceive){
-          field.append(amount.toString())
-        }
-        else{
-          val receiveAmount = getWorthiness(currencyToExchange, currencyToReceive, amount)
-          updateReceiveText(view, receiveAmount)
-        }
-
+        val amount = view.findViewById<EditText>(R.id.amountToExchange).text.toString()
+        if (amount != "." && amount.isNotEmpty()) {
+          val currencyToExchange =
+            view.findViewById<Spinner>(R.id.spinnerCurrenciesToExchange).selectedItem.toString()
+          val currencyToReceive =
+            view.findViewById<Spinner>(R.id.spinnerCurrenciesToReceive).selectedItem.toString()
+          val field = view.findViewById<EditText>(R.id.amountReceived)
+          field.text.clear()
+          if (currencyToExchange == currencyToReceive) {
+            field.append(amount.toString())
+          } else {
+            val receiveAmount =
+              getWorthiness(currencyToExchange, currencyToReceive, amount.toDouble())
+            updateReceiveText(view, receiveAmount)
+          }
+        } else updateReceiveText(view, null)
       }
 
       override fun onNothingSelected(parentView: AdapterView<*>?) {}
