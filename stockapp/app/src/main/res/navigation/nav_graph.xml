@@ -7,7 +7,7 @@
 
   <fragment
     android:id="@+id/WalletFragment"
-    android:name="com.example.stockapp.WalletFragment"
+    android:name="com.msid.stockapp.WalletFragment"
     android:label="@string/wallet_fragment_label"
     tools:layout="@layout/fragment_wallet">
 
@@ -20,7 +20,7 @@
   </fragment>
   <fragment
     android:id="@+id/CurrenciesFragment"
-    android:name="com.example.stockapp.CurrenciesFragment"
+    android:name="com.msid.stockapp.CurrenciesFragment"
     android:label="@string/currencies_fragment_label"
     tools:layout="@layout/fragment_currencies">
 
@@ -33,7 +33,7 @@
   </fragment>
   <fragment
     android:id="@+id/SpeculationFragment"
-    android:name="com.example.stockapp.ExchangeCurrenciesFragment"
+    android:name="com.msid.stockapp.ExchangeCurrenciesFragment"
     android:label="fragment_speculation"
     tools:layout="@layout/fragment_exchange" >
     <action

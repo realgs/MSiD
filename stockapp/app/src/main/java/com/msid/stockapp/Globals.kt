@@ -1,4 +1,4 @@
-package com.example.stockapp
+package com.msid.stockapp
 
 import BitStampTickerEntity
 import BitbayTickerEntity

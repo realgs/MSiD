@@ -1,4 +1,4 @@
-package com.example.stockapp
+package com.msid.stockapp
 
 import DBHelper
 import android.app.AlertDialog

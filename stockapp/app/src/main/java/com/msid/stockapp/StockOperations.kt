@@ -1,4 +1,4 @@
-import com.example.stockapp.BuySell
+import com.msid.stockapp.BuySell
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 

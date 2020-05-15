@@ -1,5 +1,5 @@
-import com.example.stockapp.BuySell
-import com.example.stockapp.Globals
+import com.msid.stockapp.BuySell
+import com.msid.stockapp.Globals
 
 class Wallet(
   val name: String, val stockName: String,

@@ -1,5 +1,5 @@
-import com.example.stockapp.BuySell
-import com.example.stockapp.Response
+import com.msid.stockapp.BuySell
+import com.msid.stockapp.Response
 import java.net.HttpURLConnection
 import java.net.URL
 

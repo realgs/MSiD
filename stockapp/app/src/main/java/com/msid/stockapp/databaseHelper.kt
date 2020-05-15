@@ -2,8 +2,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.stockapp.BuySell
-import com.example.stockapp.Globals
+import com.msid.stockapp.BuySell
+import com.msid.stockapp.Globals
 import java.util.*
 
 
@@ -37,10 +37,10 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "stockAppDatabase",
     const val walletName = "walletName"
     const val time = "time"
     const val exchanged = "exchanged"
-    const val bought = "exchanged"
-    const val howMuchExchanged = "exchanged"
-    const val howMuchBought = "exchanged"
-    const val atWhatRate = "exchanged"
+    const val bought = "bought"
+    const val howMuchExchanged = "howMuchExchanged"
+    const val howMuchBought = "howMuchBought"
+    const val atWhatRate = "atWhatRate"
   }
 
   override fun onCreate(db: SQLiteDatabase?) {
