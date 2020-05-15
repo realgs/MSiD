@@ -8,7 +8,7 @@ if os.path.exists("wallet.db"):
 connection = sqlite3.connect("wallet.db")
 cursor = connection.cursor()
 cursor.execute('''CREATE TABLE wallet
-             (resource text, amount real)''')
+             (resource text PRIMARY KEY, amount real)''')
 connection.commit()
 connection.close()
 print("New database created.")
