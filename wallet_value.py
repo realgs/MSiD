@@ -14,7 +14,8 @@ sources = {}
 save_filetypes = [('database', '.db')]
 
 window = tkinter.Tk()
-wallet_display=tkinter.StringVar(value="Empty wallet")
+wallet_display = tkinter.StringVar(value="Empty wallet")
+
 
 def calculate_wallet_value():
     total_value = 0
@@ -23,25 +24,27 @@ def calculate_wallet_value():
         total_value += value
     return total_value
 
+
 def get_orderbook(base_currency, currency, source):
-    if source=='bittrex':
+    if source == 'bittrex':
         orderbook = requests.get(
             "https://api.bittrex.com/api/v1.1/public/getorderbook?market={0}-{1}&type=sell".format(base_currency,
                                                                                                    currency))
-        orderbook_json=orderbook.json()
-        orderbook_result=[]
+        orderbook_json = orderbook.json()
+        orderbook_result = []
         for dict in orderbook_json['result']:
-            orderbook_result.append([dict['Rate'],dict['Quantity']])
+            orderbook_result.append([dict['Rate'], dict['Quantity']])
         return orderbook_result
-    elif source=='bitbay':
+    elif source == 'bitbay':
         orderbook = requests.get("https://bitbay.net/API/Public/{0}{1}/orderbook.json".format(currency, base_currency))
         return orderbook.json()['asks']
     else:
         return None
 
+
 def get_value(base_currency, currency, amount):
-    orderbook=get_orderbook(base_currency,currency,sources[(base_currency,currency)])
-    #print(orderbook_json['result'])
+    orderbook = get_orderbook(base_currency, currency, sources[(base_currency, currency)])
+    # print(orderbook_json['result'])
     total_value = 0
     amount_left = amount
     current_index = 0
@@ -85,18 +88,6 @@ def check_market_availability(base_currency, currency):
     return available
 
 
-def wallet_data_input():
-    try:
-        currency = input("Type in name of currency to add: ")
-        amount = float(input("Type in amount of this currency: "))
-        print(currency)
-        print(amount)
-        add_wallet_data(currency, amount)
-    except ValueError:
-        print("This is not a valid amount - try again")
-        wallet_data_input()
-
-
 def add_wallet_data(currency, amount):
     if check_market_availability(base_currency, currency):
         if currency in wallet.keys():
@@ -104,7 +95,7 @@ def add_wallet_data(currency, amount):
         else:
             wallet[currency] = amount
     else:
-        print("{0}-{1} market isn't available".format(base_currency, currency))
+        messagebox.showerror("Error", "{0}-{1} market isn't available".format(base_currency, currency))
 
 
 def add_wallet_data_dialog():
@@ -120,7 +111,7 @@ def set_wallet_data(currency, amount):
     if check_market_availability(base_currency, currency):
         wallet[currency] = amount
     else:
-        print("{0}-{1} market isn't available".format(base_currency, currency))
+        messagebox.showerror("Error", "{0}-{1} market isn't available".format(base_currency, currency))
 
 
 def set_wallet_data_dialog():
@@ -136,7 +127,7 @@ def delete_wallet_data(currency):
     if currency in wallet.keys():
         wallet.pop(currency, None)
     else:
-        print("{0} isn't in your wallet".format(currency))
+        messagebox.showerror("Error", "{0} isn't in your wallet".format(currency))
 
 
 def delete_wallet_data_dialog():
@@ -196,9 +187,9 @@ def save_wallet_dialog():
 
 
 def update_wallet_display():
-    display_text="Currency: Amount\n"
+    display_text = "Currency: Amount\n"
     for key in wallet:
-        display_text+="{0}: {1}\n".format(key,wallet[key])
+        display_text += "{0}: {1}\n".format(key, wallet[key])
     wallet_display.set(display_text)
 
 
@@ -213,13 +204,13 @@ def create_main_window():
                                                  parent=window)
         set_base_currency(currency_answer)
     label = tkinter.Label(window, text="Your wallet (base currency - {0})".format(base_currency))
-    exit_button = tkinter.Button(window, text="Quit", command=window.quit)
     enter_currency_button = tkinter.Button(window, text="Enter currency amount", command=add_wallet_data_dialog)
     adjust_currency_button = tkinter.Button(window, text="Adjust currency amount", command=set_wallet_data_dialog)
     delete_currency_button = tkinter.Button(window, text="Delete currency", command=delete_wallet_data_dialog)
     calculate_value_button = tkinter.Button(window, text="Calculate value", command=calculate_wallet_value_dialog)
     save_button = tkinter.Button(window, text="Save wallet", command=save_wallet_dialog)
     wallet_data_display = tkinter.Label(window, textvariable=wallet_display)
+    exit_button = tkinter.Button(window, text="Quit", command=window.quit)
     label.pack()
     enter_currency_button.pack()
     adjust_currency_button.pack()
@@ -233,6 +224,7 @@ def create_main_window():
 def main():
     create_main_window()
     window.mainloop()
+
 
 if __name__ == "__main__":
     main()
