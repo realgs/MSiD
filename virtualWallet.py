@@ -18,7 +18,7 @@ def cli():
 def show_state():
     """Show state of the wallet"""
     for resource in w.wallet:
-        click.echo(f"{resource}: {w.wallet[resource]}\n")
+        click.echo(f"{resource}: {w.wallet[resource]}")
 
 
 @cli.command()
@@ -26,14 +26,18 @@ def show_state():
 @click.argument('resource', type=str)
 @click.argument('amount', type=float)
 def add_resource(resource, amount, new):
-    """Add an amonunt of resource to the wallet, use option -n or --new if you are adding completly new resource """
+    """Add an amount of resource to the wallet, see --help for options """
     if apiBroker.api_supports_resource(resource):
         if new:
             w.add_new_resource(resource, base_amount=amount)
         else:
-            w.add_resources(resource, amount)
+            if resource in w.wallet.keys():
+                w.add_resources(resource, amount)
+            else:
+                click.echo("no such resource in wallet")
     else:
-        print(f"resource {resource} not supported")
+        click.echo(f"resource {resource} not supported")
+
 
 @cli.command()
 @click.argument('resource', type=str)
@@ -43,7 +47,7 @@ def lower_resource(resource, amount):
     if resource in w.wallet.keys():
         w.remove_resources(resource, amount)
     else:
-        print("No such resource in the wallet")
+        click.echo("No such resource in the wallet")
 
 
 @cli.command()
@@ -53,7 +57,8 @@ def remove_resource(resource):
     if resource in w.wallet.keys():
         w.remove_resource_from_wallet(resource)
     else:
-        print("No such resource in the wallet")
+        click.echo("No such resource in the wallet")
+
 
 @cli.command()
 @click.argument('resource', type=str)
@@ -66,9 +71,11 @@ def set_resource(resource, amount):
 
 @cli.command()
 @click.argument('currency', type=str)
-def check_value_in(currency):
+@click.option('-o', '--omit-fee', is_flag=True, help="omit taker fee when calculating value")
+def check_value_in(currency, omit_fee):
     """Evaluate value of wallet in given currency"""
-    w.eval_wallet_value(currency)
+    consider_fee = not omit_fee  # this exists for clarity's sake
+    w.eval_wallet_value(currency, consider_fee)
 
 
 if __name__ == '__main__':

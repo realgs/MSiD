@@ -50,14 +50,14 @@ class Wallet:
         else:
             print(f"API does not support cryptocurrency: {resource}")
 
-    def eval_wallet_value(self, currency):
+    def eval_wallet_value(self, currency, consider_fee):
         total_value = 0
         print(f"Evaluating wallet value in {currency}:")
         for resource in self.wallet:
             if resource == currency:
                 val = self.wallet[resource]
             else:
-                val = apiBroker.evalValue(currency, resource, self.wallet[resource])
+                val = apiBroker.evalValue(currency, resource, self.wallet[resource], consider_fee=consider_fee)
             if val is None:
                 print(f"{resource} : trading for {currency} is not possible on the market")
             else:
