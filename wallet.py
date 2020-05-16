@@ -3,7 +3,7 @@ import apiBroker
 
 
 class Wallet:
-    def __init__(self, base, database):
+    def __init__(self, database):
         self.database = database
         self.wallet = dict()
         self.connection = sqlite3.connect(database)
