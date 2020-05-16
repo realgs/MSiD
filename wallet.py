@@ -1,7 +1,11 @@
 import requests
 import json
 
+def getLastSellTransactionValue(historyJson):
 
+    for it in historyJson["items"]:
+        if it['ty'] == 'Sell':
+            return it['r']
 class Wallet:
 
     def isAPIAgreedWithWallet(self):
@@ -34,20 +38,22 @@ class Wallet:
             if coinInWallet == self.baseCurrency:
                 value = value + self.coinsInWallet[coinInWallet]
             else:
-                url = "https://api.bitbay.net/rest/trading/orderbook/{}-{}".format(
+                url = "https://api.bitbay.net/rest/trading/transactions/{}-{}".format(
                     coinInWallet,self.baseCurrency)
-                response = requests.request("GET", url)
+                response = requests.request("GET", url, params = {"limit" : "300"})
                 if response.json()['status'] == 'Fail':
-                    url = "https://api.bitbay.net/rest/trading/orderbook/{}-{}".format(
+                    url = "https://api.bitbay.net/rest/trading/transactions/{}-{}".format(
                         self.baseCurrency, coinInWallet)
                     response = requests.request("GET", url)
                     if response.json()['status'] == 'Fail':
                         print("Nie potrafię przekonwertować {} do {}".format(
                             coinInWallet, self.baseCurrency))
                     else:
-                        value = value + self.coinsInWallet[coinInWallet]*(1/float(response.json()['sell'][0]['ra']))
+                        lastSellTrans = getLastSellTransactionValue(response.json())
+                        value = value + self.coinsInWallet[coinInWallet]*(1/float(lastSellTrans))
                 else:
-                    value = value + self.coinsInWallet[coinInWallet]*float(response.json()['sell'][0]['ra'])
+                    lastSellTrans = getLastSellTransactionValue(response.json())
+                    value = value + self.coinsInWallet[coinInWallet]*float(lastSellTrans)
         return value
 
     def save(self):
