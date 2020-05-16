@@ -28,6 +28,28 @@ class Wallet:
         if not self.isAPIAgreedWithWallet():
             print("Błąd")
 
+    def estimateWalletValue(self):
+        value = 0.0
+        for coinInWallet in self.coinsInWallet:
+            if coinInWallet == self.baseCurrency:
+                value = value + self.coinsInWallet[coinInWallet]
+            else:
+                url = "https://api.bitbay.net/rest/trading/orderbook/{}-{}".format(
+                    coinInWallet,self.baseCurrency)
+                response = requests.request("GET", url)
+                if response.json()['status'] == 'Fail':
+                    url = "https://api.bitbay.net/rest/trading/orderbook/{}-{}".format(
+                        self.baseCurrency, coinInWallet)
+                    response = requests.request("GET", url)
+                    if response.json()['status'] == 'Fail':
+                        print("Nie potrafię przekonwertować {} do {}".format(
+                            coinInWallet, self.baseCurrency))
+                    else:
+                        value = value + self.coinsInWallet[coinInWallet]*(1/float(response.json()['sell'][0]['ra']))
+                else:
+                    value = value + self.coinsInWallet[coinInWallet]*float(response.json()['sell'][0]['ra'])
+        return value
+
     def save(self):
         with open("walletData.json", "w") as writeFile:
             json.dump(self.coinsInWallet, writeFile, indent=4)
@@ -56,3 +78,12 @@ class Wallet:
             del self.coinsInWallet[currency]
         self.save()
 
+    def showWallet(self):
+        print("Stan porfela: ")
+        for coin, amount in self.coinsInWallet.items():
+            print("{} {}".format(amount,coin))
+        print()
+        if self.baseCurrency == "BTC":
+            print("Portfel ma wartość = {:.8f} {}".format(self.estimateWalletValue(), self.baseCurrency))
+        else:
+            print("Portfel ma wartość = {:.2f} {}".format(self.estimateWalletValue(), self.baseCurrency))

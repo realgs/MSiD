@@ -19,16 +19,17 @@ def handleRemoving():
     wallet.removeFromWallet(currency,float(amount))
 
 def handleShowing():
-    pass
-
+    wallet.showWallet()
 
 while True:
+    print()
     print("Opcje portfela:")
     print("1. by dodać zasób do portfela")
     print("2. by odjąć zasób z portfela")
     print("3. by podsumować portfel")
     print("4. by wyjść")
     choose = input("... ")
+    print()
     if choose == "1":
         handleAdding()
     elif choose == "2":
@@ -37,4 +38,3 @@ while True:
         handleShowing()
     elif choose == "4":
         break
-wallet = None
