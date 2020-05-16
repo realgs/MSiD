@@ -1,0 +1,6 @@
+Program uruchamia proste GUI, w którym najpierw decydujemy, czy wczytujemy zapis portfela, czy tworzymy nowy portfel.
+W przypadku stworzenia nowego portfelu wpisujemy nazwę bazowej waluty.
+Po wybraniu jednej z dwóch opcji wyświetla się właściwe menu, w którym możemy dodać, bądź ustawić ilośc danej waluty w portfelu (w jednym popupie wpisujemy nazwę waluty, w drugim ilość tej waluty), a także usunąć daną walutę z portfela (w popupie wpisujemy nazwę waluty do usunięcia).
+Następny przycisk powoduje obliczenie zawartości portfela w bazowej walucie i informacje wypisuje w nowym okienku.
+Przedostatni przycisk powoduje zapis portfela w wybranej lokalizacji na dysku.
+Ostatni przycisk powoduje wyjście z programu.
