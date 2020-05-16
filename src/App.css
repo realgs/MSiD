@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    background-color: #2C2C2C;
+}
+
+header {
+    width: 100%;
+    height: 80px;
+    padding-top:20px;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #F2C654;
+}
+
+.block-exchange {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.block-lists-converter {
+    display: flex;
+}
+
+.block-options {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+}
+
+.list-currency {
+    list-style-type: none;
+}
+
+.list__elem {
+    display: flex;
+    height: 30px;
+}
+
