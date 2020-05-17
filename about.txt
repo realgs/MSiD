@@ -1,0 +1,11 @@
+
+Aplikacja wirtalnego portfela z interfesjem konsolowym.
+
+Głównym skryptem jest skrypt virtualWallet.py, aby zacząć należy odpalić go w ulubionej konsoli za pomocą interpretera języka pyhton:
+
+Komendy wyświetlające pomoc:
+python virtualWallet.py
+albo
+pyhton virtualWallet.py --help
+
+Jeśli chciałbyś zacząć od czystego portfela, uruchom za pomocą pythona skrypt createdb.py
