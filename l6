@@ -1,0 +1,14 @@
+Stworzyć funkcję, która dla różnych zakresów czasu notowań z przeszłości wygeneruje symulację zachowania przyszłego dla wybranego waloru. 
+Funkcja przyjmuje argumenty wejściowe - walor (1 z 3 predefiniowanych przez Was), datę "od" i datę "do". 
+Data w dowolnie wybranym przez was formacie, może być to string "2016-01-01" może być to pełny timestamp. 
+Symulacja ma bazować na danych pomiędzy wybranymi datami. Na podstawie tych danych historycznych tworzycie model, z którego generujecie dane dot. przyszłości.
+Proponuję bazować model na obserwacji zachowania z przeszłości(dziennych wzrostów, spadków wartości i wolumenu, ich wielkości i stosunku tych wartości). 
+Podpowiedź: policzyć prawdopodobieństwa wystąpienia zdarzeń (spadku/wzrostu) oraz ich wielkości (o ile % spadnie/wzrośnie) i na tej podstawie generować notowania (wartości i wolumeny) przyszłe.
+
+Przeprowadzić pojedynczą oraz wielokrotną symulację, zapisać wyniki, policzyć wskaźniki grupy symulacji (takie jak średnia, mediana, odchylenia). 
+Wygenerować wykres przedstawiający notowania historyczne (daty od - do) oraz kontynuację notowań bazowaną na modelu (wybrany okres, proponuję taki sam jak dane "historyczne"- "od - do").
+Na wykresie nanieść wynik pojedynczej symulacji oraz uśrednienia ze 100 symulacji.
+Wykres ma przedstawiać notowania/symulację wartości oraz wolumenu. Do daty "do" mają to być dane historyczne, od tej daty do końca - symulacja.
+Wolumen zaznaczcie na wykresie słupkami, analogicznie do: https://www.tradingview.com/chart/?symbol=BITSTAMP%3ABTCUSD
+Uwaga - zostawcie sobie czas na przeprowadzenie symulacji, w zależności od sprzętu oraz jakości Waszego kodu symulacje mogą trochę trwać.
+(10pkt)
