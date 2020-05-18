@@ -2,7 +2,7 @@ import React from 'react';
 
 const OptionButton = (props) => {
     return(
-        <button>
+        <button onClick = {(e) => props.onClick(props)}>
             {props.text}
         </button>
     )

@@ -6,8 +6,8 @@ import Wallet from './components/Wallet';
 function App() {
   return (
     <div className='main-app'>
-      <Header></Header>
-      <Wallet></Wallet>
+      <Header/>
+      <Wallet/>
     </div>
   );
 }
