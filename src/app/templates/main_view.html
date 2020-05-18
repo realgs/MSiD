@@ -1,0 +1,97 @@
+{% import 'macros.html' as m %}
+
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+<form class="wallet" action="">
+  {{ m.progress_bar('wallet_refresh_bar') }}
+  {% for (currency, value) in wallet %}
+  <div class="group">
+    <div>{{currency}}</div>
+    <input type="text" name="{{currency}}" value="{{value}}">
+  </div>
+  {% endfor %}
+  <button class="btn update">Aktualizuj</button>
+</form>
+<div class="charts"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='node_modules/d3/dist/d3.js')}}"></script>
+
+<script>
+  const update_wallet_btn = document.querySelector('.btn.update');
+  const update_wallet_form = document.querySelector('.wallet');
+  const update_wallet_url = '/update_wallet';
+  const get_wallet_url = '/get_wallet';
+  const get_markets_url = '/get_markets';
+  const charts_handle = document.querySelector('.charts');
+  const get_tickers_url = market => `/get_tickers/${market}`;
+  const refresh_delay = 5000;
+  const wallet_refresh_bar = document.querySelector('.wallet_refresh_bar');
+
+  function refresh_wallet() {
+    fetch(get_wallet_url)
+      .then(response => response.json())
+      .then(wallet => {
+        wallet.forEach(item => {
+          const currency = item[0];
+          const value = item[1];
+          const currency_input = document.querySelector(`input[name=${currency}]`);
+          currency_input.value = value;
+        });
+      });
+  }
+
+  function refresh_graphs() {
+    charts_handle.innerHTML = '';
+
+    get_markets().then(markets => {
+        markets.forEach(market => loadData(market).then(data =>
+          create_chart(charts_handle, data, market)));
+    });
+  }
+
+  let bar_step = 0;
+  function update_bar() {
+    if(bar_step < 100) bar_step++;
+    else {
+      bar_step = 0;
+      refresh_wallet();
+      refresh_graphs();
+    }
+    wallet_refresh_bar.style.width = `${bar_step}%`;
+  }
+
+  function update_wallet() {
+    event.preventDefault();
+    const data = new URLSearchParams(new FormData(update_wallet_form))
+
+    fetch(update_wallet_url, {
+      method: 'post',
+      body: data,
+    });
+  }
+
+  function get_markets() {
+    return fetch(get_markets_url).then(response => response.json())
+  }
+
+  const loadData = market =>
+    fetch(get_tickers_url(market))
+      .then(response => response.json())
+      .then(data => {
+        return data.map(e => ({
+          buy: e[0],
+          sell: e[1],
+          date: new Date(e[2]),
+        }));
+      });
+
+  refresh_graphs()
+  refresh_wallet()
+  setInterval(update_bar, refresh_delay/100)
+  update_wallet_btn.onclick = update_wallet;
+</script>
+{% endblock %}

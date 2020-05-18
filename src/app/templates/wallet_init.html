@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block content %}
+<form class="wallet" action="/init_wallet" method="POST">
+  {% for currency, init_value in initial_wallet.items() %}
+  <div class="group">
+    <div>{{currency}}</div>
+    <input type="text" name="{{currency}}" value="{{init_value}}">
+  </div>
+  {% endfor %}
+  <button>Zainicjalizuj</button>
+</form>
+{% endblock %}
