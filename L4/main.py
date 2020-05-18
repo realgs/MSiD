@@ -46,11 +46,11 @@ def ticker_url(market, currency_pair):
 def bid_ask_pair(market, pair):
 	url = ticker_url(market,pair)
 	req = requests.get(url)
-	print(req)
+#	print(req)
 	jsonText = req.json()
 	repairedJson = str(jsonText).replace("\'", "\"")
 	if "message" not in repairedJson:
-		print(repairedJson)
+#		print(repairedJson)
 		dict = json.loads(repairedJson)
 		bid = None
 		ask = None
@@ -63,23 +63,25 @@ def bid_ask_pair(market, pair):
 
 def sell_offer(market, pair):
 	pair = bid_ask_pair(market, pair)
-	return pair[1]
+	return pair[0]
 
 def buy_offer(market, pair):
 	pair = bid_ask_pair(market, pair)
-	return pair[0]
+	return pair[1]
 
-							#Sprawdza tylko czy mozna kupic na pierwszym i sprzedac na drugim, nie na odwrot
+							#Sprawdza tylko czy mozna sprzedac na pierwszym i kupic na drugim, nie na odwrot
 def check_arbitrage(market1, market2, pair):
-	sell = sell_offer(market1,pair)
-	buy = buy_offer(market2,pair)
+	sell = sell_offer(market1,pair)	#Sprzedac moge JA		- czyli jest to czyjas chec KUPNA ode mnie
+	buy = buy_offer(market2,pair)	#Kupic moge JA
+#	print("Without fee:  Buy: " + str(buy) + " Sell: " + str(sell))
 	if sell == None or buy == None:
 		return False
 	fee = fees[market2]
-	buy = buy - buy * fee
+	buy = buy + buy * (fee/100.0)
 	fee = fees[market1]
-	sell = sell + sell * fee
-	if buy > sell:
+	sell = sell - sell * (fee/100.0)
+#	print("With fee:  Buy: " + str(buy) + " Sell: " + str(sell))
+	if buy < sell:
 		return True
 	return False
 
@@ -89,8 +91,8 @@ def print_arbitrages():
 			for pair in currency_pairs:
 				arbitrage_possible = check_arbitrage(market1,market2,pair)
 				if arbitrage_possible:
-					print("Buy" + pair[0] + "-" + pair[1] +  "on market " + market1 + " for " + buy_offer(market1,pair) + " and sell on market "
-						  + market2 + " for " + sell_offer(market2,pair))
+					print("Buy " + pair[0] + "-" + pair[1] +  " on market " + market1 + " for " + str(buy_offer(market2,pair)) + " and sell on market "
+						  + market2 + " for " + str(sell_offer(market1,pair)) + " (Including fees)")
 
 def check_and_print_arbitrages():
 	while True:
