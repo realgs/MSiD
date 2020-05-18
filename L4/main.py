@@ -14,6 +14,9 @@ markets = ['bitbay.net','bittrex.com','bitstamp.net','cex.io']
 
 currency_pairs = [("ETH","USD"),("LTC","BTC"),("ETH","EUR"),("ETH","BTC")]
 
+	#Portfel sprawdza dla kazdej pary walut osobno
+wallet = {("ETH","USD"): 0.0,("LTC","BTC"): 0.0,("ETH","EUR"): 0.0,("ETH","BTC"): 0.0}
+
 #Fees in percent values
 fees = {'bitbay.net': 0.43,'bittrex.com': 0.2,'bitstamp.net': 0.5,'cex.io': 0.25}
 
@@ -49,7 +52,7 @@ def bid_ask_pair(market, pair):
 #	print(req)
 	jsonText = req.json()
 	repairedJson = str(jsonText).replace("\'", "\"")
-	if "message" not in repairedJson:
+	if "message" not in repairedJson:			#jesli pojawia sie "message" to znaczy ze cos sie nie powiodlo
 #		print(repairedJson)
 		dict = json.loads(repairedJson)
 		bid = None
@@ -84,19 +87,55 @@ def check_arbitrage(market1, market2, pair):
 	if buy < sell:
 		return True
 	return False
+								#w market2 KUPUJEMY w market1 SPRZEDAJEMY
+def ammount_of_arbitrage(market1, market2, pair):
+	url = orderbook_url(market2, pair)
+	req = requests.get(url)
+	#	print(req)
+	jsonText = req.json()
+	repairedJson = str(jsonText).replace("\'", "\"")
+	buy_ammount = 0.0
+	sell_ammount = 0.0
+	if "message" not in repairedJson:
+		#		print(repairedJson)
+		dict = json.loads(repairedJson)
+		asks_ammount_pairs = None
+		buy_ammout_pairs = None
+		if 'asks' in dict.keys():
+			asks_ammount_pairs = dict['asks']
+			min_buy = asks_ammount_pairs[0][0]
+			buy_ammount = asks_ammount_pairs[0][1]
+			for pair in asks_ammount_pairs:
+				if pair[0] < min_buy:
+					min_buy = pair[0]
+					buy_ammount = pair[1]
+		if 'bids' in dict.keys():
+			bids_ammount_pairs = dict['bids']
+			max_sell = bids_ammount_pairs[0][0]
+			sell_ammount = bids_ammount_pairs[0][1]
+			for pair in bids_ammount_pairs:
+				if pair[0] > max_sell:
+					max_sell = pair[0]
+					sell_ammount = pair[1]
+	return min(buy_ammount,sell_ammount)
 
-def print_arbitrages():
+
+def loop_arbitrages():
 	for market1 in markets:
 		for market2 in markets:
 			for pair in currency_pairs:
 				arbitrage_possible = check_arbitrage(market1,market2,pair)
 				if arbitrage_possible:
-					print("Buy " + pair[0] + "-" + pair[1] +  " on market " + market1 + " for " + str(buy_offer(market2,pair)) + " and sell on market "
+					print("Arbitrage!")
+					ammount = ammount_of_arbitrage(market1,market2,pair)
+					wallet[pair] = wallet[pair] + ammount *(sell_offer(market1,pair) - buy_offer(market2,pair))
+					print("Buy " + str(ammount) + " " + pair[0] + "-" + pair[1] +  " on market " + market1 + " for " + str(buy_offer(market2,pair)) + " and sell on market "
 						  + market2 + " for " + str(sell_offer(market1,pair)) + " (Including fees)")
+					print("Wallet after operation: " + str(wallet))
 
-def check_and_print_arbitrages():
+def run_arbitrages():
 	while True:
 		time.sleep(1)
-		print_arbitrages()
+		loop_arbitrages()
 
-check_and_print_arbitrages()
+run_arbitrages()
