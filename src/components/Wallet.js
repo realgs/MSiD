@@ -41,7 +41,6 @@ const Wallet =  (props) => {
             arr.map(elem => {
               i++;
             return {...elem, id:i};
-              
             }))
     }
 
@@ -58,6 +57,19 @@ const Wallet =  (props) => {
 
     const onSave = () => {
         save(resources);
+    }
+
+    const getSum = () => {
+        let sum =0;
+        if(convertedList.length<1) return <span></span>;
+        if(convertedList.length===1) sum= convertedList[0].amount;
+        else sum = convertedList.reduce(function(prev, curr, index, array) { 
+            if(curr.status==='no data') return prev;
+            console.log(prev);
+            console.log(curr);
+            return prev + parseFloat(curr.amount);
+            },0)
+        return (<span>{'Sum: '+(Number(Math.round(sum + 'e+2') + 'e-2'))}</span>)
     }
 
     const listResources = resources.map((elem)=>
@@ -98,6 +110,7 @@ const Wallet =  (props) => {
                             <CurrencyListElem amount={elem.amount} message={elem.status}/>
                         </li>)
                     }
+                    <li key={"sum_"+getSum()}>{getSum()}</li>
                 </ul> 
             </div>
             
