@@ -1,24 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
 import EditCurrencyForm from './EditCurrencyForm';
 
 const CurrencyListElem = (props) => {
 
     const elemView =() => {
         if(props.message==="no data") return props.message;
-        else if(props.amount===0) return "amount";
         else return Number(Math.round(props.amount + 'e+2') + 'e-2');
     }
 
-    const [view,setView] = useState(elemView());
+    const view = elemView();
 
     
     if(props.message === "resources"){
         return(
-            <div>
-                <button onClick={(e) => props.onDeleteItem({id: props.id})}>
+            <div className='list__elem'>
+                <button className='button-list' onClick={(e) => props.onDeleteItem({id: props.id})}>
                 delete
                 </button>
-                <button onClick={(e) => props.onEditItem({id: props.id, symbol: props.symbol, amount: props.amount, status: "toEdit"})}>
+                <button className='button-list' onClick={(e) => props.onEditItem({id: props.id, symbol: props.symbol, amount: props.amount, status: "toEdit"})}>
                 edit
                 </button>
                 <span>{props.symbol}</span>
@@ -36,7 +35,7 @@ const CurrencyListElem = (props) => {
             />)
     } else {
         return(
-            <div>
+            <div className='list__elem'>
                 <span>{props.symbol}</span>
                 <span>{view}
                 </span>

@@ -1,6 +1,10 @@
 body {
     margin: 0;
-    background-color: #2C2C2C;
+    background: #2C2C2C;
+    background-image: url('./images/background.jpg');
+    background-attachment: fixed; 
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 header {
@@ -8,6 +12,7 @@ header {
     height: 80px;
     padding-top:20px;
     text-align: center;
+    background: rgba(44, 44, 44, 0.842);
 }
 
 h1 {
@@ -16,15 +21,23 @@ h1 {
     color: #F2C654;
 }
 
+.main-app {
+    min-height: 100vh;
+}
 .block-exchange {
     display: flex;
     align-items: center;
     flex-direction: column;
-    color: rgb(194, 245, 165);
+    height: 80vh;
+    color: white;
 }
 
 .block-lists-converter {
     display: flex;
+    justify-content: center;
+    width:80%;
+    height: 100%;
+    background-color: rgba(51, 51, 51, 0.644)
 }
 
 .block-options {
@@ -35,10 +48,64 @@ h1 {
 
 .list-currency {
     list-style-type: none;
+    width: 30%;
 }
 
 .list__elem {
     display: flex;
     height: 30px;
+    align-items: center;
 }
 
+.list__elem > * {
+    margin-right: 5px;
+}
+
+
+.list__elem__form > *{
+    margin-right: 5px;
+}
+
+.list__elem__text {
+    width:60px;
+}
+
+
+button {
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    margin:4px;
+    border-radius: 4px;
+    transition-duration: 0.4s;
+}
+
+.button-option {
+    color: aquamarine;
+    background-color: rgba(41, 44, 43, 0);
+    font-size: 16px;
+    margin:4px;
+}
+
+.button-option:hover {
+    background-color: rgb(66, 66, 66);
+  }
+
+.button-convert {
+    background-color: rgba(44, 44, 44);
+    color: white;
+}
+
+.button-convert:hover {
+    background-color: #F2C654;
+    color: black;
+  }
+
+.button-list {
+    background-color:  rgba(44, 44, 44);
+    color: aquamarine;
+}
+
+.button-list:hover {
+    background-color:  rgb(61, 61, 61);
+}

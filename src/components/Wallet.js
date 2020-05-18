@@ -27,6 +27,7 @@ const Wallet =  (props) => {
         setResources(
             resources.map(elem => {
               if (elem.id === e.id) {
+                if(isNaN(e.amount)) return {...e, amount:0}
                 return e;
               } else {
                 return elem;
@@ -57,7 +58,6 @@ const Wallet =  (props) => {
 
     const onSave = () => {
         save(resources);
-        console.log(read());
     }
 
     const listResources = resources.map((elem)=>
@@ -75,7 +75,7 @@ const Wallet =  (props) => {
         <div className="block-exchange">
             <div className="block-options">
                 <OptionButton text="Add new" onClick = {(e) => onAddItem(e)}/>
-                <OptionButton text="Refresh" onClick =  {(e) => onRefresh(e)}/>
+                <OptionButton text="Last saved" onClick =  {(e) => onRefresh(e)}/>
                 <OptionButton text="Clear" onClick =  {(e) => onClear(e)}/>
                 <OptionButton text="Save" onClick =  {(e) => onSave(e)}/>
             </div>
@@ -86,7 +86,7 @@ const Wallet =  (props) => {
                         <option key={elem} value={elem}>{elem}</option>)
                     }
                 </select>
-                <button onClick={(e) => onCovert(e)}> convert </button>
+                <button className="button-convert" onClick={(e) => onCovert(e)}>convert</button>
             </div>
             <div className="block-lists-converter">
                 <ul className="list-currency">

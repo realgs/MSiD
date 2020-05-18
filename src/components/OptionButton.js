@@ -1,8 +1,9 @@
 import React from 'react';
+import '../App.css'
 
 const OptionButton = (props) => {
     return(
-        <button onClick = {(e) => props.onClick(props)}>
+        <button className="button-option" onClick = {(e) => props.onClick(props)}>
             {props.text}
         </button>
     )
