@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/screenBackground"
+  tools:context=".CurrenciesFragment">
+
+  <EditText
+    android:id="@+id/amountReceived"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10"
+    android:inputType="none"
+    android:clickable="false"
+    android:focusable="false"
+    android:textColor="@color/textColor"
+    android:maxLength="12"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.561" />
+
+  <Spinner
+    android:id="@+id/spinnerCurrenciesToReceive"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/amountReceived"
+    app:layout_constraintTop_toBottomOf="@+id/speculation_header"
+    app:layout_constraintVertical_bias="0.52" />
+
+  <TextView
+    android:id="@+id/speculation_header"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginLeft="24dp"
+    android:layout_marginTop="16dp"
+    android:text="@string/speculation_header"
+    android:textColor="@color/textColor"
+    android:textSize="24sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <Button
+    android:id="@+id/wallet_button_spec"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/wallet_button_text"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/amountReceived"
+    app:layout_constraintVertical_bias="0.501" />
+
+  <EditText
+    android:id="@+id/amountToExchange"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:ems="10"
+    android:inputType="numberDecimal"
+    android:textColor="@color/textColor"
+    android:maxLength="12"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.354" />
+
+  <Spinner
+    android:id="@+id/spinnerCurrenciesToExchange"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toEndOf="@+id/amountToExchange"
+    app:layout_constraintTop_toBottomOf="@+id/speculation_header"
+    app:layout_constraintVertical_bias="0.302" />
+
+  <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/exchangeButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:src="@drawable/ic_arrow_downward"
+    app:layout_constraintBottom_toTopOf="@+id/amountReceived"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.498"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/amountToExchange"
+    app:layout_constraintVertical_bias="0.512"
+    android:focusable="true" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

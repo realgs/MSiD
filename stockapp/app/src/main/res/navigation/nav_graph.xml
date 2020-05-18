@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/nav_graph"
+  app:startDestination="@id/WalletFragment">
+
+  <fragment
+    android:id="@+id/WalletFragment"
+    android:name="com.msid.stockapp.WalletFragment"
+    android:label="@string/wallet_fragment_label"
+    tools:layout="@layout/fragment_wallet">
+
+    <action
+      android:id="@+id/action_WalletFragment_to_CurrenciesFragment"
+      app:destination="@id/CurrenciesFragment" />
+    <action
+      android:id="@+id/action_WalletFragment_to_exchangeFragment"
+      app:destination="@id/SpeculationFragment" />
+  </fragment>
+  <fragment
+    android:id="@+id/CurrenciesFragment"
+    android:name="com.msid.stockapp.CurrenciesFragment"
+    android:label="@string/currencies_fragment_label"
+    tools:layout="@layout/fragment_currencies">
+
+    <action
+      android:id="@+id/action_CurrenciesFragment_to_WalletFragment"
+      app:destination="@id/WalletFragment" />
+    <argument
+      android:name="myArg"
+      app:argType="integer" />
+  </fragment>
+  <fragment
+    android:id="@+id/SpeculationFragment"
+    android:name="com.msid.stockapp.ExchangeCurrenciesFragment"
+    android:label="fragment_speculation"
+    tools:layout="@layout/fragment_exchange" >
+    <action
+      android:id="@+id/action_speculationFragment_to_WalletFragment"
+      app:destination="@id/WalletFragment" />
+  </fragment>
+</navigation>
