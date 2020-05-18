@@ -8,6 +8,7 @@
 import requests
 import string
 import json
+import time
 
 markets = ['bitbay.net','bittrex.com','bitstamp.net','cex.io']
 
@@ -64,34 +65,14 @@ def buy_offer(market, pair):
 	pair = getBidAskPair(market, pair)
 	return pair[0]
 
-'''
-def is_arbitrage_possible():
-	for pair in currency_pairs:
-		#Sprawdzenie najpierw gdzie jest najmniejsza oferta sprzedazy
-		best_sell_offer = [markets[0],sell_offer(markets[0],pair)]
-		for market in markets:
-			if market.sell_offer < best_sell_offer[1]:
-				best_sell_offer[0] = market
-				best_sell_offer[1] = market.sell_offer
-
-		#Sprawdzenie gdzie jest najwieksza oferta kupna
-		best_buy_offer = [market[0],markets[0].buy_offer]
-		for market in markets:
-			if market.buy_offer > best_buy_offer[1]:
-				best_buy_offer[0] = market
-				best_buy_offer[1] = market.buy_offer
-
-		#Sprawdzenie,czy oferta kupna jest wieksza niz oferta sprzedazy
-
-		if best_sell_offer[1] < best_buy_offer[1]:
-			return(best_sell_offer,best_buy_offer)
-		else:
-			return None
-'''
 							#Sprawdza tylko czy mozna kupic na pierwszym i sprzedac na drugim, nie na odwrot
 def check_arbitrage(market1, market2, curr_pair):
 	sell = sell_offer(market1,pair)
+	fee = fees[market1]
+	sell = sell + sell * fee
 	buy = buy_offer(market2,pair)
+	fee = fees[market2]
+	buy = buy - buy * fee
 	if sell == None or buy == None:
 		return False
 	if buy_offer > sell_offer:
@@ -108,5 +89,8 @@ def print_arbitrages():
 						  + market2 + " for " + sell_offer(market2,pair))
 
 def check_and_print_arbitrages():
-	sleep(5000)
-	print_arbitrages()
+	while True:
+		time.sleep(1000)
+		print_arbitrages()
+
+check_and_print_arbitrages()
