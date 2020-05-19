@@ -15,7 +15,7 @@ markets = ['bitbay.net','bittrex.com','bitstamp.net','cex.io']
 currency_pairs = [("ETH","USD"),("LTC","BTC"),("ETH","EUR"),("ETH","BTC")]
 
     #Portfel sprawdza dla kazdej waluty osobno
-wallet2 = {"ETH": 0.0, "USD": 0.0, "LTC": 0.0, "BTC": 0.0, "EUR": 0.0}
+wallet = {"ETH": 0.0, "USD": 0.0, "LTC": 0.0, "BTC": 0.0, "EUR": 0.0}
 
 #Fees in percent values
 fees = {'bitbay.net': 0.43,'bittrex.com': 0.2,'bitstamp.net': 0.5,'cex.io': 0.25}
@@ -83,7 +83,7 @@ def check_arbitrage(market1, market2, pair):
     buy = buy + buy * (fee/100.0)
     fee = fees[market1]
     sell = sell - sell * (fee/100.0)
-#	print("With fee:  Buy: " + str(buy) + " Sell: " + str(sell))
+    #print("With fee:  Buy: " + str(buy) + " Sell: " + str(sell))
     if buy < sell:
         return True
     return False
@@ -121,6 +121,7 @@ def ammounts_of_best_offers(market1, market2, pair):
                 if pair[0] > max_sell:
                     max_sell = pair[0]
                     sell_ammount = pair[1]
+    #print(str((buy_ammount,sell_ammount)))
     return (buy_ammount,sell_ammount)
 
 
@@ -152,17 +153,17 @@ def run_arbitrages():
                 #Czyli ask -> dajesz lewe dostajesz prawe	(dostajesz tyle prawego co ammount) (tracisz tyle lewego do wyliczenia)
                 # bid -> dajesz prawe dostajesz lewe (tracisz tyle prawego ile ammount) (dostajesz tyle co przeliczenie)
 def buy(source_currency, target_currency, rate, ammount, fee):
-    wallet2[target_currency] = wallet2[target_currency] + (ammount - ammount * fee / 100.0)
-    wallet2[source_currency] = wallet2[source_currency] - (ammount * rate + ammount * rate * fee / 100.0)
-    print("Buy " + str(ammount) + " of " + target_currency + " for " + source_currency + " with rate " + rate)
-    print("Wallet now: " + wallet2)
+    wallet[target_currency] = wallet[target_currency] + (ammount * rate - ammount * rate * fee / 100.0)
+    wallet[source_currency] = wallet[source_currency] - (ammount + ammount * fee / 100.0)
+    print("Buy " + str(ammount) + " of " + str(target_currency) + " for " + str(source_currency) + " with rate " + str(rate))
+    print("Wallet now: " + str(wallet))
 
 def sell(source_currency, target_currency, rate, ammount, fee):
     rev_rate = 1.0 / rate
-    wallet2[source_currency] = wallet2[source_currency] + (ammount * rev_rate - ammount * rev_rate * fee / 100.0)
-    wallet2[target_currency] = wallet2[target_currency] - (ammount + ammount * fee / 100.0)
-    print("Sell " + str(ammount) + " of " + target_currency + " for " + source_currency + " with rate " + rate)
-    print("Wallet now: " + str(wallet2))
+    wallet[source_currency] = wallet[source_currency] + (ammount * rev_rate - ammount * rev_rate * fee / 100.0)
+    wallet[target_currency] = wallet[target_currency] - (ammount + ammount * fee / 100.0)
+    print("Sell " + str(ammount) + " of " + str(target_currency) + " for " + str(source_currency) + " with rate " + str(rate))
+    print("Wallet now: " + str(wallet))
 
 def count_average(arr):
     return sum(arr) / len(arr)
@@ -177,6 +178,22 @@ def sum_errors(arr):
 def average_deviation(arr):
     return sum_errors(arr) / len(arr)
 
+
+#Moj algorytm
+#Dla ustalonego marketu tworzy slownik, ktory dla kazdej pary walut zwraca pare list
+#Listy te są historiami odpowiednio bid-ow i ask-ow dla danej pary w danym markecie
+#Co sekunde uruchamia się pętla, ktora dodaje do historii aktualne najlepsze oferty
+#Nastepnie sprawdza czy dlugosc tablic nie przekracza 1500 - wtedy usuwa 50 najstarszych wpisow
+#Jezeli wpisow jest ponad 100 to algorytm moze zaczac wystawiac oferty
+#Algorytm liczy jak bardzo funkcja jest "hustajaca sie" - liczy najpierw srednia wartosc funkcji
+#a nastepnie dla kazdego punktu liczy odleglosc punktu od sredniej (blad)
+#Wzgledne odchylenie to srednie odchylenie punktu od sredniej arytmetycznej podzielone jeszcze przez wartosc tej sredniej
+#Algorytm liczy wzgledne odchylenie zarowno dla Bid-ow jak i Ask-ow a nastepnie ustala ich wspolne za pomoca
+#Sredniej arytmetycznej obu odchylen
+#Jezeli wzgledne odchylenie jest wystarczajaco duze, wieksze niz ustalona wartosc, ktora ustalilem przez analize rynku
+#To znaczy ze rynek ten jest wystarczajaco zroznicowany i mozna na nim grac
+#W takiej sytuacji sprawdzam czy wartosc, za ktora moge kupic jest minimalna wzgledem calej historii - wtedy kupuje
+#lub, za ktora moge sprzedac maksymalna - wtedy sprzedaje
 def analyze_market(market):
     dict = {}
     for pair in currency_pairs:
@@ -184,7 +201,7 @@ def analyze_market(market):
                                 #Z lewej jest tablica bid-ow, z prawej ask-ow zarejestrowanych
     while True:
         time.sleep(1)
-        print(str(dict))
+#        print(str(dict))
         for pair in currency_pairs:
             best_offers_pair = bid_ask_pair(market,pair)
             dict[pair][0].append(best_offers_pair[0])
@@ -201,7 +218,7 @@ def analyze_market(market):
                 relative_dev_ask = average_dev_ask / count_average(dict[pair][1])
                 relative_dev_bid = average_dev_bid / count_average(dict[pair][0])
                 av_deviation = (relative_dev_ask+ relative_dev_bid) / 2.0
-                print(str(av_deviation))
+       #         print("Average deviation on market " + market + " " + str(av_deviation) + " needs to be at least 0.00025 to commit action")
                 if av_deviation > 0.00025:		#Dzialam tylko jezeli funkcja ma wzgledne odchylenie powyzej tej wartosci
                                                                 # (patrzy wyzej
                                                                 #Wzgledne odchylenie (relative_dev_ask i bid)
@@ -211,5 +228,7 @@ def analyze_market(market):
                     if best_offers_pair[1] == max(dict[pair][1]):	#Jesli aktualna cena, za która mozemy sprzedaz osiagnela maximum
                         sell(pair[0],pair[1],best_offers_pair[1],ammounts[1],fees[market])
 
+print("Note: algorythm of analysis needs some data first, so wait few minutes for first output.")
 analyze_market("bitbay.net")
+#To check arbitrages algorythm uncomment below line, and comment above one
 #run_arbitrages()
