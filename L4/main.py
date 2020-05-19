@@ -14,9 +14,7 @@ markets = ['bitbay.net','bittrex.com','bitstamp.net','cex.io']
 
 currency_pairs = [("ETH","USD"),("LTC","BTC"),("ETH","EUR"),("ETH","BTC")]
 
-    #Portfel sprawdza dla kazdej pary walut osobno
-wallet = {("ETH","USD"): 0.0,("LTC","BTC"): 0.0,("ETH","EUR"): 0.0,("ETH","BTC"): 0.0}
-
+    #Portfel sprawdza dla kazdej waluty osobno
 wallet2 = {"ETH": 0.0, "USD": 0.0, "LTC": 0.0, "BTC": 0.0, "EUR": 0.0}
 
 #Fees in percent values
@@ -60,10 +58,10 @@ def bid_ask_pair(market, pair):
         bid = None
         ask = None
         if 'bid' in dict.keys():
-            bid = dict['bid']
+            bid = float(dict['bid'])
         if 'ask' in dict.keys():
-            ask = dict['ask']
-        return (float(bid),float(ask))
+            ask = float(dict['ask'])
+        return (bid,ask)
     return (None, None)
 
 def sell_offer(market, pair):
@@ -134,10 +132,10 @@ def loop_arbitrages():
                 if arbitrage_possible:
                     print("Arbitrage!")
                     ammount = ammount_of_arbitrage(market1,market2,pair)
-                    wallet[pair] = wallet[pair] + ammount *(sell_offer(market1,pair) - buy_offer(market2,pair))
                     print("Buy " + str(ammount) + " " + pair[0] + "-" + pair[1] +  " on market " + market1 + " for " + str(buy_offer(market2,pair)) + " and sell on market "
                           + market2 + " for " + str(sell_offer(market1,pair)) + " (Including fees)")
-                    print("Wallet after operation: " + str(wallet))
+                    buy(pair[0],pair[1],buy_offer(market2,pair),ammount,fees[market2])
+                    sell(pair[0],pair[1],sell_offer(market1,pair),ammount,fees[market1])
 
 def run_arbitrages():
     while True:
@@ -214,3 +212,4 @@ def analyze_market(market):
                         sell(pair[0],pair[1],best_offers_pair[1],ammounts[1],fees[market])
 
 analyze_market("bitbay.net")
+#run_arbitrages()
