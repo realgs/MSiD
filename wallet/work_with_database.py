@@ -1,9 +1,9 @@
 import _sqlite3
+
 import config
+
 def createDataBase():
-    getDataBDByRequest("""CREATE TABLE IF NOT EXISTS crypto (crypto_name TEXT,
-                                                             quantity INTEGER
-                                                             )""", [])
+    getDataBDByRequest("""CREATE TABLE IF NOT EXISTS crypto (crypto_name TEXT, quantity FLOAT)""", [])
 
 def addNewValue(currency, quantity):
     getDataBDByRequest("""INSERT INTO crypto VALUES(?, ?)""", [currency, quantity])
@@ -28,6 +28,12 @@ def getCryptoQuantityByName(currency):
         quantity = getDataBDByRequest("""SELECT quantity FROM crypto WHERE crypto_name = ?""", [currency])[0][0]
         return quantity
 
+def setValueByAdding(currency, quantity):
+    if not ifExistCryptoInDB(currency):
+        addNewValue(currency, quantity)
+    else:
+        getDataBDByRequest("""UPDATE crypto SET quantity = ? WHERE crypto_name = ?""", [getCryptoQuantityByName(currency) + quantity, currency])
+
 def getDataBDByRequest(request, arrayArgs):
     db_wallet = _sqlite3.connect(config.DB_FILE_PATH)
     sql_cursor = db_wallet.cursor()
@@ -38,8 +44,7 @@ def getDataBDByRequest(request, arrayArgs):
     db_wallet.close()
     return objDB
 
+def deleteDB():
+    getDataBDByRequest("""DROP TABLE IF EXISTS crypto""", [])
+#deleteDB()
 createDataBase()
-print(ifExistCryptoInDB("USD"))
-getCryptoQuantityByName("USD")
-ifExistCryptoInDB("USD")
-printTable()
