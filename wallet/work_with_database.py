@@ -1,44 +1,45 @@
 import _sqlite3
+import config
 def createDataBase():
-    db_wallet = _sqlite3.connect('walet_resource.db')
-    sql_cursor = db_wallet.cursor()
-    sql_cursor.execute("""CREATE TABLE IF NOT EXISTS crypto (crypto_name TEXT,
+    getDataBDByRequest("""CREATE TABLE IF NOT EXISTS crypto (crypto_name TEXT,
                                                              quantity INTEGER
-                                                             )""")
-    db_wallet.commit()
-    sql_cursor.close()
-    db_wallet.close()
-#havent checked\'
-def addNewValue(currency, quantity):
-    db_wallet = _sqlite3.connect('walet_resource.db')
-    sql_cursor = db_wallet.cursor()
-    list_to_add = [currency, quantity]
-    sql_cursor.execute("""INSERT INTO crypto VALUES(?, ?)""", list_to_add)
-    db_wallet.commit()
-    sql_cursor.close()
-    db_wallet.close()
-def printTable():
-    db_wallet = _sqlite3.connect('walet_resource.db')
-    sql_cursor = db_wallet.cursor()
-    for row in sql_cursor.execute('SELECT * FROM crypto'):
-        print(row)
-    db_wallet.commit()
-    sql_cursor.close()
-    db_wallet.close
-def ifExistCryptoInDB(currency):
-    db_wallet = _sqlite3.connect('walet_resource.db')
-    sql_cursor = db_wallet.cursor()
-    list = sql_cursor.execute("""SELECT COUNT(*) FROM crypto WHERE crypto_name =?""", [currency])
-    to_ret = False
-    for line in list:#one line, cause of it gives num of exists
-        if(line[0] == 0):
-            to_ret = False
-        else:
-            to_ret = True
-        db_wallet.commit()
-        sql_cursor.close()
-        db_wallet.close
-        return to_ret
-createDataBase()
-print(ifExistCryptoInDB("ETH"))
+                                                             )""", [])
 
+def addNewValue(currency, quantity):
+    getDataBDByRequest("""INSERT INTO crypto VALUES(?, ?)""", [currency, quantity])
+
+def printTable():
+    tableToPrint = getDataBDByRequest('SELECT * FROM crypto', [])
+    for line in tableToPrint:
+        print(line)
+
+def ifExistCryptoInDB(currency):
+    getDataBDByRequest("""SELECT COUNT(*) FROM crypto WHERE crypto_name =?""", [currency])
+    countRecordsBD = getDataBDByRequest("""SELECT COUNT(*) FROM crypto WHERE crypto_name =?""", [currency])[0][0]
+    if(countRecordsBD > 0):
+        return True
+    else:
+        return False
+
+def getCryptoQuantityByName(currency):
+    if not ifExistCryptoInDB(currency):
+        return 0
+    else:
+        quantity = getDataBDByRequest("""SELECT quantity FROM crypto WHERE crypto_name = ?""", [currency])[0][0]
+        return quantity
+
+def getDataBDByRequest(request, arrayArgs):
+    db_wallet = _sqlite3.connect(config.DB_FILE_PATH)
+    sql_cursor = db_wallet.cursor()
+    dDResult = sql_cursor.execute(request, arrayArgs)
+    objDB = dDResult.fetchall()
+    db_wallet.commit()
+    sql_cursor.close()
+    db_wallet.close()
+    return objDB
+
+createDataBase()
+print(ifExistCryptoInDB("USD"))
+getCryptoQuantityByName("USD")
+ifExistCryptoInDB("USD")
+printTable()
