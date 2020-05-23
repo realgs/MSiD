@@ -1,0 +1,1 @@
+Po uruchomieniu programu można wczytać portfel (bazę danych) lub utworzyć nowy. Przed dodaniem zasobu lub wyliczeniem wartości portfela zawsze trzeba ustawić walutę główną.
