@@ -66,4 +66,18 @@ def update_currency(currency, amount):
     return False
 
 
-def get_currency_worth(currency, amount)
+def get_currency_value(currency, amount):
+    bids = get_bitbay_orderbook(currency)['bids']
+    value = 0
+    index = 0
+    while True:
+        offer = bids[index]
+        if offer[1] < amount:
+            value += offer[0] * offer[1]
+            amount -= offer[1]
+            index += 1
+        else:
+            value += offer[0] * amount
+            break
+    return value
+
