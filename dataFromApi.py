@@ -99,11 +99,4 @@ def runMainEvery5Seconds():
 
 if __name__ == "__main__":
     runMainEvery5Seconds()
-    #data = fetchData("kraken", "USD","BTC")
-    #print(parsedData("https://bitbay.net/API/Public/BTCUSD/ticker.json"))
-    #print(parsedData("https://api.binance.com/api/v3/ticker/bookTicker?symbol=BTCTUSD"))
-    #print(parsedData("https://api.kraken.com/0/public/Ticker?pair=XBTUSD"))
-    #print(parsedData("https://api.bittrex.com/api/v1.1/public/getticker?market=USD-BTC"))
-    #printOfferList("Sell","Sell",data[1])
-    #print(data[1][0])
-    #checkArbitrage()
+   
