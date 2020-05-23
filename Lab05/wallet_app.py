@@ -81,3 +81,10 @@ def get_currency_value(currency, amount):
             break
     return value
 
+
+def get_wallet_value():
+    wallet = load_json()
+    value = 0
+    for currency in wallet['currencies']:
+        value += get_currency_value(currency, wallet['currencies'][currency])
+    return value
