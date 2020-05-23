@@ -27,6 +27,12 @@ def get_bitbay_orderbook(currency):
     return orderbook
 
 
+def set_base_currency(currency):
+    global base_currency
+    currency = currency.upper()
+    base_currency = currency
+
+
 def is_market_available(currency):
     orderbook = get_bitbay_orderbook(currency)
     if 'bids' in orderbook.keys():
@@ -35,6 +41,7 @@ def is_market_available(currency):
 
 
 def add_currency(currency, amount):
+    currency = currency.upper()
     if is_market_available(currency):
         wallet = load_json()
         if currency in wallet["currencies"]:
@@ -47,6 +54,7 @@ def add_currency(currency, amount):
 
 
 def remove_currency(currency, amount):
+    currency = currency.upper()
     wallet = load_json()
     if currency in wallet["currencies"]:
         wallet["currencies"][currency] -= amount
@@ -58,6 +66,7 @@ def remove_currency(currency, amount):
 
 
 def update_currency(currency, amount):
+    currency = currency.upper()
     wallet = load_json()
     if currency in wallet["currencies"]:
         wallet["currencies"][currency] = amount
@@ -88,3 +97,13 @@ def get_wallet_value():
     for currency in wallet['currencies']:
         value += get_currency_value(currency, wallet['currencies'][currency])
     return value
+
+
+def get_wallet_info():
+    wallet = load_json()
+    wallet_str = ''
+    for currency in wallet['currencies']:
+        wallet_str += f'{currency} {wallet["currencies"][currency]} ' \
+                      f'({base_currency} {get_currency_value(currency, wallet["currencies"][currency])})\n'
+    wallet_str += f'TOTAL: {base_currency} {get_wallet_value()}'
+    return wallet_str
