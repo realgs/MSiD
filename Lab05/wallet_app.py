@@ -4,6 +4,7 @@ import os.path
 
 base_currency = "USD"
 wallet_file = "wallet.json"
+currency_precision = 8
 
 
 def load_json():
@@ -23,22 +24,28 @@ def create_json():
 
 
 def get_bids(currency):
+    bids = []
+
     # bitbay
     market = (currency + base_currency).upper()
     url = f'https://bitbay.net/API/Public/{market}/orderbook.json'
     orderbook = requests.get(url).json()
     if 'bids' in orderbook.keys():
-        return orderbook['bids']
+        bids = orderbook['bids']
+
     # bittrex
     market = (base_currency + '-' + currency).upper()
     url = f'https://api.bittrex.com/api/v1.1/public/getorderbook?market={market}&type=both'
     orderbook = requests.get(url).json()
     if orderbook['success'] == 'true':
         orderbook = orderbook['result']['buy']
-        bids = []
         for i in range(orderbook):
             bids.append([orderbook[i]['Rate'], orderbook[i]['Quantity']])
-        return bids
+
+    bids.sort()
+    bids.reverse()
+    print(bids)
+    return bids
 
 
 def set_base_currency(currency):
@@ -48,7 +55,7 @@ def set_base_currency(currency):
 
 
 def is_market_available(bids):
-    if bids is not None:
+    if bids:
         return True
     return False
 
@@ -59,9 +66,9 @@ def add_currency(currency, amount):
     if is_market_available(bids):
         wallet = load_json()
         if currency in wallet["currencies"]:
-            wallet["currencies"][currency] += amount
+            wallet["currencies"][currency] = round(wallet["currencies"][currency] + amount, currency_precision)
         else:
-            wallet["currencies"][currency] = amount
+            wallet["currencies"][currency] = round(amount, currency_precision)
         write_json(wallet)
         return True
     return False
@@ -81,6 +88,7 @@ def remove_currency(currency, amount):
 
 def update_currency(currency, amount):
     currency = currency.upper()
+    amount = round(amount, currency_precision)
     wallet = load_json()
     if currency in wallet["currencies"]:
         wallet["currencies"][currency] = amount
@@ -100,11 +108,11 @@ def get_currency_value(currency, amount):
         while True:
             offer = bids[index]
             if offer[1] < amount:
-                value += offer[0] * offer[1]
+                value = round(value + offer[0] * offer[1], currency_precision)
                 amount -= offer[1]
                 index += 1
             else:
-                value += offer[0] * amount
+                value = round(value + offer[0] * amount, currency_precision)
                 return value
             if index == len(bids):
                 # if amount is too big
@@ -119,7 +127,7 @@ def get_wallet_value():
     for currency in wallet['currencies']:
         currency_value = get_currency_value(currency, wallet['currencies'][currency])
         if currency_value > 0:
-            total_value += currency_value
+            total_value = round(total_value + currency_value, currency_precision)
     return total_value
 
 
@@ -137,6 +145,6 @@ def get_wallet_info():
                 wallet_str += ' (too big amount - not count)\n'
             else:
                 wallet_str += f' ({base_currency} {value})\n'
-                total_value += value
-    wallet_str += f'TOTAL: {base_currency} {total_value}'
+                total_value = round(total_value + value, currency_precision)
+    wallet_str += f'\nTOTAL: {base_currency} {total_value}'
     return wallet_str
