@@ -1,4 +1,4 @@
-from tkinter import simpledialog
+from tkinter import simpledialog, messagebox
 
 import wallet_app as wallet
 import tkinter as tk
@@ -14,29 +14,42 @@ def update_wallet_info():
 
 
 def add_currency_dialog():
-    currency = simpledialog.askstring("Currency", "Enter the currency", parent=window)
-    amount = simpledialog.askfloat("Amount", "Enter the amount", parent=window)
-    wallet.add_currency(currency, amount)
-    update_wallet_info()
+    currency = simpledialog.askstring('Currency', 'Enter the currency', parent=window)
+    amount = simpledialog.askfloat('Amount', 'Enter the amount', parent=window)
+    if currency is not None and currency != '' and amount is not None:
+        currency = currency.upper()
+        if wallet.add_currency(currency, amount):
+            update_wallet_info()
+        else:
+            messagebox.showerror('Error', f'{currency}-{wallet.base_currency} market isn\'t available!')
 
 
 def remove_currency_dialog():
-    currency = simpledialog.askstring("Currency", "Enter the currency", parent=window)
-    amount = simpledialog.askfloat("Amount", "Enter the amount", parent=window)
-    wallet.remove_currency(currency, amount)
-    update_wallet_info()
+    currency = simpledialog.askstring('Currency', 'Enter the currency', parent=window)
+    amount = simpledialog.askfloat('Amount', 'Enter the amount', parent=window)
+    if currency is not None and currency != '' and amount is not None:
+        currency = currency.upper()
+        if wallet.remove_currency(currency, amount):
+            update_wallet_info()
+        else:
+            messagebox.showerror('Error', f'You have no {currency} in your wallet!')
 
 
 def update_currency_dialog():
-    currency = simpledialog.askstring("Currency", "Enter the currency", parent=window)
-    amount = simpledialog.askfloat("Amount", "Enter the amount", parent=window)
-    wallet.update_currency(currency, amount)
-    update_wallet_info()
+    currency = simpledialog.askstring('Currency', 'Enter the currency', parent=window)
+    amount = simpledialog.askfloat('Amount', 'Enter the amount', parent=window)
+    if currency is not None and currency != '' and amount is not None:
+        currency = currency.upper()
+        if wallet.update_currency(currency, amount):
+            update_wallet_info()
+        else:
+            messagebox.showerror('Error', f'You have no {currency} in your wallet!')
 
 
 def set_base_currency_dialog():
-    currency = simpledialog.askstring("Base currency", "Enter the base currency", parent=window)
-    wallet.set_base_currency(currency)
+    currency = simpledialog.askstring('Base currency', 'Enter the base currency', parent=window)
+    if currency is not None and currency != '':
+        wallet.set_base_currency(currency)
 
 
 def create_main_window():
@@ -71,6 +84,6 @@ def run_gui():
     window.mainloop()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run_gui()
     exit()

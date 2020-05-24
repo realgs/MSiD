@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 base_currency = "USD"
@@ -20,7 +19,7 @@ def create_json():
     write_json({'currencies': {}})
 
 
-def get_bitbay_orderbook(currency):
+def get_orderbook(currency):
     market = (currency + base_currency).upper()
     url = f'https://bitbay.net/API/Public/{market}/orderbook.json'
     orderbook = requests.get(url).json()
@@ -34,7 +33,7 @@ def set_base_currency(currency):
 
 
 def is_market_available(currency):
-    orderbook = get_bitbay_orderbook(currency)
+    orderbook = get_orderbook(currency)
     if 'bids' in orderbook.keys():
         return True
     return False
@@ -76,7 +75,7 @@ def update_currency(currency, amount):
 
 
 def get_currency_value(currency, amount):
-    bids = get_bitbay_orderbook(currency)['bids']
+    bids = get_orderbook(currency)['bids']
     value = 0
     index = 0
     while True:
@@ -87,15 +86,18 @@ def get_currency_value(currency, amount):
             index += 1
         else:
             value += offer[0] * amount
-            break
-    return value
+            return value
+        if index == len(bids):
+            return -1
 
 
 def get_wallet_value():
     wallet = load_json()
     value = 0
     for currency in wallet['currencies']:
-        value += get_currency_value(currency, wallet['currencies'][currency])
+        currency_value = get_currency_value(currency, wallet['currencies'][currency])
+        if currency_value > 0:
+            value += currency_value
     return value
 
 
