@@ -44,7 +44,6 @@ def get_bids(currency):
 
     bids.sort()
     bids.reverse()
-    print(bids)
     return bids
 
 
