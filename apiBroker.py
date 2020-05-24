@@ -10,5 +10,12 @@ def get_all_data(trading_pair):
     else:
         return resp.json()
 
+
+def get_data(trading_pair, timestamp_from, timestamp_to):
+    data = get_all_data(trading_pair)
+    return filter(lambda data:  data["time"] in range(timestamp_from, timestamp_to + 1), data["Data"]["Data"])
+
+
 if __name__ == '__main__':
-    print(get_all_data("LTC-USD"))
+    data = get_data("BTC-USD", 1589328000, 1590192000)
+    print(data)
