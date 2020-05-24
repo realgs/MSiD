@@ -1,0 +1,5 @@
+Program uruchamiany jest przez skrypt wallet_gui.py
+Dane s¹ wprowadzane przy pomocy pliku wallet.json lub w GUI
+Domyœlna waluta bazowa, to USD.
+Jeœli plik zawiera zasób, którego wartoœci nie ma w API, to dany zasób zostaje pominiêty w kalkulacjach i nie zostaje wyœwietlony w GUI.
+Jeœli u¿ytkownik chce wprowadziæ taki zasób przy pomocy GUI, to nie jest on przyjmowany i zostaje wyœwietlona o tym informacja.
