@@ -100,12 +100,12 @@ def get_currency_value(currency, amount):
 
 def get_wallet_value():
     wallet = load_json()
-    value = 0
+    total_value = 0
     for currency in wallet['currencies']:
         currency_value = get_currency_value(currency, wallet['currencies'][currency])
         if currency_value > 0:
-            value += currency_value
-    return value
+            total_value += currency_value
+    return total_value
 
 
 def get_wallet_info():
