@@ -1,11 +1,14 @@
 import json
 import requests
+import os.path
 
 base_currency = "USD"
 wallet_file = "wallet.json"
 
 
 def load_json():
+    if not os.path.exists(wallet_file):
+        create_json()
     with open(wallet_file) as f:
         return json.load(f)
 
@@ -75,20 +78,24 @@ def update_currency(currency, amount):
 
 
 def get_currency_value(currency, amount):
-    bids = get_orderbook(currency)['bids']
-    value = 0
-    index = 0
-    while True:
-        offer = bids[index]
-        if offer[1] < amount:
-            value += offer[0] * offer[1]
-            amount -= offer[1]
-            index += 1
-        else:
-            value += offer[0] * amount
-            return value
-        if index == len(bids):
-            return -1
+    if is_market_available(currency):
+        bids = get_orderbook(currency)['bids']
+        value = 0
+        index = 0
+        while True:
+            offer = bids[index]
+            if offer[1] < amount:
+                value += offer[0] * offer[1]
+                amount -= offer[1]
+                index += 1
+            else:
+                value += offer[0] * amount
+                return value
+            if index == len(bids):
+                # if amount is too big
+                return -1
+    # if market isn't available
+    return -2
 
 
 def get_wallet_value():
@@ -107,10 +114,12 @@ def get_wallet_info():
     for currency in wallet['currencies']:
         amount = wallet["currencies"][currency]
         value = get_currency_value(currency, amount)
-        wallet_str += f'{currency} {amount}'
-        if value == -1:
-            wallet_str += ' (too much amount)\n'
-        else:
-            wallet_str += f' ({base_currency} {value})\n'
+        # if market is available
+        if value != -2:
+            wallet_str += f'{currency} {amount}'
+            if value == -1:
+                wallet_str += ' (too big amount - not count)\n'
+            else:
+                wallet_str += f' ({base_currency} {value})\n'
     wallet_str += f'TOTAL: {base_currency} {get_wallet_value()}'
     return wallet_str

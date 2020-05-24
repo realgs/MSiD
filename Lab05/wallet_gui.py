@@ -1,8 +1,6 @@
 from tkinter import simpledialog, messagebox
-
 import wallet_app as wallet
 import tkinter as tk
-import os.path
 
 
 window = tk.Tk()
@@ -78,8 +76,6 @@ def create_main_window():
 
 
 def run_gui():
-    if not os.path.exists('wallet.json'):
-        wallet.create_json()
     create_main_window()
     window.mainloop()
 
