@@ -111,6 +111,7 @@ def get_wallet_value():
 def get_wallet_info():
     wallet = load_json()
     wallet_str = ''
+    total_value = 0
     for currency in wallet['currencies']:
         amount = wallet["currencies"][currency]
         value = get_currency_value(currency, amount)
@@ -121,5 +122,6 @@ def get_wallet_info():
                 wallet_str += ' (too big amount - not count)\n'
             else:
                 wallet_str += f' ({base_currency} {value})\n'
-    wallet_str += f'TOTAL: {base_currency} {get_wallet_value()}'
+                total_value += value
+    wallet_str += f'TOTAL: {base_currency} {total_value}'
     return wallet_str
