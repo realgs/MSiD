@@ -22,11 +22,23 @@ def create_json():
     write_json({'currencies': {}})
 
 
-def get_orderbook(currency):
+def get_bids(currency):
+    # bitbay
     market = (currency + base_currency).upper()
     url = f'https://bitbay.net/API/Public/{market}/orderbook.json'
     orderbook = requests.get(url).json()
-    return orderbook
+    if 'bids' in orderbook.keys():
+        return orderbook['bids']
+    # bittrex
+    market = (base_currency + '-' + currency).upper()
+    url = f'https://api.bittrex.com/api/v1.1/public/getorderbook?market={market}&type=both'
+    orderbook = requests.get(url).json()
+    if orderbook['success'] == 'true':
+        orderbook = orderbook['result']['buy']
+        bids = []
+        for i in range(orderbook):
+            bids.append([orderbook[i]['Rate'], orderbook[i]['Quantity']])
+        return bids
 
 
 def set_base_currency(currency):
@@ -36,8 +48,8 @@ def set_base_currency(currency):
 
 
 def is_market_available(currency):
-    orderbook = get_orderbook(currency)
-    if 'bids' in orderbook.keys():
+    bids = get_bids(currency)
+    if bids is not None:
         return True
     return False
 
@@ -78,8 +90,11 @@ def update_currency(currency, amount):
 
 
 def get_currency_value(currency, amount):
+    currency = currency.upper()
+    if currency == base_currency:
+        return amount
     if is_market_available(currency):
-        bids = get_orderbook(currency)['bids']
+        bids = get_bids(currency)
         value = 0
         index = 0
         while True:
