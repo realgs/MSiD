@@ -5,6 +5,7 @@ import tkinter as tk
 
 window = tk.Tk()
 wallet_info = tk.StringVar()
+base_currency = tk.StringVar()
 
 
 def update_wallet_info():
@@ -48,6 +49,8 @@ def set_base_currency_dialog():
     currency = simpledialog.askstring('Base currency', 'Enter the base currency', parent=window)
     if currency is not None and currency != '':
         wallet.set_base_currency(currency)
+        base_currency.set(value=f'Base currency: {wallet.base_currency}')
+        update_wallet_info()
 
 
 def create_main_window():
@@ -55,10 +58,9 @@ def create_main_window():
 
     set_base_currency_dialog()
 
-    lbl_base_currency = tk.Label(window, text=f'Base currency: {wallet.base_currency}')
+    lbl_base_currency = tk.Label(window, textvariable=base_currency)
     lbl_base_currency.grid(column=0)
 
-    update_wallet_info()
     lbl_wallet_info = tk.Label(window, textvariable=wallet_info)
     lbl_wallet_info.grid(column=0)
 
@@ -70,6 +72,9 @@ def create_main_window():
 
     btn_remove_update = tk.Button(window, text='Update currency', command=update_currency_dialog)
     btn_remove_update.grid(column=0)
+
+    btn_change_base_currency = tk.Button(window, text='Change base currency', command=set_base_currency_dialog)
+    btn_change_base_currency.grid(column=0)
 
     btn_refresh = tk.Button(window, text='Refresh', command=update_wallet_info)
     btn_refresh.grid(column=0)
