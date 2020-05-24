@@ -47,8 +47,7 @@ def set_base_currency(currency):
     base_currency = currency
 
 
-def is_market_available(currency):
-    bids = get_bids(currency)
+def is_market_available(bids):
     if bids is not None:
         return True
     return False
@@ -56,7 +55,8 @@ def is_market_available(currency):
 
 def add_currency(currency, amount):
     currency = currency.upper()
-    if is_market_available(currency):
+    bids = get_bids(currency)
+    if is_market_available(bids):
         wallet = load_json()
         if currency in wallet["currencies"]:
             wallet["currencies"][currency] += amount
@@ -93,8 +93,8 @@ def get_currency_value(currency, amount):
     currency = currency.upper()
     if currency == base_currency:
         return amount
-    if is_market_available(currency):
-        bids = get_bids(currency)
+    bids = get_bids(currency)
+    if is_market_available(bids):
         value = 0
         index = 0
         while True:
