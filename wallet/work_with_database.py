@@ -9,7 +9,7 @@ def addNewValue(currency, quantity):
     getDataBDByRequest("""INSERT INTO crypto VALUES(?, ?)""", [currency, quantity])
 
 def printTable():
-    tableToPrint = getDataBDByRequest('SELECT * FROM crypto', [])
+    tableToPrint = getDataBDByRequest("""SELECT * FROM crypto""", [])
     for line in tableToPrint:
         print(line)
 
@@ -44,7 +44,10 @@ def getDataBDByRequest(request, arrayArgs):
     db_wallet.close()
     return objDB
 
+def getListOfTuplesWithData():
+    return getDataBDByRequest("""SELECT crypto_name, quantity FROM crypto""", []) #view of [('USD', 5.0), ('BTC', 4.2)]
+
 def deleteDB():
     getDataBDByRequest("""DROP TABLE IF EXISTS crypto""", [])
-#deleteDB()
+
 createDataBase()
