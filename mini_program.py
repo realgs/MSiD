@@ -1,5 +1,4 @@
 from json.decoder import JSONDecodeError
-from typing import Set
 
 import requests
 import csv
@@ -12,12 +11,44 @@ def change_main_currency(new_currency):
     MAIN_CURRENCY = new_currency
 
 
-def add_resources_to_wallet(currency, value):
-    pass
-	
+def change_resources_in_wallet(type, currency, value=0):
+    currency = currency.upper()
+    if check_currency_already_in_wallet(currency):
+        with open('wallet.csv', encoding='utf-8') as csvfile:
+            csvreader = csv.reader(csvfile.readlines())
+        with open('wallet.csv', mode="w", encoding='utf-8', newline='') as newcsvfile:
+            newcsvwriter = csv.writer(newcsvfile)
+            for row in csvreader:
+                if row[0] == currency:
+                    if type == "add":
+                        newcsvwriter.writerow([row[0], int(row[1]) + value])
+                    elif type == "change":
+                        newcsvwriter.writerow([row[0], value])
+                    elif type == "remove":
+                        pass
+                    else:
+                        raise Exception
+                else:
+                    newcsvwriter.writerow(row)
+    else:
+        with open('wallet.csv', mode='a', encoding='utf-8') as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow('')
+            csvwriter.writerow([currency,value])
+
+
+def check_currency_already_in_wallet(currency):
+    with open('wallet.csv', mode='r', encoding='utf-8') as csvfile:
+        csvreader = csv.DictReader(csvfile)
+        for row in csvreader:
+            if row["currency"] == currency:
+                return True
+    return False
+
 
 def get_resource_value(currency, value):
     if currency == MAIN_CURRENCY:
+        print("Waluta nie została wymienona z uwagi na identyczność skrótu. Wartość 200" + currency)
         return value
     else:
         number_of_markets = 0
@@ -36,8 +67,7 @@ def get_resource_value(currency, value):
                         wartosc += ofety_buy[i]["qty"] * ofety_buy[i]["price"]
                         value -= ofety_buy[i]["qty"]
                 if value <= 0:
-                    print("Waluta została wymieniona na giełdzie " + str(MARKETS[number_of_markets]) + " i uzyskaliśmy "
-                          + str(wartosc) + str(MAIN_CURRENCY))
+                    print(f"Waluta została wymieniona na giełdzie {MARKETS[number_of_markets]} i uzyskaliśmy {wartosc:>.8f} {MAIN_CURRENCY}")
                     waluta_wymieniona = True
                 else:
                     print("Brak możliwości zamiany " + str(currency) + " na " + str(
@@ -50,13 +80,14 @@ def get_resource_value(currency, value):
 
 def get_wallet_value():
     wallet_value = 0
-    with open('wallet.csv', mode='r') as csv_file:
+    with open('wallet.csv', mode='r', encoding='utf-8', newline='') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
-            print("Wymiana " + str(row["value"]) + " " + str(row["currency"]))
+            print(f"Wymiana {row['value']} {row['currency']}")
             wallet_value = get_resource_value(row["currency"],int(row["value"]))
             print()
+    return wallet_value
 
 
 def get_orderbook(market_name, market_currency, base_currency):
@@ -151,6 +182,9 @@ def get_orderbook(market_name, market_currency, base_currency):
 
 def main():
     change_main_currency("USD")
+    change_resources_in_wallet("add", "ETH", 12)
+    change_resources_in_wallet("remove", "ASE")
+    change_resources_in_wallet("change", "USD", 400)
     get_wallet_value()
 
 
