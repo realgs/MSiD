@@ -54,6 +54,8 @@ class Wallet:
             price = lambda currency_offer: currency_offer[1]
             offers.sort(key=price, reverse=True)
 
+            print(f"Worth to exchange {wallet_currency_name}:", worth_exchanging(currency_name, wallet_currency_name,
+                                                                                 offers[0][1]))
             for offer in offers:
                 offer_quantity = offer[0]
                 offer_price = offer[1]
@@ -111,6 +113,25 @@ class Wallet:
 
             for currency in self.__wallet:
                 writer.writerow((currency[0].upper(), currency[1]))
+
+
+# Feature - is it worth to exchange currency in comparision to average price in the past
+def worth_exchanging(base_currency, exchange_currency, price):
+    data = get_url_data(f'https://api.bittrex.com/api/v1.1/public/getmarkethistory?market={base_currency}-'
+                        f'{exchange_currency}')
+    if not data['success']:
+        return False
+
+    price_sum = 0
+    offers_amount = 0
+
+    for offer in data['result']:
+        if offer['OrderType'] == 'BUY':
+            price_sum += offer['Price']
+            offers_amount += 1
+
+    average_price = price_sum / offers_amount
+    return price > average_price
 
 
 def get_url_data(url):
