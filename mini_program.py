@@ -225,8 +225,8 @@ def run():
               "5. Przelicz portfel\n"
               "6. Wyświetl dostępne waluty na giełdzie: 'Bitbay','Bittrex','Bitstamp'\n"
               "7. Zakończ program")
-        wybor = input()
-        if wybor == "1":
+        choice = input()
+        if choice == "1":
             correct = False
             while not correct:
                 print("Podaj skrót waluty na jaką ma być przeliczany portfel:")
@@ -234,7 +234,7 @@ def run():
                 correct = czy_poprawna_nazwa_waluty(currency)
             change_main_currency(currency)
             print("GOTOWE!\n\n\n")
-        elif wybor == "2":
+        elif choice == "2":
             correct = False
             while not correct:
                 print("Podaj skrót waluty jaką chcesz dodać: ")
@@ -245,7 +245,7 @@ def run():
             quantity = int(quantity)
             change_resources_in_wallet("add", currency, quantity)
             print("GOTOWE!\n\n\n")
-        elif wybor == "3":
+        elif choice == "3":
             correct = False
             while not correct:
                 print("Podaj skrót waluty jaką chcesz usunąć: ")
@@ -253,7 +253,7 @@ def run():
                 correct = czy_poprawna_nazwa_waluty(currency)
             change_resources_in_wallet("remove", currency)
             print("GOTOWE!\n\n\n")
-        elif wybor == "4":
+        elif choice == "4":
             correct = False
             while not correct:
                 print("Podaj skrót waluty jaką chcesz zmienić: ")
@@ -264,10 +264,10 @@ def run():
             quantity = int(quantity)
             change_resources_in_wallet("change", currency, quantity)
             print("GOTOWE!\n\n\n")
-        elif wybor == "5":
+        elif choice == "5":
             get_wallet_value()
             print("\n\n\n")
-        elif wybor == "6":
+        elif choice == "6":
             correct = False
             while not correct:
                 print("Podaj nazwę giełdy 'Bitbay','Bittrex','Bitstamp': ")
@@ -276,7 +276,7 @@ def run():
                     correct = True
             available_currency_pairs(name)
             print("\n\n\n")
-        elif wybor == "7":
+        elif choice == "7":
             end = True
 
 
