@@ -52,29 +52,27 @@ def get_resource_value(currency, value):
         return value
     else:
         number_of_markets = 0
-        waluta_wymieniona = False
-        while not (not (number_of_markets < len(MARKETS)) or (waluta_wymieniona)):
+        currency_exchanged = False
+        while not (not (number_of_markets < len(MARKETS)) or currency_exchanged):
             try:
                 order_book = get_orderbook(MARKETS[number_of_markets], MAIN_CURRENCY, currency)
-                ofety_buy = order_book["buy"]
-                wartosc = 0
-                for i in range(len(ofety_buy)):
-                    if ofety_buy[i]["qty"] >= value:
-                        wartosc += value * ofety_buy[i]["price"]
+                offers_buy = order_book["buy"]
+                resource_value = 0
+                for i in range(len(offers_buy)):
+                    if offers_buy[i]["qty"] >= value:
+                        resource_value += value * offers_buy[i]["price"]
                         value = 0
                         break
                     else:
-                        wartosc += ofety_buy[i]["qty"] * ofety_buy[i]["price"]
-                        value -= ofety_buy[i]["qty"]
+                        resource_value += offers_buy[i]["qty"] * offers_buy[i]["price"]
+                        value -= offers_buy[i]["qty"]
                 if value <= 0:
-                    print(f"Waluta została wymieniona na giełdzie {MARKETS[number_of_markets]} i uzyskaliśmy {wartosc:>.8f} {MAIN_CURRENCY}")
-                    waluta_wymieniona = True
+                    print(f"Waluta została wymieniona na giełdzie {MARKETS[number_of_markets]} i uzyskaliśmy {resource_value:>.2f} {MAIN_CURRENCY}")
+                    currency_exchanged = True
                 else:
-                    print("Brak możliwości zamiany " + str(currency) + " na " + str(
-                        MAIN_CURRENCY) + " na giełdzie " + str(order_book["name"]))
+                    print(f"Brak możliwości zamiany {currency} na {MAIN_CURRENCY} na giełdzie {order_book['name']}")
             except Exception:
-                print("Brak możliwości sprawdzenia cen na giełdzie " + str(MARKETS[number_of_markets]) + " dla nasepującej pary: " +
-                      MAIN_CURRENCY + "-" + currency)
+                print(f"Brak możliwości sprawdzenia cen na giełdzie {MARKETS[number_of_markets]} dla nasepującej pary: {MAIN_CURRENCY} - {currency}")
             number_of_markets += 1
 
 
@@ -210,15 +208,80 @@ def available_currency_pairs(market):
             else:
                 print(currencies_json[i]["name"], end=", ")
 
+def czy_poprawna_nazwa_waluty(currency):
+    if len(currency) == 3:
+        return True
+
+
+def run():
+    print("Witamy w programie pomgającym ogarnąć Kryptowaluty i Kryptogiełdy :)")
+    end = False
+    while not end:
+        print("Wybierz co chcesz zrobić:\n"
+              "1. Zmień walutę przelicznika\n"
+              "2. Dodaj walutę do portfela\n"
+              "3. Usuń walutę z portfela\n"
+              "4. Zmień ilość waluty z portfela\n"
+              "5. Przelicz portfel\n"
+              "6. Wyświetl dostępne waluty na giełdzie: 'Bitbay','Bittrex','Bitstamp'\n"
+              "7. Zakończ program")
+        wybor = input()
+        if wybor == "1":
+            correct = False
+            while not correct:
+                print("Podaj skrót waluty na jaką ma być przeliczany portfel:")
+                currency = input()
+                correct = czy_poprawna_nazwa_waluty(currency)
+            change_main_currency(currency)
+            print("GOTOWE!\n\n\n")
+        elif wybor == "2":
+            correct = False
+            while not correct:
+                print("Podaj skrót waluty jaką chcesz dodać: ")
+                currency = input()
+                correct = czy_poprawna_nazwa_waluty(currency)
+            print("Podaj ilość waluty do dodania: ")
+            quantity = input()
+            quantity = int(quantity)
+            change_resources_in_wallet("add", currency, quantity)
+            print("GOTOWE!\n\n\n")
+        elif wybor == "3":
+            correct = False
+            while not correct:
+                print("Podaj skrót waluty jaką chcesz usunąć: ")
+                currency = input()
+                correct = czy_poprawna_nazwa_waluty(currency)
+            change_resources_in_wallet("remove", currency)
+            print("GOTOWE!\n\n\n")
+        elif wybor == "4":
+            correct = False
+            while not correct:
+                print("Podaj skrót waluty jaką chcesz zmienić: ")
+                currency = input()
+                correct = czy_poprawna_nazwa_waluty(currency)
+            print("Podaj ilość waluty jaka ma być w portfelu: ")
+            quantity = input()
+            quantity = int(quantity)
+            change_resources_in_wallet("change", currency, quantity)
+            print("GOTOWE!\n\n\n")
+        elif wybor == "5":
+            get_wallet_value()
+            print("\n\n\n")
+        elif wybor == "6":
+            correct = False
+            while not correct:
+                print("Podaj nazwę giełdy 'Bitbay','Bittrex','Bitstamp': ")
+                name = input()
+                if name == "Bitbay" or name == "Bittrex" or name == "Bitstamp":
+                    correct = True
+            available_currency_pairs(name)
+            print("\n\n\n")
+        elif wybor == "7":
+            end = True
 
 
 def main():
-    #change_main_currency("USD")
-    #change_resources_in_wallet("add", "ETH", 12)
-    #change_resources_in_wallet("remove", "ASE")
-    #change_resources_in_wallet("change", "USD", 400)
-    #get_wallet_value()
-    dostepne_pary_walut("Bitstamp")
+    run()
 
 
 if __name__ == '__main__':
