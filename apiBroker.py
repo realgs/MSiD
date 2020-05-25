@@ -1,6 +1,7 @@
 import requests
 
 
+
 def get_all_data(trading_pair):
     (fst, snd) = trading_pair.split("-")
     url = f"https://min-api.cryptocompare.com/data/v2/histoday?fsym={fst}&tsym={snd}&allData=true"
@@ -13,9 +14,10 @@ def get_all_data(trading_pair):
 
 def get_data(trading_pair, timestamp_from, timestamp_to):
     data = get_all_data(trading_pair)
-    return filter(lambda data:  data["time"] in range(timestamp_from, timestamp_to + 1), data["Data"]["Data"])
+    return filter(lambda data:  float(timestamp_from) <= float(data["time"]) <= float(timestamp_to), data["Data"]["Data"])
 
 
 if __name__ == '__main__':
     data = get_data("BTC-USD", 1589328000, 1590192000)
-    print(data)
+    for record in data:
+        print(record)
