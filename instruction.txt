@@ -1,0 +1,1 @@
+Dane zostają wprowadzane z konsoli i są zapisywane w pliku csv.
