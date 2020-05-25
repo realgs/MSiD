@@ -180,12 +180,45 @@ def get_orderbook(market_name, market_currency, base_currency):
         return result
 
 
+def available_currency_pairs(market):
+    if market == "Bittrex":
+        currencies = requests.get("https://api.bittrex.com/api/v1.1/public/getmarketsummaries")
+        try:
+            currencies_json = currencies.json()
+        except JSONDecodeError:
+            raise Exception
+        for i in range(len(currencies_json["result"])):
+            if i % 10 == 0 and i != 0:
+                print(currencies_json["result"][i]["MarketName"])
+            elif i == len(currencies_json["result"]) - 1:
+                print(currencies_json["result"][i]["MarketName"])
+            else:
+                print(currencies_json["result"][i]["MarketName"], end=", ")
+    elif market == "Bitbay":
+        print("Brak możliwości sprawdzenia dostępnych par walut")
+    elif market == "Bitstamp":
+        currencies = requests.get("https://www.bitstamp.net/api/v2/trading-pairs-info/")
+        try:
+            currencies_json = currencies.json()
+        except JSONDecodeError:
+            raise Exception
+        for i in range(len(currencies_json)):
+            if i % 10 == 0 and i != 0:
+                print(currencies_json[i]["name"])
+            elif i == len(currencies_json) - 1:
+                print(currencies_json[i]["name"])
+            else:
+                print(currencies_json[i]["name"], end=", ")
+
+
+
 def main():
-    change_main_currency("USD")
-    change_resources_in_wallet("add", "ETH", 12)
-    change_resources_in_wallet("remove", "ASE")
-    change_resources_in_wallet("change", "USD", 400)
-    get_wallet_value()
+    #change_main_currency("USD")
+    #change_resources_in_wallet("add", "ETH", 12)
+    #change_resources_in_wallet("remove", "ASE")
+    #change_resources_in_wallet("change", "USD", 400)
+    #get_wallet_value()
+    dostepne_pary_walut("Bitstamp")
 
 
 if __name__ == '__main__':
