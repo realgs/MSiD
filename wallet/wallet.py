@@ -27,13 +27,25 @@ def getAllMoneyInChosenCurrency():
         result_sum = 0
         list_tuples_currencies_quantity = db.getListOfTuplesWithData() #[('USD', 5.0), ('BTC', 4.2)]
         for currency_quantity_pair in list_tuples_currencies_quantity:
-            list_of_last_transactions = getParsedObj(config.URL_BITBAY_ORDERBOOK + currency_quantity_pair[0] + "-" + config.basic_currency)["buy"]
-            course = float(list_of_last_transactions[0]['ra'])
-            result_sum += course * float(currency_quantity_pair[1])
-        return result_sum
+            list_of_orders = getParsedObj(config.URL_BITBAY_ORDERBOOK + currency_quantity_pair[0] + "-" + config.basic_currency)["buy"]
+            result_sum += sumInBasicCurrency(list_of_orders, float(currency_quantity_pair[1]))
+        return  result_sum
     else:
         print("You need to input basic currency firstly")
         return -1
+
+def sumInBasicCurrency(list_of_orders, quantity):
+    result_sum = 0
+    quantity_less = quantity #input this variables to increase readability
+    index = 0
+    while (quantity_less > 0):
+        if(quantity_less < float(list_of_orders[index]['ca'])):
+            result_sum += quantity_less * float(list_of_orders[index]['ra'])
+            quantity_less = 0
+        else:
+            result_sum += float(list_of_orders[index]['ca']) * float(list_of_orders[index]['ra'])
+            quantity_less -= float(list_of_orders[index]['ca'])
+    return result_sum
 
 def ifExistInApi(currency):
     list_of_evailable_curencies = getListofAllCurrencies()
