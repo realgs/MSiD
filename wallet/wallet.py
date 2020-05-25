@@ -12,6 +12,24 @@ def updateCurrencyByAdding():
     else:
         print("Wallet has no options to work with this currency. It works ONLY with CRYPTO CURRENCIES")
 
+def deleteCurrecyQuantity():
+    currency = input("input currency: ").upper()
+    quantity = float(input("input quantity: "))
+    if (ifExistAsMuchQuantity(currency, quantity)):
+        db.setValueByAdding(currency, -quantity)
+        print("successfuly deleted " + currency + " " + str(quantity))
+    else:
+        print("currency is not supported or not exist as much quantity")
+
+def ifExistAsMuchQuantity(currency, quantity):
+    if (ifExistInApi(currency)):
+        if (db.getCryptoQuantityByName(currency) == 0):
+            return False
+        if (quantity > db.getCryptoQuantityByName(currency)):
+            return False
+        else:
+            return True
+    return False
 def setBasicCurrency():
     print("Input one currency from this: ")
     for curr in config.BASIC_CURRENCIES:

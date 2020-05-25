@@ -34,6 +34,9 @@ def setValueByAdding(currency, quantity):
     else:
         getDataBDByRequest("""UPDATE crypto SET quantity = ? WHERE crypto_name = ?""", [getCryptoQuantityByName(currency) + quantity, currency])
 
+def getPairCurrencyAndQuantity(currency):
+    return getDataBDByRequest("SELECT crypto_name, quantity FROM crypto WHERE crypto_name = ?", [currency])[0]
+
 def getDataBDByRequest(request, arrayArgs):
     db_wallet = _sqlite3.connect(config.DB_FILE_PATH)
     sql_cursor = db_wallet.cursor()
