@@ -1,0 +1,7 @@
+Dzień dobry,
+
+Dane portfela ładuję się z utworzonego jsona, można również załadować pustego jsona i własnoręcznie dodać ilości walut. Jednak polecam używanie moich przykładowych.
+Json-y zawierają historie zmian w zasobach, dzięki temu można wczytywać aktualny stan zasobów jak i również tworzyć wykresy, żeby sprawdzić jak zasoby się zmieniały.
+Wybrałem tylko USD i BTC na bazowe waluty, ponieważ strona, którą wybrałem w małym stopniu wspiera inne kombinacje np. LTC-ETH itp. Niestety zbyt późno zorientowałem się,
+że strona ta ma dosyć ubogą bibliotekę tych kombinacji. Nie chciałem przeliczać np. z waluty bazową na USD i z usd dopiero obliczać wartość całego portfela, bo moim zdaniem
+takie rozwiązanie byłoby bardzo niedokładnym odzwierciedleniem tego i "bazowa waluta" traciłaby przez to sens.
