@@ -19,7 +19,9 @@ public class ObjectPooler : MonoBehaviour
 
     private GameObject CreateNewObject()
     {
-        return Instantiate(prefab, transform);
+        GameObject newObj = Instantiate(prefab, transform);
+        objectsPool.Add(newObj);
+        return newObj;
     }
 
     public GameObject GetGameObject()
