@@ -178,74 +178,22 @@ def sum_errors(arr):
 def average_deviation(arr):
     return sum_errors(arr) / len(arr)
 
-
-#Moj algorytm
-#Dla ustalonego marketu tworzy slownik, ktory dla kazdej pary walut zwraca pare list
-#Listy te są historiami odpowiednio bid-ow i ask-ow dla danej pary w danym markecie
-#Co sekunde uruchamia się pętla, ktora dodaje do historii aktualne najlepsze oferty
-#Nastepnie sprawdza czy dlugosc tablic nie przekracza 1500 - wtedy usuwa 50 najstarszych wpisow
-#Jezeli wpisow jest ponad 100 to algorytm moze zaczac wystawiac oferty
-#Algorytm liczy jak bardzo funkcja jest "hustajaca sie" - liczy najpierw srednia wartosc funkcji
-#a nastepnie dla kazdego punktu liczy odleglosc punktu od sredniej (blad)
-#Wzgledne odchylenie to srednie odchylenie punktu od sredniej arytmetycznej podzielone jeszcze przez wartosc tej sredniej
-#Algorytm liczy wzgledne odchylenie zarowno dla Bid-ow jak i Ask-ow a nastepnie ustala ich wspolne za pomoca
-#Sredniej arytmetycznej obu odchylen
-#Jezeli wzgledne odchylenie jest wystarczajaco duze, wieksze niz ustalona wartosc, ktora ustalilem przez analize rynku
-#To znaczy ze rynek ten jest wystarczajaco zroznicowany i mozna na nim grac
-#W takiej sytuacji sprawdzam czy wartosc, za ktora moge kupic jest minimalna wzgledem calej historii - wtedy kupuje
-#lub, za ktora moge sprzedac maksymalna - wtedy sprzedaje
-def analyze_market(market):
-    dict = {}
-    for pair in currency_pairs:
-        dict[pair] = ([],[])		#Przypisanie do każdej pary walut pary pustych list
-                                #Z lewej jest tablica bid-ow, z prawej ask-ow zarejestrowanych
-    while True:
-        time.sleep(1)
-#        print(str(dict))
-        for pair in currency_pairs:
-            best_offers_pair = bid_ask_pair(market,pair)
-            dict[pair][0].append(best_offers_pair[0])
-            dict[pair][1].append(best_offers_pair[1])
-            if len(dict[pair][0]) > 1500:			#Jezeli tablice maja juz dlugosc ponad 1500 to usun 50 elementow ostatnich
-                for x in range(50):
-                    dict[pair][0].pop(0)
-            if len(dict[pair][1]) > 1500:
-                for x in range(50):
-                    dict[pair][0].pop(0)
-            if len(dict[pair][0]) > 100:			#Jezeli danych zebrano juz ponad 100 to mozna zaczac spekulacje
-                average_dev_ask = average_deviation(dict[pair][1])
-                average_dev_bid = average_deviation(dict[pair][0])
-                relative_dev_ask = average_dev_ask / count_average(dict[pair][1])
-                relative_dev_bid = average_dev_bid / count_average(dict[pair][0])
-                av_deviation = (relative_dev_ask+ relative_dev_bid) / 2.0
-       #         print("Average deviation on market " + market + " " + str(av_deviation) + " needs to be at least 0.00025 to commit action")
-                if av_deviation > 0.00025:		#Dzialam tylko jezeli funkcja ma wzgledne odchylenie powyzej tej wartosci
-                                                                # (patrzy wyzej
-                                                                #Wzgledne odchylenie (relative_dev_ask i bid)
-                    ammounts = ammounts_of_best_offers(market, market, pair)
-                    if best_offers_pair[0] == min(dict[pair][0]):	#Jesli aktualna cena, za która mozemy kupic osiagnela minimum
-                        buy(pair[0],pair[1],best_offers_pair[0],ammounts[0],fees[market])
-                    if best_offers_pair[1] == max(dict[pair][1]):	#Jesli aktualna cena, za która mozemy sprzedaz osiagnela maximum
-                        sell(pair[0],pair[1],best_offers_pair[1],ammounts[1],fees[market])
-
-#print("Note: algorythm of analysis needs some data first, so wait few minutes for first output.")
-#analyze_market("bitbay.net")
-#To check arbitrages algorythm uncomment below line, and comment above one
-#run_arbitrages()
-
 #L5
 
 def last_transaction(market, currency_pair):
     if currency_pair[0] == currency_pair[1]:
+        print("Same: " + currency_pair[0] + " " + currency_pair[1])
         return 1.0              #Jezeli chcemy konwersji np z BTC do BTC to nie liczymy tylko dajemy ze 1.0 mnoznik
     url = ticker_url(market,currency_pair)
     req = requests.get(url)
     if str(req) != "<Response [200]>":
-        print(str(req))
+#        print(str(req))
         return None         #Jezeli nie mozna polaczyc sie z danym url to zwroc None
     jsonText = req.json()
     repairedJson = str(jsonText).replace("\'", "\"")
-    print(repairedJson)
+    if "message" in repairedJson:
+        return -1.0		#Jezeli w wiadomosci jest fragment "message" to znaczy ze cos poszlo nie tak, nigdy go nie ma 
+    print(repairedJson)									#jak jest wszystko dobrze
     #		print(repairedJson)
     dict = json.loads(repairedJson)
     #print(float(dict['last']))
@@ -269,23 +217,25 @@ def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), 
         print("Error - no base currency specified in JSON file!")
         return None
     base_curr = dict['base_currency']
-    print(str(dict))
+    #print(str(dict))
     dict.pop("base_currency")
-    print(str(dict))
+    #print(str(dict))
                         #Dla kazdej waluty w jakiej mamy srodki (key = waluta)
     for key in dict.keys():
-        pair = (base_curr, key)
-        last_trans = last_transaction(market, key)
+        print("Key: " + key)
+        pair = (key, base_curr)
+        print("Pair: " + str(pair))
+        last_trans = last_transaction(market, pair)
         if last_trans == None:
             print("Error - can't connect to API or no pair " + str(pair) + " in market " + market)
         elif last_trans == -1.0:
-            print("No pair " + str(pair) + "in market" + market)
+            print("No pair " + str(pair) + " in market " + market)
         else:
-            sum = sum + float(dict[key]) * last_transaction(market, (base_curr, key))
+            sum = sum + float(dict[key]) * last_trans
     return (base_curr, sum)
 
 def main():
-    pair = summarize_wallet("bittrex.com","input.json")
+    pair = summarize_wallet("bitbay.net","input.json")
     dict = {"base_currency":pair[0],"ammount":pair[1]}
     with open("output.json",'w') as f:
         json.dump(dict,f)
