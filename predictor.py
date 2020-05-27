@@ -4,14 +4,14 @@ from datetime import datetime
 import time
 import random
 
-PREDICTION_RANDOM_MAX_MODIFICATOR = 0.005
+PREDICTION_RANDOM_MAX_MODIFICATOR = 0.007
 HOW_MANY_BEST_RESULTS = 3
-INPUT_SIZE = 10
-STEPS_OF_SIMULATION = 250
-NUMBER_OF_SIMULATIONS = 1
-START = '2019-10-01'
+INPUT_SIZE = 5
+STEPS_OF_SIMULATION = 300
+NUMBER_OF_SIMULATIONS = 250
+START = '2019-12-01'
 END = '2020-02-01'
-SHOW_SUB_SIMULATION = False
+SHOW_SUB_SIMULATIONS = True
 
 
 def downloadData(start, end, granularity = 3600000):
@@ -128,7 +128,9 @@ for simulationIndex in range(NUMBER_OF_SIMULATIONS):
 
     for i in range(STEPS_OF_SIMULATION):
         givenRequest = inputsForCalcs[-INPUT_SIZE:]
+
         estimatedChange, positiveChangeChance, estimatedVolume, qualityOfEstimate = estimate(givenRequest, parsedInternetDataForLearn)
+        
         inputsForCalcs.append([estimatedChange, estimatedVolume])
         calcData.append(estimatedChange*calcData[-1]+calcData[-1])
 
@@ -142,7 +144,7 @@ averageResultsFromSimulation = calculateAverageValues(simulationResults)
 domain1 = [x for x in range(len(realData)-STEPS_OF_SIMULATION,len(realData))]
 domain2 = [x for x in range(len(realData))]
 
-if SHOW_SUB_SIMULATION:
+if SHOW_SUB_SIMULATIONS:
     for i in range(len(simulationResults)):
         plt.plot(domain1, simulationResults[i],label =str(i))
 
