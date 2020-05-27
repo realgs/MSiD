@@ -255,7 +255,9 @@ def last_transaction(market, currency_pair):
 
                 #Waluty musza byc zapisane w pliku wielkimi literami
 def get_json_from_file(filename):
-
+    with open(filename) as f:
+        return json.load(f)
+    
                         #Funkcja odczytuje dane z pliku JSON o podanej ścieżce w argumencie wywołania funkcji
 def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), ktora mowi jaka jest waluta w ktorej podajew
     sum = 0.0                                       #I ile posiadamy w tej walucie pieniedzy
@@ -266,7 +268,9 @@ def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), 
         print("Error - no base currency specified in JSON file!")
         return None
     base_curr = dict['base_currency']
-    dict.pop(base_curr)
+    print(str(dict))
+    dict.pop("base_currency")
+    print(str(dict))
                         #Dla kazdej waluty w jakiej mamy srodki (key = waluta)
     for key in dict.keys():
         pair = (base_curr, key)
@@ -276,11 +280,24 @@ def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), 
         elif last_trans == -1.0:
             print("No pair " + str(pair) + "in market" + market)
         else:
-            sum = sum + dict[key] * last_transaction(market, (base_curr, key))
+            sum = sum + float(dict[key]) * last_transaction(market, (base_curr, key))
     return (base_curr, sum)
 
-    repairedJson = str(jsonText).replace("\'", "\"")
+def main():
+    pair = summarize_wallet("bitbay.net","input.json")
+    dict = {"base_currency":pair[0],"ammount":pair[1]}
+    with open("output.json",'w') as f:
+        json.dump(dict,f)
 
+
+main()
+
+#sample = {"BTC" : "0.123", "LTC" : "1.345"}
+
+#with open('result.json', 'w') as fp:
+#    json.dump(sample, fp)
+
+#print(get_json_from_file("result.json"))
 
 #Pobrac liste walut w jakich mamy z pliku w formacie JSON
 #Na samym poczatku jest pod kluczem base_currency waluta do ktorej chcemy przeliczac
