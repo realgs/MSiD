@@ -14,7 +14,7 @@ def get_all_data(trading_pair):
 
 def get_data(trading_pair, timestamp_from, timestamp_to):
     data = get_all_data(trading_pair)
-    return filter(lambda data:  float(timestamp_from) <= float(data["time"]) <= float(timestamp_to), data["Data"]["Data"])
+    return list(filter(lambda data:  float(timestamp_from) <= float(data["time"]) <= float(timestamp_to), data["Data"]["Data"]))
 
 
 if __name__ == '__main__':

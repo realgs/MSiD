@@ -1,6 +1,8 @@
 import apiBroker
 import time
 import datetime
+import numpy as np
+import pandas as pd
 
 pairs = [
     "BTC-USD",
@@ -23,23 +25,17 @@ def sim(trading_pair, starting_date, ending_date):
         raise ValueError("Wrong date range")
     if trading_pair not in pairs:
         raise ValueError("Wrong trading pair")
-    data = apiBroker.get_data(trading_pair, starting_date, ending_date)
-    print(count_rise_probability(data))
-
-
-def price_has_risen(open, close):
-    return close > open
+    data = pd.DataFrame(apiBroker.get_data(trading_pair, starting_date, ending_date))
+    count_rise_probability(data)
 
 
 def count_rise_probability(data):
-    a = 0
-    total_volume = 0
-    for record in data:
-        if price_has_risen(float(record['open']), float(record['close'])):
-            a += record['volumefrom']
-        total_volume += record['volumefrom']
-    return a / total_volume
+    data['diff'] = data['open'] - data['close']
+    total_change_in_price = np.abs(data['diff']).sum()
+    print((data['diff'][data['diff'] > 0]).sum())
+    print(total_change_in_price)
+    print((data['diff'][data['diff']]).sum() / total_change_in_price)
 
 
 if __name__ == '__main__':
-    sim("BTC-USD", "2020-05-18", "2020-05-24")
+    sim("BTC-USD", "2020-04-18", "2020-05-24")
