@@ -241,10 +241,11 @@ def last_transaction(market, currency_pair):
     url = ticker_url(market,currency_pair)
     req = requests.get(url)
     if str(req) != "<Response [200]>":
+        print(str(req))
         return None         #Jezeli nie mozna polaczyc sie z danym url to zwroc None
     jsonText = req.json()
     repairedJson = str(jsonText).replace("\'", "\"")
-
+    print(repairedJson)
     #		print(repairedJson)
     dict = json.loads(repairedJson)
     #print(float(dict['last']))
@@ -284,7 +285,7 @@ def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), 
     return (base_curr, sum)
 
 def main():
-    pair = summarize_wallet("bitbay.net","input.json")
+    pair = summarize_wallet("bittrex.com","input.json")
     dict = {"base_currency":pair[0],"ammount":pair[1]}
     with open("output.json",'w') as f:
         json.dump(dict,f)
