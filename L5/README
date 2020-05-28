@@ -1,0 +1,19 @@
+Program pobiera dane z pliku JSON o nazwie input.json w folderze tym samym co plik l5.py.
+W pliku JSON musi być zdefiniowana wybrana waluta docelowa jako tekst
+pisany wielkimi literami, zawarta w słowniku pod kluczem "base_currency" (patrz przykladowy plik).
+
+Pozostałymi parami klucz - wartosc musza byc pisane wielkimi literami waluty w jakich mamy pieniadze,
+np "BTC" albo "LTC" jako klucze oraz wartości rzeczywiste w cudzysłowach, np. "146.2356", które
+oznaczaja z kolei ile pieniedzy posiadamy w danej walucie. Przykladowy plik znajduje sie w folderze
+projektu. Program zapisuje wynik do pliku output.json rowniez w formacie json, gdzie zapisuje walute docelowa
+i obliczona wartosc.
+
+UPDATE:
+
+Jako dodatkowy feature dodalem obliczenie ile hipotetycznie moglibysmy miec, jezeli
+zamienialibysmy waluty w momencie najlepszego kursu w ciagu ostatnich 24h. W pliku
+output.json jest teraz trzeci klucz - "best_potential_ammount", pod ktorym jest
+ta wlasnie wartosc zapisana. 
+
+WAZNE:
+Uruchamiac skrypt w python, nie python3 (u mnie coś się psuje wtedy).
