@@ -20,8 +20,20 @@ def orderbook_url(market, currency_pair):
         return 'https://cex.io/api/order_book/' + source_currency + "/" + target_currency
     return ""
 
-#L5
+def ticker_url(market, currency_pair):
+    source_currency = currency_pair[0]
+    target_currency = currency_pair[1]
+    if market == 'bitstamp.net':
+        return 'https://www.bitstamp.net/api/v2/ticker/' + source_currency.lower() + target_currency.lower() + '/'
+    if market == 'bitbay.net':
+        return 'https://bitbay.net/API/Public/' + source_currency + target_currency + '/ticker.json'
+    if market == 'bittrex.com':
+        return 'https://api.bittrex.com/api/v1.1/public/getticker?market=' + source_currency + '-' + target_currency
+    if market == 'cex.io':
+        return 'https://cex.io/api/ticker/' + source_currency + '/' + target_currency
+    return ""
 
+#L5
 def last_transaction(market, currency_pair):
     if currency_pair[0] == currency_pair[1]:
         print("Same: " + currency_pair[0] + " " + currency_pair[1])
@@ -35,7 +47,7 @@ def last_transaction(market, currency_pair):
     repairedJson = str(jsonText).replace("\'", "\"")
     if "message" in repairedJson:
         return -1.0		#Jezeli w wiadomosci jest fragment "message" to znaczy ze cos poszlo nie tak, nigdy go nie ma 
-    print(repairedJson)									#jak jest wszystko dobrze
+    #print(repairedJson)									#jak jest wszystko dobrze
     #		print(repairedJson)
     dict = json.loads(repairedJson)
     #print(float(dict['last']))
@@ -80,11 +92,13 @@ def old_summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartos
 
 #Task 2
 
-def sort_tuples_list_by_first_elem(tup_l):  
-    tup_l.sort(key = lambda x: x[0])  
+def sort_tuples_list_by_first_elem(tup_l):  #Porzadkuje oferty kupna danej waluty od najwiekszej
+    if tup_l == None:
+        return None
+    tup_l.sort(key = lambda x: x[0],reverse = True)  
     return tup_l  
 
-		#Zwraca liste par (kurs, ilosc) posortowane wedlug kursu
+        #Zwraca liste par (kurs, ilosc) posortowane wedlug kursu malejaco
 def get_buy_offers_sorted(market, currency_pair):
     url = orderbook_url(market,currency_pair)
     req = requests.get(url)
@@ -95,14 +109,17 @@ def get_buy_offers_sorted(market, currency_pair):
     repairedJson = str(jsonText).replace("\'", "\"")
     if "message" in repairedJson:
         return None		#Jezeli w wiadomosci jest fragment "message" to znaczy ze cos poszlo nie tak, nigdy go nie ma 
-    print(repairedJson)									#jak jest wszystko dobrze
+    #print(repairedJson)									#jak jest wszystko dobrze
     dict = json.loads(repairedJson)
-    l1 = dict['asks']
+    l1 = None
+    if 'bids' in dict.keys():
+        l1 = dict['bids']
     return sort_tuples_list_by_first_elem(l1) 
 
                         #Funkcja odczytuje dane z pliku JSON o podanej ścieżce w argumencie wywołania funkcji
 def summarize_wallet(filename):         #Zwraca pare (Waluta, Wartosc), ktora mowi jaka jest waluta w ktorej podajew
-    sum = 0.0                                       #I ile posiadamy w tej walucie pieniedzy
+    real_sum = 0.0                                       #I ile posiadamy w tej walucie pieniedzy
+    best_sum = 0.0          #Ile bysmy posiadali pieniedzy w danej walucie sprzedajac po ostatnio najlepszych kursach
     jsonText = get_json_from_file(filename)
     repairedJson = str(jsonText).replace("\'", "\"")
     dict = json.loads(repairedJson)
@@ -116,27 +133,37 @@ def summarize_wallet(filename):         #Zwraca pare (Waluta, Wartosc), ktora mo
     market = markets[0]
     found = True
     i = 0	#Licznik, ktory market teraz sprawdzamy - wazny, jezeli jakiejs waluty w jednym nie ma zawartej
-                        #Dla kazdej waluty w jakiej mamy srodki (key = waluta)
-    for key in dict.keys():
-        curr_left = dict[key]
-        pair = (key, base_curr)
-        offers_list = get_buy_offers_sorted(markets[i],pair)
-        if offers_list == None						#	========
-            i=i+1
-	    while i<len(markets) and offers_list == None:		#	W tych liniach zaimplementowane jest szukanie
-                offers_list = get_buy_offers_sorted(markets[i],pair)	#	par walut w kolejnych marketach, jesli brakuje ich 
-	    if offers_list == None:					#	w poprzednich	
-                return None						#	========
-	while curr_left > 0:						#	========
-	    if offers_list[0][1] > curr_left:
-                sum = sum + curr_left * offers_list[0][0]
-                curr_left = 0						#	W tych liniach zaimplementowane jest zamienianie walut
-            else:							#	z kolejnych najlepszych ofert
-                sum = sum + offers_list[0][1] * offers_list[0][0]	#	uwzgledniajac wolumen w ofercie
-                curr_left = curr_left - offers_list[0][1]
-                offers_list.pop[0]					#	========
 
-    return (base_curr, sum)
+    for key in dict.keys(): #Dla kazdej waluty w jakiej mamy srodki (key = waluta)
+        i=0
+        curr_left = float(dict[key])
+        if key == base_curr:		#Jezeli to ta sama waluta to po prostu dodaje ja
+            real_sum = real_sum + curr_left
+            best_sum = best_sum + curr_left
+        else:
+            pair = (key, base_curr)
+            offers_list = get_buy_offers_sorted(markets[i],pair)
+            if offers_list == None:						#	========
+                i=i+1
+            while i<len(markets) and offers_list == None:		#	W tych liniach zaimplementowane jest szukanie
+                offers_list = get_buy_offers_sorted(markets[i],pair)	#	par walut w kolejnych marketach, jesli brakuje ich 
+                #print(str(offers_list))
+                i=i+1
+            if offers_list == None:				                    	#	w poprzednich
+                print("No such a pair of currencies in any of available markets! Pair: " + str(pair))			#	========
+                curr_left = 0
+            if curr_left > 0:
+                best_sum = best_sum + curr_left * last_day_best_buy_offer(markets[i],pair)      #Dodatkowy feature do zadania 2
+            while curr_left > 0:						#	========
+                if offers_list[0][1] > curr_left:
+                    real_sum = real_sum + curr_left * offers_list[0][0]
+                    curr_left = 0						#	W tych liniach zaimplementowane jest zamienianie walut
+                else:							#	z kolejnych najlepszych ofert
+                    real_sum = real_sum + offers_list[0][1] * offers_list[0][0]	#	uwzgledniajac wolumen w ofercie
+                    curr_left = curr_left - offers_list[0][1]
+                    offers_list.pop[0]					#	========
+       
+    return (base_curr, real_sum, best_sum)
 
 
 #Dodatkowy feature - sprawdzanie ile mielibysmy w portfelu, jezeli wszystko kupowalibysmy po najlepszych dla nas ofertach
@@ -154,23 +181,28 @@ def last_day_best_buy_offer(market, currency_pair):
     repairedJson = str(jsonText).replace("\'", "\"")
     if "message" in repairedJson:
         return -1.0		#Jezeli w wiadomosci jest fragment "message" to znaczy ze cos poszlo nie tak, nigdy go nie ma 
-    print(repairedJson)									#jak jest wszystko dobrze
+    #print(repairedJson)									#jak jest wszystko dobrze
     #		print(repairedJson)
     dict = json.loads(repairedJson)
+    #print(str(dict))
     #print(float(dict['last']))
-    if 'last' in dict.keys():
-        return float(dict['last'])
+    if 'max' in dict.keys():
+        return float(dict['max'])
+    if 'High' in dict.keys():
+        return float(dict['High'])
+    if 'high' in dict.keys():
+        return float(dict['high'])
     return -1.0              #Jezeli wystapil inny blad (np. dostaniemy poprawna odpowiedz od API, ze nie ma takiej
 
 
 def main():
-    pair = summarize_wallet("input.json")
-    dict = {"base_currency":pair[0],"ammount":pair[1]}
-    print(str(dict))
+    tup = summarize_wallet("input.json")
+    dict = {"base_currency":tup[0],"ammount":tup[1],"best_potential_ammount":tup[2]}
+    #print(str(dict))
     with open("output.json",'w') as f:
         json.dump(dict,f)
 
-
+#print("Poczatek")
 main()
 
 #sample = {"BTC" : "0.123", "LTC" : "1.345"}
