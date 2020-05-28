@@ -1,0 +1,7 @@
+Aby wprowadzić dane należy:
+1. Uruchomić MarketApp.exe z folderu build
+2. Nacisnąć "Manage wallet" w menu głównym
+3. W polach tekstowych (2 miejsca obok przycisku Add) należy wpisać odpowiednio nazwę waluty (np. BTC, ETH) oraz ilość posiadanej waluty (miejsce dziesiętne oddzielone kropką, np. 10.34, 0.3471)
+
+Aby edytować dane należy ponownie dodać walutę.
+Aby usunąć dane należy nacisnąć przycisk Del obok wybranej waluty.
