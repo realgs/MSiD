@@ -16,5 +16,4 @@ output.json jest teraz trzeci klucz - "best_potential_ammount", pod ktorym jest
 ta wlasnie wartosc zapisana. 
 
 WAZNE:
-
 Uruchamiac skrypt w python, nie python3 (u mnie coś się psuje wtedy).
