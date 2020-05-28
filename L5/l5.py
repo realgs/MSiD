@@ -206,9 +206,10 @@ def last_transaction(market, currency_pair):
 def get_json_from_file(filename):
     with open(filename) as f:
         return json.load(f)
-    
-                        #Funkcja odczytuje dane z pliku JSON o podanej ścieżce w argumencie wywołania funkcji
-def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), ktora mowi jaka jest waluta w ktorej podajew
+
+#Funkcja z pierwszej czesci - bez sprawdzania dalszych marketow    
+                     #Funkcja odczytuje dane z pliku JSON o podanej ścieżce w argumencie wywołania funkcji
+def old_summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), ktora mowi jaka jest waluta w ktorej podajew
     sum = 0.0                                       #I ile posiadamy w tej walucie pieniedzy
     jsonText = get_json_from_file(filename)
     repairedJson = str(jsonText).replace("\'", "\"")
@@ -234,8 +235,70 @@ def summarize_wallet(market, filename):         #Zwraca pare (Waluta, Wartosc), 
             sum = sum + float(dict[key]) * last_trans
     return (base_curr, sum)
 
+
+#Task 2
+
+def sort_tuples_list_by_first_elem(tup_l):  
+    tup_l.sort(key = lambda x: x[0])  
+    return tup_l  
+
+		#Zwraca liste par (kurs, ilosc) posortowane wedlug kursu
+def get_buy_offers_sorted(market, currency_pair):
+    url = orderbook_url(market,currency_pair)
+    req = requests.get(url)
+    if str(req) != "<Response [200]>":
+#        print(str(req))
+        return None         #Jezeli nie mozna polaczyc sie z danym url to zwroc None
+    jsonText = req.json()
+    repairedJson = str(jsonText).replace("\'", "\"")
+    if "message" in repairedJson:
+        return None		#Jezeli w wiadomosci jest fragment "message" to znaczy ze cos poszlo nie tak, nigdy go nie ma 
+    print(repairedJson)									#jak jest wszystko dobrze
+    dict = json.loads(repairedJson)
+    l1 = dict['asks']
+    return sort_tuples_list_by_first_elem(l1) 
+
+                        #Funkcja odczytuje dane z pliku JSON o podanej ścieżce w argumencie wywołania funkcji
+def summarize_wallet(filename):         #Zwraca pare (Waluta, Wartosc), ktora mowi jaka jest waluta w ktorej podajew
+    sum = 0.0                                       #I ile posiadamy w tej walucie pieniedzy
+    jsonText = get_json_from_file(filename)
+    repairedJson = str(jsonText).replace("\'", "\"")
+    dict = json.loads(repairedJson)
+    if "base_currency" not in dict.keys():
+        print("Error - no base currency specified in JSON file!")
+        return None
+    base_curr = dict['base_currency']
+    #print(str(dict))
+    dict.pop("base_currency")
+    #print(str(dict))
+    market = markets[0]
+    found = True
+    i = 0	#Licznik, ktory market teraz sprawdzamy - wazny, jezeli jakiejs waluty w jednym nie ma zawartej
+                        #Dla kazdej waluty w jakiej mamy srodki (key = waluta)
+    for key in dict.keys():
+        curr_left = dict[key]
+        pair = (key, base_curr)
+        offers_list = get_buy_offers_sorted(markets[i],pair)
+        if offers_list == None						#	========
+            i=i+1
+	    while i<len(markets) and offers_list == None:		#	W tych liniach zaimplementowane jest szukanie
+                offers_list = get_buy_offers_sorted(markets[i],pair)	#	par walut w kolejnych marketach, jesli brakuje ich 
+	    if offers_list == None:					#	w poprzednich	
+                return None						#	========
+	while curr_left > 0:						#	========
+	    if offers_list[0][1] > curr_left:
+                sum = sum + curr_left * offers_list[0][0]
+                curr_left = 0						#	W tych liniach zaimplementowane jest zamienianie walut
+            else:							#	z kolejnych najlepszych ofert
+                sum = sum + offers_list[0][1] * offers_list[0][0]	#	uwzgledniajac wolumen w ofercie
+                curr_left = curr_left - offers_list[0][1]
+                offers_list.pop[0]					#	========
+
+    return (base_curr, sum)
+
+
 def main():
-    pair = summarize_wallet("bitbay.net","input.json")
+    pair = summarize_wallet("input.json")
     dict = {"base_currency":pair[0],"ammount":pair[1]}
     with open("output.json",'w') as f:
         json.dump(dict,f)
