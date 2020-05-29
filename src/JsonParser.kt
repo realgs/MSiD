@@ -1,12 +1,11 @@
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 
 data class ChartData(
-  val date: Long,
   val high: Double,
   val low: Double,
   val open: Double,
-  val close: Double
+  val close: Double,
+  val volume: Double
 )
 
 object JsonParser{

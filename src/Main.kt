@@ -46,9 +46,6 @@ fun main() {
             ChartCanvas("Wykres!", parsed)
             val generated = Simulator(parsed).simulate(endDate + interval, interval).toList()
             ChartCanvas("Wygenerowane!", generated)
-            for(data in generated){
-              println(data)
-            }
           }
         } else {
           println("Select valid interval")
