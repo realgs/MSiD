@@ -1,3 +1,4 @@
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
 import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -43,9 +44,16 @@ fun main() {
           val result = ApiFetch.sendRequest("https://poloniex.com/public?command=returnChartData&currencyPair=$currencyPair&start=$startDate&end=$endDate&period=$interval")
           val parsed = JsonParser.resolveJson(result)
           if (parsed != null) {
-            ChartCanvas("Wykres!", parsed)
-            val generated = Simulator(parsed).simulate(endDate + interval, interval).toList()
-            ChartCanvas("Wygenerowane!", generated)
+            ChartCanvas("Original data", parsed)
+            val sim = Simulator(parsed)
+            val generated = sim.simulate().toList()
+            val averageCloseStats = DescriptiveStatistics(parsed.map{ iit -> iit.high }.toDoubleArray())
+            val averageVolumeStats =  DescriptiveStatistics(parsed.map{ iit -> iit.volume }.toDoubleArray())
+
+            println("Original close mean: ${averageCloseStats.mean} ::: Average close standard deviation: ${averageCloseStats.standardDeviation}")
+            println("Average volume mean: ${averageVolumeStats.mean} ::: Average volume standard deviation: ${averageVolumeStats.standardDeviation}")
+            ChartCanvas("One-time generated data", generated)
+            sim.averageSimulation(100)
           }
         } else {
           println("Select valid interval")

@@ -12,26 +12,40 @@ class Simulator(dataset: List<ChartData>){
   private val closeData: DoubleArray = dataset.map { it.close }.toDoubleArray()
   private val volumeData: DoubleArray = dataset.map { it.volume }.toDoubleArray()
 
-  private val highChangeData: DoubleArray = getChangeData(highData)
   private val closeChangeData: DoubleArray = getChangeData(closeData)
 
   var correction = 0.0
 
-  fun simulate(beginDate: Long, interval: Int): MutableList<ChartData> {
-    val dsHigh = DescriptiveStatistics(highData)
+  fun averageSimulation(numOfIterations: Int){
+    val allData = mutableListOf<MutableList<ChartData>>()
+    for(i in 0 until numOfIterations){
+      allData.add(simulate())
+    }
+
+    val averageCloseStats = allData.map{ DescriptiveStatistics(it.map{ iit -> iit.high }.toDoubleArray()) }
+    val averageCloseMean = averageCloseStats.sumByDouble { it.mean } / averageCloseStats.size
+    val averageCloseDeviation = averageCloseStats.sumByDouble { it.standardDeviation } / averageCloseStats.size
+
+    val averageVolumeStats = allData.map{ DescriptiveStatistics(it.map{ iit -> iit.volume }.toDoubleArray()) }
+    val averageVolumeMean = averageVolumeStats.sumByDouble { it.mean } / averageVolumeStats.size
+    val averageVolumeDeviation = averageVolumeStats.sumByDouble { it.standardDeviation } / averageVolumeStats.size
+
+    println("Average close mean: $averageCloseMean ::: Average close standard deviation: $averageCloseDeviation")
+    println("Average volume mean: $averageVolumeMean ::: Average volume standard deviation: $averageVolumeDeviation")
+
+  }
+
+  fun simulate(): MutableList<ChartData> {
+
+    correction = 0.0
+
     val dsClose = DescriptiveStatistics(closeData)
     val dsVolume = DescriptiveStatistics(volumeData)
 
-    val dsHighChange = DescriptiveStatistics(highChangeData)
     val dsCloseChange = DescriptiveStatistics(closeChangeData)
     val dsVolumeChange = DescriptiveStatistics(volumeData)
 
-    println("${dsHigh.mean} ... ${dsHigh.max} ... ${dsHigh.min}")
-    println("${dsHighChange.mean} ... ${dsHighChange.max} ... ${dsHighChange.min} ... ${dsHighChange.standardDeviation}")
-
-
     val newValues: MutableList<ChartData> = mutableListOf()
-    var date = beginDate
 
     val deviationDataClose = getValuesOutsideStandardDeviation(closeData, dsClose)
     val deviationDataVolume = getValuesOutsideStandardDeviation(volumeData, dsVolume)
@@ -46,22 +60,9 @@ class Simulator(dataset: List<ChartData>){
 
     val newVolume = generateNewVal(volumeData.last(), volumeData.size, dsVolume, dsVolumeChange, deviationDataVolume, mutableListOf())
 
-
     for( i in 0 until newHigh.size) {
       newValues.add(ChartData(newHigh[i], newLow[i], newOpen[i], newClose[i], newVolume[i]))
-      date += interval
     }
-
-    val dsNewClose = DescriptiveStatistics(newClose.toDoubleArray())
-
-    println("WYGENEROWANE:\n mean: ${dsNewClose.mean} dev: ${dsNewClose.standardDeviation}")
-    println("ORYGINAL:\n mean: ${dsClose.mean} dev: ${dsClose.standardDeviation}")
-
-    val origChanges = DescriptiveStatistics(getChangeData(highData))
-    val newChanges = DescriptiveStatistics(getChangeData(newClose.toDoubleArray()))
-
-    println("\nWYGENROWANE ZMIANY:\n mean: ${newChanges.mean} dev: ${newChanges.standardDeviation}")
-    println("\nORYGINALNE ZMIANY:\n mean: ${origChanges.mean} dev: ${origChanges.standardDeviation}")
 
     return newValues
 
@@ -107,7 +108,6 @@ class Simulator(dataset: List<ChartData>){
     if(threshold > 0) generateNewVal(newVal, threshold-1, ds, dsc, deviationData, acc)
     return acc
   }
-
 
   fun generateValue(ds: DescriptiveStatistics, dsChange: DescriptiveStatistics, valsAboveDev: DoubleArray, valsBelowDev: DoubleArray, previousValue: Double): Double {
     var growChance = 50.0
