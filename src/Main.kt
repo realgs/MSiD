@@ -1,4 +1,5 @@
-import java.time.LocalDate
+import java.lang.Exception
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -9,40 +10,56 @@ fun main() {
 
   println("Format of datetime is yyyy-mm-ddThh:mm:ss")
   print("Enter start date: ")
-  val startDate = LocalDate.parse(readLine(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    .atStartOfDay(ZoneId.of("UTC")).toInstant().epochSecond
 
-  println("Timestamp: $startDate")
+  try {
+    val startDate = LocalDateTime.parse(readLine(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.of("UTC")).toEpochSecond()
 
-  print("Enter end date: ")
-  val endDate = LocalDate.parse(readLine(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-    .atStartOfDay(ZoneId.of("UTC")).toInstant().epochSecond
+    print("Enter end date: ")
+    val endDate = LocalDateTime.parse(readLine(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.of("UTC")).toEpochSecond()
 
-  println("Timestamp: $endDate")
 
-  val mapOfIntervals = arrayListOf<Int>(300, 900, 1800, 7200, 14400, 86400)
+    if(startDate > endDate){
+      println("End date happens earlier than start date")
+      return
+    }
 
-  print("Select interval:\n " +
-    "1. 5 minutes\n" +
-    "2. 15 minutes\n" +
-    "3. 30 minutes\n" +
-    "4. 2 hours\n" +
-    "5. 4 hours\n" +
-    "6. 24 hours\n")
+    val mapOfIntervals = arrayListOf<Int>(300, 900, 1800, 7200, 14400, 86400)
 
-  val selectedInterval = readLine()
+    print("Select interval:\n" +
+      "1. 5 minutes\n" +
+      "2. 15 minutes\n" +
+      "3. 30 minutes\n" +
+      "4. 2 hours\n" +
+      "5. 4 hours\n" +
+      "6. 24 hours\n")
 
-  if (selectedInterval != null) {
-    if(selectedInterval.toInt() in 1..6) {
-      val interval = mapOfIntervals[selectedInterval.toInt() - 1]
-      val result = ApiFetch.sendRequest("https://poloniex.com/public?command=returnChartData&currencyPair=$currencyPair&start=$startDate&end=$endDate&period=$interval")
-      JsonParser.resolveJson(result)?.forEach {
-        println(it)
+    var selectedInterval: String? = null
+
+    while (selectedInterval == null){
+      selectedInterval = readLine()
+      if (selectedInterval != null) {
+        if (selectedInterval.toInt() in 1..6) {
+          val interval = mapOfIntervals[selectedInterval.toInt() - 1]
+          val result = ApiFetch.sendRequest("https://poloniex.com/public?command=returnChartData&currencyPair=$currencyPair&start=$startDate&end=$endDate&period=$interval")
+          val parsed = JsonParser.resolveJson(result)
+          if (parsed != null) {
+            ChartCanvas("Wykres!", parsed)
+            val generated = Simulator(parsed).simulate(endDate + interval, interval).toList()
+            ChartCanvas("Wygenerowane!", generated)
+            for(data in generated){
+              println(data)
+            }
+          }
+        } else {
+          println("Select valid interval")
+          selectedInterval = null
+        }
       }
     }
+
   }
-
-
-
+  catch(e: Exception){
+    e.printStackTrace()
+  }
 
 }
