@@ -15,9 +15,3 @@ def get_data(trading_pair, timestamp_from, timestamp_to):
     data = get_all_data(trading_pair)
     return list(
         filter(lambda data: float(timestamp_from) <= float(data["time"]) <= float(timestamp_to), data["Data"]["Data"]))
-
-
-if __name__ == '__main__':
-    data = get_data("BTC-USD", 1589328000, 1590192000)
-    for record in data:
-        print(record)

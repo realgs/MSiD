@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import graphs
 
+
 pairs = [
     "BTC-USD",
     "ETH-USD",
@@ -21,7 +22,7 @@ def convert_dates(human_readable_date):
 
 def sim(trading_pair, starting_date, ending_date, count):
     data_list = []
-    for i in range(count):
+    for _ in range(count):
         data_list.append(sim_one(trading_pair, starting_date, ending_date))
     return data_list
 
@@ -48,7 +49,7 @@ def generate_entry(data):
     price_change = (decide_how_price_changes(data, count_rise_probability(data)))
     new_volume = decide_volume_change(data, price_change)
     last_entry = data.tail(1)
-    time = last_entry['time'] + (24 * 60 * 60)  # 24 hours in seconds
+    time = last_entry['time'] + (24 * 60 * 60)
     open = last_entry['close']
     close = open + price_change
     diff = np.abs(price_change)
@@ -92,6 +93,19 @@ def mean_from_multiple_sims(data_list):
 
 
 if __name__ == '__main__':
-    #datao = sim_one("BTC-USD", "2020-01-01", "2020-05-01")
-    data = sim("BTC-USD", "2020-01-01", "2020-05-01", 5)
-    graphs.draw(mean_from_multiple_sims(data), 'Avg')
+    print('Pick a pair')
+    for i in range(3):
+        print(f"{i} - {pairs[i]}")
+    pair = input()
+    start_date = input("Enter start date(YYYY-MM-DD): ")
+    end_date = input("Enter end date(YYYY-MM-DD): ")
+    one = sim_one(pairs[int(pair)], start_date, end_date)
+    graphs.draw(one, 'Simulation')
+    stats = count_statistics(one)
+    print("Statistics from simulation: ")
+    for stat in stats:
+        print(f"{stat}:")
+        print(stats[stat])
+    data = sim(pairs[int(pair)], start_date, end_date, 100)
+    graphs.draw(mean_from_multiple_sims(data), 'Avg from 100 simulations')
+    graphs.plt.show()
