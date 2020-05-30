@@ -11,10 +11,12 @@ def draw(data, title):
     ax2 = fig.add_subplot(212)
     dataset = pd.DataFrame(data)
     dataset['time'] = pd.to_datetime(dataset['time'], unit='s')
-    print(dataset[['time', 'open', 'close']])
-    dataset.plot(kind='line' , x='time', y='open', title=title, ax=ax1)
-    dataset.plot(kind="bar", x='time', y='volumefrom', stacked=True, ax=ax2)
-    dataset.info()
+    ax1 = dataset.plot(kind='line' , x='time', y='open', title=title, ax=ax1)
+    ax1.set_xlabel("time")
+    ax1.set_ylabel("price")
+    ax2 = dataset.plot(kind="bar", x='time', y='volumefrom', stacked=True, ax=ax2)
+    ax2.set_xlabel("time")
+    ax2.set_ylabel("volume")
 
     plt.show()
 
