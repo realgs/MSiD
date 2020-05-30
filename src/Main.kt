@@ -5,7 +5,10 @@ import java.time.format.DateTimeFormatter
 
 fun main() {
 
-  print("Enter valid currency pair (e.g. BTC_ETH): ")
+  println("-----FUTURE DATA SIMULATION-----")
+  println("App uses poloniex API. Example currency pairs: BTC_ETH, BTC_LTC, BTC_XMR")
+
+  print("Enter valid currency pair: ")
   val currencyPair = readLine()
 
   println("Format of datetime is yyyy-mm-ddThh:mm:ss")
