@@ -8,13 +8,12 @@ data class ChartData(
   val volume: Double
 )
 
-object JsonParser{
+object JsonParser {
 
   fun resolveJson(json: String): List<ChartData>? {
-    try{
+    try {
       return Gson().fromJson(json, Array<ChartData>::class.java).toList()
-    }
-    catch(e: Exception){
+    } catch (e: Exception) {
       println(json)
     }
     return null

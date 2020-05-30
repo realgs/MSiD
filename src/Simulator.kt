@@ -4,7 +4,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-class Simulator(dataset: List<ChartData>){
+class Simulator(dataset: List<ChartData>) {
 
   private val highData: DoubleArray = dataset.map { it.high }.toDoubleArray()
   private val lowData: DoubleArray = dataset.map { it.low }.toDoubleArray()
@@ -16,22 +16,34 @@ class Simulator(dataset: List<ChartData>){
 
   var correction = 0.0
 
-  fun averageSimulation(numOfIterations: Int){
+  fun averageSimulation(numOfIterations: Int) {
     val allData = mutableListOf<MutableList<ChartData>>()
-    for(i in 0 until numOfIterations){
+    for (i in 0 until numOfIterations) {
       allData.add(simulate())
     }
 
-    val averageCloseStats = allData.map{ DescriptiveStatistics(it.map{ iit -> iit.high }.toDoubleArray()) }
-    val averageCloseMean = averageCloseStats.sumByDouble { it.mean } / averageCloseStats.size
-    val averageCloseDeviation = averageCloseStats.sumByDouble { it.standardDeviation } / averageCloseStats.size
+    val averageCloses = mutableListOf<Double>()
+    val averageVolumes = mutableListOf<Double>()
 
-    val averageVolumeStats = allData.map{ DescriptiveStatistics(it.map{ iit -> iit.volume }.toDoubleArray()) }
-    val averageVolumeMean = averageVolumeStats.sumByDouble { it.mean } / averageVolumeStats.size
-    val averageVolumeDeviation = averageVolumeStats.sumByDouble { it.standardDeviation } / averageVolumeStats.size
+    for (i in allData.first().indices) {
+      averageCloses.add(allData.sumByDouble { it[i].close } / numOfIterations)
+      averageVolumes.add(allData.sumByDouble { it[i].volume } / numOfIterations)
+    }
 
-    println("Average close mean: $averageCloseMean ::: Average close standard deviation: $averageCloseDeviation")
-    println("Average volume mean: $averageVolumeMean ::: Average volume standard deviation: $averageVolumeDeviation")
+    val averageOpens = setNewOpens(highData.last(), averageCloses)
+    val averageHighs = generateNewHigh(openData, closeData, averageOpens, averageCloses)
+    val averageLows = generateNewLow(openData, closeData, averageOpens, averageCloses)
+
+    val newValues = mutableListOf<ChartData>()
+
+    for (i in 0 until averageHighs.size) {
+      newValues.add(ChartData(averageHighs[i], averageLows[i], averageOpens[i], averageCloses[i], averageVolumes[i]))
+    }
+
+    ChartCanvas("Average", newValues)
+
+    println("Average close mean: ${DescriptiveStatistics(averageCloses.toDoubleArray()).mean} ::: Average close standard deviation: ${DescriptiveStatistics(averageCloses.toDoubleArray()).standardDeviation}")
+    println("Average volume mean: ${DescriptiveStatistics(averageVolumes.toDoubleArray()).mean} ::: Average volume standard deviation: ${DescriptiveStatistics(averageVolumes.toDoubleArray()).standardDeviation}")
 
   }
 
@@ -60,7 +72,7 @@ class Simulator(dataset: List<ChartData>){
 
     val newVolume = generateNewVal(volumeData.last(), volumeData.size, dsVolume, dsVolumeChange, deviationDataVolume, mutableListOf())
 
-    for( i in 0 until newHigh.size) {
+    for (i in 0 until newHigh.size) {
       newValues.add(ChartData(newHigh[i], newLow[i], newOpen[i], newClose[i], newVolume[i]))
     }
 
@@ -71,7 +83,7 @@ class Simulator(dataset: List<ChartData>){
   fun generateNewHigh(openData: DoubleArray, closeData: DoubleArray, newOpenData: MutableList<Double>, newCloseData: MutableList<Double>): MutableList<Double> {
     val dsHighData = getStatsOfHighVal(highData, openData, closeData)
     val retVal = mutableListOf<Double>()
-    for(i in openData.indices) {
+    for (i in openData.indices) {
       val larger = max(newOpenData[i], newCloseData[i])
       val d100roll = Random.nextInt(0, 100)
       retVal.add(larger + ((dsHighData.mean + dsHighData.standardDeviation) / 100) * d100roll)
@@ -82,7 +94,7 @@ class Simulator(dataset: List<ChartData>){
   fun generateNewLow(openData: DoubleArray, closeData: DoubleArray, newOpenData: MutableList<Double>, newCloseData: MutableList<Double>): MutableList<Double> {
     val dsLowData = getStatsOfLowVal(lowData, openData, closeData)
     val retVal = mutableListOf<Double>()
-    for(i in openData.indices) {
+    for (i in openData.indices) {
       val smaller = min(newOpenData[i], newCloseData[i])
       val d100roll = Random.nextInt(0, 100)
       retVal.add(smaller - ((dsLowData.mean + dsLowData.standardDeviation) / 100) * d100roll)
@@ -94,7 +106,7 @@ class Simulator(dataset: List<ChartData>){
   fun setNewOpens(firstVal: Double, closeData: MutableList<Double>): MutableList<Double> {
     val retVal = mutableListOf<Double>()
     retVal.add(firstVal)
-    for(close in closeData){
+    for (close in closeData) {
       retVal.add(close)
     }
     return retVal.dropLast(1).toMutableList()
@@ -105,7 +117,7 @@ class Simulator(dataset: List<ChartData>){
     val dsValuesBelowDev = deviationData.second
     val newVal = generateValue(ds, dsc, dsValuesAboveDev, dsValuesBelowDev, prevVal)
     acc.add(newVal)
-    if(threshold > 0) generateNewVal(newVal, threshold-1, ds, dsc, deviationData, acc)
+    if (threshold > 0) generateNewVal(newVal, threshold - 1, ds, dsc, deviationData, acc)
     return acc
   }
 
@@ -115,46 +127,50 @@ class Simulator(dataset: List<ChartData>){
     val dsValAboveStat = DescriptiveStatistics(valsAboveDev)
     val dsValBelowStat = DescriptiveStatistics(valsBelowDev)
 
-    if(previousValue > ds.mean) {
+    if (previousValue > ds.mean) {
       var divider = dsValAboveStat.mean + dsValAboveStat.standardDeviation - ds.mean
-      if(divider == 0.0 || divider.isNaN()) divider = ds.mean + ds.max
+      if (divider == 0.0 || divider.isNaN()) divider = ds.mean + ds.max
       growChance = 100.0 - (previousValue - ds.mean) / divider * 100
-    }
-    else if (previousValue < ds.mean){
+    } else if (previousValue < ds.mean) {
       var divider = ds.mean - dsValBelowStat.mean - dsValBelowStat.standardDeviation
-      if(divider == 0.0 || divider.isNaN()) divider = ds.mean - ds.min
+      if (divider == 0.0 || divider.isNaN()) divider = ds.mean - ds.min
       growChance = (ds.mean - previousValue) / divider * 100
     }
 
     val d100Roll = Random.nextInt(0, 100)
 
-    if(growChance - d100Roll > 0){
+    if (growChance - d100Roll > 0) {
       val newVal = previousValue + rollNewVal(dsChange, dsValAboveStat) - correction
-      if(newVal < 0) correction = abs(newVal)
-      return abs(newVal)
-    }
-    else if(growChance - d100Roll < 0){
+      if (newVal < 0) {
+        val retVal = ds.min
+        correction = abs(newVal) - ds.min
+        return retVal
+      }
+      return newVal
+    } else if (growChance - d100Roll < 0) {
       val newVal = previousValue - rollNewVal(dsChange, dsValBelowStat) - correction
-      if(newVal < 0) correction = abs(newVal)
-      return abs(newVal)
+      if (newVal < 0) {
+        val retVal = ds.min
+        correction = abs(newVal) - ds.min
+        return retVal
+      }
+      return newVal
     }
     return previousValue
   }
 
   fun rollNewVal(dsc: DescriptiveStatistics, dsCh: DescriptiveStatistics): Double {
     val changeRoll = Random.nextInt(0, 100)
-    val change = ((dsc.mean + dsc.standardDeviation) / 100) * changeRoll
-    return change
+    return ((dsc.mean + dsc.standardDeviation) / 100) * changeRoll
   }
 
   fun getValuesOutsideStandardDeviation(data: DoubleArray, ds: DescriptiveStatistics): Pair<DoubleArray, DoubleArray> {
     val above = mutableListOf<Double>()
     val below = mutableListOf<Double>()
     data.forEach {
-      if(it > ds.mean + ds.standardDeviation){
+      if (it > ds.mean + ds.standardDeviation) {
         above.add(it)
-      }
-      else if(it < ds.mean - ds.standardDeviation){
+      } else if (it < ds.mean - ds.standardDeviation) {
         below.add(it)
       }
     }
@@ -163,15 +179,15 @@ class Simulator(dataset: List<ChartData>){
 
   fun getChangeData(data: DoubleArray): DoubleArray {
     val resVal = mutableListOf<Double>()
-    for(i in 1 until data.size){
-      resVal.add(abs(data[i]-data[i-1]))
+    for (i in 1 until data.size) {
+      resVal.add(abs(data[i] - data[i - 1]))
     }
     return resVal.toDoubleArray()
   }
 
   fun getStatsOfHighVal(dataHigh: DoubleArray, dataOpen: DoubleArray, dataClose: DoubleArray): DescriptiveStatistics {
     val retVal = mutableListOf<Double>()
-    for (i in dataHigh.indices){
+    for (i in dataHigh.indices) {
       val larger = max(dataOpen[i], dataClose[i])
       retVal.add(dataHigh[i] - larger)
     }
@@ -180,7 +196,7 @@ class Simulator(dataset: List<ChartData>){
 
   fun getStatsOfLowVal(dataLow: DoubleArray, dataOpen: DoubleArray, dataClose: DoubleArray): DescriptiveStatistics {
     val retVal = mutableListOf<Double>()
-    for (i in dataLow.indices){
+    for (i in dataLow.indices) {
       val smaller = min(dataOpen[i], dataClose[i])
       retVal.add(smaller - dataLow[i])
     }

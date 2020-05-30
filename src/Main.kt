@@ -1,5 +1,4 @@
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics
-import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -19,7 +18,7 @@ fun main() {
     val endDate = LocalDateTime.parse(readLine(), DateTimeFormatter.ISO_LOCAL_DATE_TIME).atZone(ZoneId.of("UTC")).toEpochSecond()
 
 
-    if(startDate > endDate){
+    if (startDate > endDate) {
       println("End date happens earlier than start date")
       return
     }
@@ -36,7 +35,7 @@ fun main() {
 
     var selectedInterval: String? = null
 
-    while (selectedInterval == null){
+    while (selectedInterval == null) {
       selectedInterval = readLine()
       if (selectedInterval != null) {
         if (selectedInterval.toInt() in 1..6) {
@@ -47,11 +46,11 @@ fun main() {
             ChartCanvas("Original data", parsed)
             val sim = Simulator(parsed)
             val generated = sim.simulate().toList()
-            val averageCloseStats = DescriptiveStatistics(parsed.map{ iit -> iit.high }.toDoubleArray())
-            val averageVolumeStats =  DescriptiveStatistics(parsed.map{ iit -> iit.volume }.toDoubleArray())
+            val averageCloseStats = DescriptiveStatistics(parsed.map { iit -> iit.high }.toDoubleArray())
+            val averageVolumeStats = DescriptiveStatistics(parsed.map { iit -> iit.volume }.toDoubleArray())
 
-            println("Original close mean: ${averageCloseStats.mean} ::: Average close standard deviation: ${averageCloseStats.standardDeviation}")
-            println("Average volume mean: ${averageVolumeStats.mean} ::: Average volume standard deviation: ${averageVolumeStats.standardDeviation}")
+            println("Original close mean: ${averageCloseStats.mean} ::: Original close standard deviation: ${averageCloseStats.standardDeviation}")
+            println("Original volume mean: ${averageVolumeStats.mean} ::: Original volume standard deviation: ${averageVolumeStats.standardDeviation}")
             ChartCanvas("One-time generated data", generated)
             sim.averageSimulation(100)
           }
@@ -62,8 +61,7 @@ fun main() {
       }
     }
 
-  }
-  catch(e: Exception){
+  } catch (e: Exception) {
     e.printStackTrace()
   }
 
