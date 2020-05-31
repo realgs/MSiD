@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-supported_steps = [60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400, 259200]
-supported_pairs = ["btcusd", "btceur", "eurusd", "xrpusd", "xrpeur", "xrpbtc", "ltcusd", "ltceur", "ltcbtc", "ethusd",
-                   "etheur", "ethbtc", "bchusd", "bcheur", "bchbtc"]
+# Limit of gathered data from bitstamp is 1000
+SUPPORTED_STEPS = [60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400, 259200]
+SUPPORTED_CURRENCY_PAIRS = ["btcusd", "btceur", "eurusd", "xrpusd", "xrpeur", "xrpbtc", "ltcusd", "ltceur", "ltcbtc",
+                            "ethusd",
+                            "etheur", "ethbtc", "bchusd", "bcheur", "bchbtc"]
 
 
 def convert_date_to_utc(year, month, day, hour=0, minutes=0, seconds=0):
@@ -21,11 +23,13 @@ def convert_utc_to_date(timestamp):
 
 def gather_data(currency_pair, start, end, step):
     limit = (end - start) // step + 1
-    bitstamp = requests.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency_pair),
-                            params={'start': start, 'end': end, 'step': step, 'limit': limit})
-    if bitstamp.status_code == 200:
-        bitstamp_json = bitstamp.json()
-        return True, bitstamp_json
+    if limit > 1000:
+        limit = 1000
+    bitstamp_data = requests.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency_pair),
+                                 params={'start': start, 'end': end, 'step': step, 'limit': limit})
+    if bitstamp_data.status_code == 200:
+        bitstamp_data_json = bitstamp_data.json()
+        return True, bitstamp_data_json
     else:
         return False, None
 
@@ -42,8 +46,15 @@ def analyze_data(currency_pair, start, end, last_timestamps, next_timestamps, it
 def prepare_single_data(timestamp, close, volume, prev_close, prev_volume):
     close_diff = close - prev_close
     volume_diff = volume - prev_volume
-    close_percentage_change = close_diff / prev_close * 100
-    volume_percentage_change = volume_diff / prev_volume * 100
+    if prev_close == 0:
+        close_percentage_change = None
+    else:
+        close_percentage_change = close_diff / prev_close * 100
+    if prev_volume == 0:
+        volume_percentage_change = None
+    else:
+        volume_percentage_change = volume_diff / prev_volume * 100
+
     return {
         'timestamp': timestamp,
         'close': close,
@@ -71,39 +82,47 @@ def simulate(data, last_timestamps, next_timestamps, iterations, step):
 def make_predictions(data, last_timestamps, next_timestamps, iterations, step):
     for i in range(next_timestamps):
         data_segment = data[-last_timestamps::]
-        close = [single_data['close'] for single_data in data_segment]
-        close_diff = [single_data['close_diff'] for single_data in data_segment]
-        close_percentage_change = [single_data['close_percentage_change'] for single_data in data_segment]
-        close_positive_count = sum(x > 0 for x in close_percentage_change)
+        close_list = [single_data['close'] for single_data in data_segment]
+        close_diff_list = [single_data['close_diff'] for single_data in data_segment]
+        close_percentage_change_list = [single_data['close_percentage_change'] for single_data in data_segment]
+        close_positive_count = sum(x > 0 for x in close_percentage_change_list)
         close_grow_chance = close_positive_count / last_timestamps
 
-        volume = [single_data['volume'] for single_data in data_segment]
-        volume_diff = [single_data['volume_diff'] for single_data in data_segment]
-        volume_percentage_change = [single_data['volume_percentage_change'] for single_data in data_segment]
+        volume_list = [single_data['volume'] for single_data in data_segment]
+        volume_diff_list = [single_data['volume_diff'] for single_data in data_segment]
+        volume_percentage_change_list = [single_data['volume_percentage_change'] for single_data in data_segment]
 
-        volume_positive_count = sum(x > 0 for x in volume_percentage_change)
+        volume_positive_count = sum(x > 0 for x in volume_percentage_change_list)
         volume_grow_chance = volume_positive_count / last_timestamps
 
         close_values = []
         volume_values = []
         for j in range(iterations):
             close_is_growing = random.random() <= close_grow_chance
-            close_percentage_change = np.mean(np.abs(close_percentage_change)) * random.uniform(0.5, 1.5) * (1 if close_is_growing else -1)
-            new_close = round(close[-1] *(1+close_percentage_change/100), 2)
+            close_percentage_change_list = np.mean(np.abs(close_percentage_change_list)) * random.uniform(0.5, 1.5) * (
+                1 if close_is_growing else -1)
+            new_close = round(close_list[-1] * (1 + close_percentage_change_list / 100), 2)
             close_values.append(new_close)
 
-            volume_is_growing=True
-            if close_percentage_change<-5 or close_percentage_change>5:
+            volume_is_growing = True
+            percentage_boost = 0
+            if close_percentage_change_list < -5 or close_percentage_change_list > 5:
                 volume_is_growing = True
+                percentage_boost = abs(close_percentage_change_list)
             else:
                 volume_is_growing = random.random() <= volume_grow_chance
-            volume_percentage_change = np.mean(np.abs(volume_percentage_change)) * random.uniform(0.2, 1.6) * (1 if volume_is_growing else -1)
-            new_volume = round(volume[-1]*(1+volume_percentage_change/100), 2)
+            volume_percentage_change_list = (percentage_boost + np.mean(np.abs(volume_percentage_change_list))) * random.uniform(
+                0.2, 1.5) * (1 if volume_is_growing else -1)
+            new_volume = round(volume_list[-1] * (1 + volume_percentage_change_list / 100), 2)
             volume_values.append(new_volume)
 
-        print("timestamp: {0}".format(data_segment[-1]['timestamp']+ step))
-        print("close - MEAN: {0}, MEDIAN: {1}, STANDARD DEVIATION: {2}".format(np.mean(close_values),np.median(close_values),np.std(close_values)))
-        print("volume - MEAN: {0}, MEDIAN: {1}, STANDARD DEVIATION: {2}".format(np.mean(volume_values),np.median(volume_values),np.std(volume_values)))
+        print("timestamp: {0}".format(data_segment[-1]['timestamp'] + step))
+        print("close - MEAN: {0}, MEDIAN: {1}, STANDARD DEVIATION: {2}".format(np.mean(close_values),
+                                                                               np.median(close_values),
+                                                                               np.std(close_values)))
+        print("volume - MEAN: {0}, MEDIAN: {1}, STANDARD DEVIATION: {2}".format(np.mean(volume_values),
+                                                                                np.median(volume_values),
+                                                                                np.std(volume_values)))
         new_close = np.mean(close_values)
         new_volume = np.mean(volume_values)
         data.append(prepare_single_data(data_segment[-1]['timestamp'] + step, new_close, new_volume,
@@ -124,7 +143,7 @@ def make_plot(data, currency_pair, end_date):
     ax1.set_xlabel('date')
     ax1.set_ylabel('volume', color=color)
     ax1.set_ylim([0, 3 * max(volumes)])
-    ax1.bar(date_labels, volumes, color=color, alpha=0.75)
+    ax1.bar(date_labels, volumes, color=color, alpha=0.75, width=0.5)
     ax1.tick_params(axis='y', labelcolor=color)
 
     ax2 = ax1.twinx()
@@ -144,7 +163,7 @@ def make_plot(data, currency_pair, end_date):
 
 def main():
     analyze_data(currency_pair="btcusd", start=convert_date_to_utc(2020, 3, 1), end=convert_date_to_utc(2020, 5, 29),
-                 last_timestamps=50, next_timestamps=20, iterations=20, step=3600*24)
+                 last_timestamps=50, next_timestamps=10, iterations=50, step=3600 * 24)
 
 
 if __name__ == "__main__":
