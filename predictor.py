@@ -4,17 +4,17 @@ from datetime import datetime
 import time
 import random
 
-PREDICTION_RANDOM_MAX_MODIFICATOR = 0.007
-HOW_MANY_BEST_RESULTS = 3
+PREDICTION_RANDOM_MAX_MODIFICATOR = 0.00000001
+HOW_MANY_BEST_RESULTS = 4
 INPUT_SIZE = 5
 STEPS_OF_SIMULATION = 300
-NUMBER_OF_SIMULATIONS = 250
+NUMBER_OF_SIMULATIONS = 5
 START = '2019-12-01'
 END = '2020-02-01'
 SHOW_SUB_SIMULATIONS = True
+apiSymbols = ['BTCUSDT', 'ETHBTC', 'LTCBTC']
 
-
-def downloadData(start, end, granularity = 3600000):
+def downloadData(start, end, symbol, granularity = 3600000):
     startTimeStamp = time.mktime(datetime.strptime(start, "%Y-%m-%d").timetuple())
     endTimeStamp = time.mktime(datetime.strptime(end, "%Y-%m-%d").timetuple())
     startTimeStamp *= 1000
@@ -26,12 +26,12 @@ def downloadData(start, end, granularity = 3600000):
     for i in range(int(endTimeStamp-startTimeStamp)//timestampStep):
         endStamp = startTimeStamp+(i+1)*timestampStep
         r = requests.get('https://api.binance.com/api/v3/klines',
-            params={'symbol':'BTCUSDT','interval':'1h','startTime':str(int(startStamp)),'endTime':str(int(endStamp)),'limit':'1000'})
+            params={'symbol':symbol,'interval':'1h','startTime':str(int(startStamp)),'endTime':str(int(endStamp)),'limit':'1000'})
         startStamp = endStamp
         rawData = rawData+r.json()
 
     r = requests.get('https://api.binance.com/api/v3/klines',
-            params={'symbol':'BTCUSDT','interval':'1h','startTime':str(int(startStamp)),'endTime':str(int(endTimeStamp)),'limit':'1000'})
+            params={'symbol':symbol,'interval':'1h','startTime':str(int(startStamp)),'endTime':str(int(endTimeStamp)),'limit':'1000'})
     rawData = rawData+r.json()
     return rawData
 
@@ -110,7 +110,7 @@ def calculateAverageValues(simulationsData):
         averageResultsFromSimulation.append(averageOfStep)
     return averageResultsFromSimulation
 
-rawData = downloadData(START,END)
+rawData = downloadData(START,END,apiSymbols[1])
 
 parsedInternetDataAll = parseDataAndCalculateChanges(rawData)
 parsedInternetDataForLearn = parsedInternetDataAll[:len(rawData)-STEPS_OF_SIMULATION]
@@ -130,7 +130,7 @@ for simulationIndex in range(NUMBER_OF_SIMULATIONS):
         givenRequest = inputsForCalcs[-INPUT_SIZE:]
 
         estimatedChange, positiveChangeChance, estimatedVolume, qualityOfEstimate = estimate(givenRequest, parsedInternetDataForLearn)
-        
+
         inputsForCalcs.append([estimatedChange, estimatedVolume])
         calcData.append(estimatedChange*calcData[-1]+calcData[-1])
 
