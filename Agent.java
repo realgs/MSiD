@@ -2,6 +2,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+/*
+	Agent podejmuje decyzje w oparciu o wskazniki dlugoterminowe, przyjmuj¹c przekazane
+	kursy jako kursy zamkniêcia danego dnia, dla maksymalizacji efektywnoœci czêsotliwoœæ
+	podejmowania decyzji, powinna zostaæ dopasowana do danych z pliku CSV 
+	(w tym przypadku najlepiej powinno dzia³aæ podejmowanie decyzji z dnia na dzieñ)
+*/
+
 public class Agent 
 {
 	public class Record 
@@ -26,8 +33,9 @@ public class Agent
 	
 	ArrayList<Record> dane;
 	Orderbook book;
-	double longTermMA=0.0;
-	double shortTermMA=0.0;
+	boolean worth=false;
+	double lastAvgMaRatio=0.0;
+	double currentAvgMaRatio=0.0;
 	
 	public Agent(String dataSource, Orderbook book) throws Exception
 	{
@@ -47,47 +55,80 @@ public class Agent
 		buffer.close();
 	}
 	
-	public double calcMA(boolean longTerm, int movingRange, double...vals)
+	public double calcMovingAverage(int modifyDate, int shortRange, int longRange, double...vals)
 	{
-		if(movingRange>dane.size())
+		lastAvgMaRatio = currentAvgMaRatio;
+		
+		if(modifyDate+shortRange>dane.size() || modifyDate+longRange>dane.size())
 		{
-			System.out.println("Podany zakres jest za du¿y!");
+			System.out.println("Podany zakres nie jest przechowywany");
 			return -1;
 		}
 		else
 		{
-			double movingAverage=0.0;
+			double shortMA=0.0, longMA=0.0;
+			
 			for(int i=0; i<vals.length; i++)
 			{
-				movingAverage+=vals[i];
+				shortMA+=vals[i];
+				longMA+=vals[i];
 			}
 			
-			for(int i=0; i<movingRange-vals.length; i++)
+			int i=modifyDate;
+			for(; i<modifyDate+shortRange-vals.length; i++)
 			{
-				movingAverage+=dane.get(0).closeValue;
+				shortMA+=dane.get(i).closeValue;
+				longMA+=dane.get(i).closeValue;
 			}
 			
-			movingAverage/=(double)movingRange;
-			
-			if(longTerm)
+			for(; i<longRange; i++)
 			{
-				longTermMA = movingAverage;
-				System.out.println("Long MA" + movingRange + ":\t" + movingAverage);
-			}
-			else
-			{
-				shortTermMA = movingAverage;
-				System.out.println("Short MA" + movingRange + ":\t" + movingAverage);
+				longMA+=dane.get(i).closeValue;
 			}
 			
-			return movingAverage;
+			shortMA/=(double)shortRange;
+			longMA/=(double)longRange;
+			
+			if(shortMA>longMA) worth=true;
+			System.out.println("------------------------------------");
+			System.out.println("Moving Avg"+shortRange+":\t"+ shortMA + "\nMoving Avg"+longRange+":\t" +longMA);
+			System.out.println("------------------------------------");
+			
+			currentAvgMaRatio = (shortMA+longMA)/2;
+			System.out.println("Stosunek Œrednich krocz¹cych:" + currentAvgMaRatio);
+			
+			return currentAvgMaRatio;
 		}
 		
 	}
 	
-	public int makeDecision(Orderbook book, int shortTerm, int longTerm) //Funkcja zwraca podejmowan¹ decyzjê (1: kupno, 0: oczekiwanie, -1: sprzedaz)
+	/*
+		Funkcja zwraca podejmowan¹ decyzjê (1: kupno, 0: oczekiwanie, -1: sprzedaz)
+		Zmienna modifyDate pozwala manipulowaæ okresem analizowanych danych 
+		np. je¿eli chcemy analizowaæ dane (wstecz) pocz¹wszy od dzisiaj 
+		modifyDate powinno przyj¹æ wartoœæ 0, je¿eli chcemy zacz¹æ analizê tydzieñ wstecz
+		modifyDate powinno przyj¹æ wartoœæ 7
+	*/
+	
+	public int makeDecision(Orderbook book, int shortRange, int longRange, int modifyDate) 
 	{
-		return 1;
+		calcMovingAverage(modifyDate, shortRange, longRange, book.buy.get(0).price);
+		
+		if(lastAvgMaRatio!=0 && currentAvgMaRatio<lastAvgMaRatio && worth)
+		{
+			System.out.println("DECYZJA KUP");
+			return 1;
+		}
+		else if (lastAvgMaRatio!=0 && currentAvgMaRatio>lastAvgMaRatio)
+		{
+			System.out.println("DECYZJA SPRZEDAJ");
+			return -1;
+		}
+		else
+		{
+			System.out.println("DECYZJA CZEKAJ");
+			return 0;
+		}
 	}
 	
 }

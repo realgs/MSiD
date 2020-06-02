@@ -19,7 +19,7 @@ public class CexIoOrderbook extends Orderbook
 		buy = new ArrayList<Offer>(); sell = new ArrayList<Offer>();
 		int i=1, counter=0;
 		
-		//long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 		
 		URLConnection connection = source.openConnection();
 		connection.addRequestProperty("User-Agent", "Mozilla");
@@ -27,7 +27,7 @@ public class CexIoOrderbook extends Orderbook
 		
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		
-		//System.out.println("CexIo: "+ (System.currentTimeMillis()-start));
+		System.out.println("CexIo: "+ (System.currentTimeMillis()-start));
 		
 		
 		tab = buffer.readLine().replaceAll("[:\\[\\]\\{\\}]", "").split(",");
