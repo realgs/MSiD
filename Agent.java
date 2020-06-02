@@ -110,8 +110,9 @@ public class Agent
 		modifyDate powinno przyj¹æ wartoœæ 7
 	*/
 	
-	public int makeDecision(Orderbook book, int shortRange, int longRange, int modifyDate) 
+	public int makeDecision(Orderbook book, int shortRange, int longRange, int modifyDate) throws Exception 
 	{
+		book.update(1);
 		calcMovingAverage(modifyDate, shortRange, longRange, book.buy.get(0).price);
 		
 		if(lastAvgMaRatio!=0 && currentAvgMaRatio<lastAvgMaRatio && worth)

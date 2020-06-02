@@ -101,33 +101,54 @@ public class Main
     	}
     }
     
-    public static void zad4() throws Exception
+    public static void zad4(double tax) throws Exception
     {
     	Budget budget = new Budget();
+    	budget.add("USD", 10000);
+    	System.out.println(budget);
+    	
 		Orderbook cex = new CexIoOrderbook("BTC","USD");
 		Agent agent = new Agent("BTCdata.csv", cex);
 		
-		budget.add("USD", 17000);
-		budget.sell("USD", 3000);
-		budget.sell("USD", 4000);
-		budget.sell("USD", 11000);
-		budget.add("BTC", 0.007362);
-		budget.sell("BTC", 0.007);
-		budget.sell("BTC", 0.007);
+		for(int reps=0; reps<100; reps++)
+		{
+			System.out.println();
+			int decyzja = agent.makeDecision(cex, 50, 100, 0);
+		    if(decyzja==1)
+		    {
+		    	double cena = (cex.sell.get(0).price * cex.sell.get(0).ammount)*(1+tax);
+		    	cena*=100; cena=Math.round(cena); cena/=100;
+		    	
+		    	if(budget.sell("USD", cena))
+		    	{
+		    		budget.add("BTC", cex.sell.get(0).ammount, cena);
+		    		System.out.println("Zakupiono BTC w iloœci: "+cex.sell.get(0).ammount+ "\tza: "+cena);
+		    	}
+		    }
+		    else if(decyzja==-1)
+		    {
+		    	double cena = (cex.buy.get(0).price * cex.buy.get(0).ammount)*(1+tax);
+		    	cena*=100; cena=Math.round(cena); cena/=100;
+		    	
+		    	if(budget.profitAvailable(cena, cex.buy.get(0).ammount))
+		    	{
+		    		budget.sell("BTC", cex.buy.get(0).ammount);
+		    		budget.add("USD", cena);
+		    		System.out.println("Sprzedano BTC w iloœci: "+cex.buy.get(0).ammount+ "\tza: "+cena);
+		    	}
+		    	else
+		    	{
+		    		System.out.println("Nie sprzedano BTC - brak waluty lub transakcja nieop³acalna");
+		    	}
+		    }
+		    Thread.sleep(5000);
+		}
 		System.out.println(budget);
-		
-//		for(int i=0; i<10; i++)
-//		{
-//			System.out.println();
-//			cex.update(1);
-//	    	agent.makeDecision(cex, 50, 100, 0);
-//	    	Thread.sleep(10000);
-//		}
     }
     
 	public static void main(String[] args) throws Exception 
     {	
 		//zad1_3();
-		zad4();
+		zad4(0.0005);
     }
 }

@@ -22,10 +22,12 @@ public class Budget
 	}
 
 	ArrayList<Resource> resources;
+	ArrayList<Offer> bought;
 	
 	public Budget()
 	{
 		resources = new ArrayList<Resource>();
+		bought = new ArrayList<Offer>();
 	}
 	
 	public void add(String currency, double ammount)
@@ -44,6 +46,12 @@ public class Budget
 		if(!added) resources.add(new Resource(currency, ammount));
 	}
 	
+	public void add(String currency, double ammount, double boughtPrice)
+	{
+		add(currency, ammount);
+		bought.add(new Offer(false,boughtPrice,ammount));
+	}
+	
 	public boolean sell(String currency, double ammount)
 	{
 		for(Resource res: resources)
@@ -51,7 +59,7 @@ public class Budget
 			if(res.currency.equals(currency) && res.ammount >= ammount)
 			{
 				res.ammount-=ammount;
-				System.out.println("Sprzedano walute: "+currency+"\tw ilosci: "+ammount);
+				System.out.println("\nSprzedano walute: "+currency+"\tw ilosci: "+ammount);
 				return true;
 			}
 		}
@@ -60,6 +68,18 @@ public class Budget
 		return false;
 	}
 
+	public boolean profitAvailable(double price, double ammount)
+	{
+		double sum = 0;
+		
+		for(Offer o : bought)
+		{
+			if(o.price<=price) sum+=o.ammount;
+		}
+		
+		return sum>=ammount;
+	}
+	
 	@Override
 	public String toString() 
 	{
