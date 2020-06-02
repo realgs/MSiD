@@ -62,47 +62,62 @@ public class Main
     	}
     }
 	
-	
 	public static void main(String[] args) throws Exception 
     {
-		Budget budget = new Budget();
-    	Orderbook[][] dane = new Orderbook[4][4];
-    	
-    	for(int i=0; i<4; i++)
-    	{
-    		dane[0][i] = new BitBayOrderbook(pairs[2*i], pairs[2*i+1]);
-    	}
-    	for(int i=0; i<4; i++)
-    	{
-    		dane[1][i] = new CexIoOrderbook(pairs[2*i], pairs[2*i+1]);
-    	}
-    	for(int i=0; i<4; i++)
-    	{
-    		dane[2][i] = new WhiteBitOrderbook(pairs[2*i], pairs[2*i+1]);
-    	}
-    	for(int i=0; i<4; i++)
-    	{
-    		dane[3][i] = new FtxOrderbook(pairs[2*i], pairs[2*i+1]);
-    	}
-    	
-    	for(int rep=0; rep<10; rep++)
-    	{
-    		System.out.println("Pobieranie danych.");
-    		update(dane, 4, 4);
-    		System.out.println("Pobrano dane.");
-        	for(int i=0; i<4; i++)
-        	{
-        		for(int j=0; j<4; j++)
-        		{
-        			arbitrage(budget, dane, i, j, 4, 0.0005); // np. 0.001 oznacza prowizjê na poziomie 0,1%
-        		}
-        		System.out.println();
-        	}
-        	if(!budget.resources.isEmpty()) System.out.println(budget);
-    	}
+		//ZADANIA 1-3
 		
+//		Budget budget = new Budget();
+//    	Orderbook[][] dane = new Orderbook[4][4];
+//    	
+//    	for(int i=0; i<4; i++)
+//    	{
+//    		dane[0][i] = new BitBayOrderbook(pairs[2*i], pairs[2*i+1]);
+//    	}
+//    	for(int i=0; i<4; i++)
+//    	{
+//    		dane[1][i] = new CexIoOrderbook(pairs[2*i], pairs[2*i+1]);
+//    	}
+//    	for(int i=0; i<4; i++)
+//    	{
+//    		dane[2][i] = new WhiteBitOrderbook(pairs[2*i], pairs[2*i+1]);
+//    	}
+//    	for(int i=0; i<4; i++)
+//    	{
+//    		dane[3][i] = new FtxOrderbook(pairs[2*i], pairs[2*i+1]);
+//    	}
+//    	
+//    	for(int rep=0; rep<1; rep++)
+//    	{
+//    		System.out.println("Pobieranie danych.");
+//    		update(dane, 4, 4);
+//    		System.out.println("Pobrano dane.");
+//        	for(int i=0; i<4; i++)
+//        	{
+//        		for(int j=0; j<4; j++)
+//        		{
+//        			arbitrage(budget, dane, i, j, 4, 0.0005); // np. 0.001 oznacza prowizjê na poziomie 0,1%
+//        		}
+//        		System.out.println();
+//        	}
+//        	if(!budget.resources.isEmpty()) System.out.println(budget);
+//    	}
 		
+		//ZADANIE 4
+		double a,b,c,d;
 		
-    	
+		Orderbook cex = new CexIoOrderbook("BTC","USD");
+		cex.update(1);
+		//cex.printOrderbook();
+		Agent agent = new Agent("BTCdata.csv", cex);
+		
+    	System.out.println("OFERTY KUPNA");
+		a=agent.calcMA(false, 50, cex.buy.get(0).price);
+		b=agent.calcMA(true, 100, cex.buy.get(0).price);
+		System.out.println("Stosunek: "+a/b);
+		System.out.println();
+		System.out.println("OFERTY SPRZEDA¯Y");
+		c=agent.calcMA(false, 50, cex.sell.get(0).price);
+		d=agent.calcMA(true, 100, cex.sell.get(0).price);
+		System.out.println("Stosunek: "+c/d);
     }
 }

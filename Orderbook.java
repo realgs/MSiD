@@ -43,7 +43,7 @@ abstract public class Orderbook
 			System.out.println(o);
 		}
 		
-		System.out.println("\n___________________________________________________\n");
+		System.out.println("---------------------------------------------------");
 		
 		for(Offer o : sell)
 		{

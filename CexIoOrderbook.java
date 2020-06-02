@@ -27,7 +27,7 @@ public class CexIoOrderbook extends Orderbook
 		
 		BufferedReader buffer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		
-		//System.out.println("Czas: "+ (System.currentTimeMillis()-start));
+		//System.out.println("CexIo: "+ (System.currentTimeMillis()-start));
 		
 		
 		tab = buffer.readLine().replaceAll("[:\\[\\]\\{\\}]", "").split(",");
