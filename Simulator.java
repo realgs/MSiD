@@ -78,6 +78,8 @@ public class Simulator
 	
 	public String calcStats()
 	{
+		average=0; median=0; stdDeviation=0;
+		
 		int predicted = prediction.size();
 		double [] closePrices = new double[predicted];
 		
@@ -140,9 +142,7 @@ public class Simulator
 		}
 		else
 		{
-			System.out.println(previous.volume - volumeDifference);
-			System.out.println(Math.max(0, previous.volume - volumeDifference));
-			volume = Math.max(0, previous.volume - volumeDifference);
+			volume = (Math.max(0, previous.volume - volumeDifference));
 		}
 		
 		return new Record(data, high, low, open, close, volume);
