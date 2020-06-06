@@ -80,6 +80,15 @@ def simulate(data, last_timestamps, next_timestamps, iterations, step):
 
 
 def make_predictions(data, last_timestamps, next_timestamps, iterations, step):
+    grows_in_a_row = 0
+    data_segment = data[-last_timestamps::]
+    close_diff_list = [single_data['close_diff'] for single_data in data_segment]
+    for close_diff in close_diff_list:
+        if close_diff >= 0:
+            grows_in_a_row += 1
+        else:
+            grows_in_a_row = 0
+    last_spike = 0
     for i in range(next_timestamps):
         data_segment = data[-last_timestamps::]
         close_list = [single_data['close'] for single_data in data_segment]
@@ -101,19 +110,23 @@ def make_predictions(data, last_timestamps, next_timestamps, iterations, step):
             close_is_growing = random.random() <= close_grow_chance
             close_percentage_change_list = np.mean(np.abs(close_percentage_change_list)) * random.uniform(0.5, 1.5) * (
                 1 if close_is_growing else -1)
+
             new_close = round(close_list[-1] * (1 + close_percentage_change_list / 100), 2)
             close_values.append(new_close)
-
             volume_is_growing = True
             percentage_boost = 0
-            if close_percentage_change_list < -5 or close_percentage_change_list > 5:
+            if (close_percentage_change_list < -3 or close_percentage_change_list > 3):
                 volume_is_growing = True
-                percentage_boost = abs(close_percentage_change_list)
+                percentage_boost = abs(close_percentage_change_list / 2)
             else:
                 volume_is_growing = random.random() <= volume_grow_chance
-            volume_percentage_change_list = (percentage_boost + np.mean(np.abs(volume_percentage_change_list))) * random.uniform(
+            volume_percentage_change_list = (percentage_boost + np.mean(
+                np.abs(volume_percentage_change_list))) * random.uniform(
                 0.2, 1.5) * (1 if volume_is_growing else -1)
-            new_volume = round(volume_list[-1] * (1 + volume_percentage_change_list / 100), 2)
+            old_volume = volume_list[-1]
+            if last_spike == data_segment[-2]['timestamp']:
+                old_volume = volume_list[-3]
+            new_volume = round(old_volume * (1 + volume_percentage_change_list / 100), 2)
             volume_values.append(new_volume)
 
         print("timestamp: {0}".format(data_segment[-1]['timestamp'] + step))
@@ -125,8 +138,18 @@ def make_predictions(data, last_timestamps, next_timestamps, iterations, step):
                                                                                 np.std(volume_values)))
         new_close = np.mean(close_values)
         new_volume = np.mean(volume_values)
-        data.append(prepare_single_data(data_segment[-1]['timestamp'] + step, new_close, new_volume,
-                                        data_segment[-1]['close'], data_segment[-1]['volume']))
+        if (new_volume / volume_list[-1]) >= 1.5:
+            last_spike = data_segment[-1]['timestamp'] + step
+        correction_probability = grows_in_a_row * 0.1
+        if random.random() <= correction_probability:
+            new_close = new_close * (1 - correction_probability / 10)
+        new_data = prepare_single_data(data_segment[-1]['timestamp'] + step, new_close, new_volume,
+                                       data_segment[-1]['close'], data_segment[-1]['volume'])
+        if new_data['close_diff'] >= 0:
+            grows_in_a_row += 1
+        else:
+            grows_in_a_row = 0
+        data.append(new_data)
 
 
 def make_plot(data, currency_pair, end_date):
@@ -163,7 +186,7 @@ def make_plot(data, currency_pair, end_date):
 
 def main():
     analyze_data(currency_pair="btcusd", start=convert_date_to_utc(2020, 3, 1), end=convert_date_to_utc(2020, 5, 29),
-                 last_timestamps=50, next_timestamps=10, iterations=50, step=3600 * 24)
+                 last_timestamps=80, next_timestamps=40, iterations=100, step=3600 * 24)
 
 
 if __name__ == "__main__":
