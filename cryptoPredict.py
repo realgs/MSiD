@@ -6,7 +6,7 @@ import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 import random 
 import matplotlib.pyplot as plt
-
+from itertools import chain
 
 def growthOrLoss(probability):
     rand = random.uniform(0,1)
@@ -36,6 +36,14 @@ def simulate(iterations, x, reg, dt):
         sim_result.append(sim_day)
     return sim_result
 
+def toMean(multi_simulation, iterations):
+    meanSimulation = []
+    for j in range (0,iterations):
+        sum_sim = 0
+        for i in range (0, 100):
+            sum_sim = sum_sim + multi_simulation[i][j:j+1,[3,6]].tolist()[0][0]
+        meanSimulation.append(sum_sim/100)
+    return meanSimulation
 
 def start(dateFrom,dateTo):
     df = time.mktime(datetime.datetime.strptime(dateFrom, "%d/%m/%Y").timetuple())
@@ -82,22 +90,26 @@ def start(dateFrom,dateTo):
     model = regressor.fit(X, y)
 
     X_pred = D[-1:,[0,1,2,5,6,7]]
-    single_simulation = np.matrix(simulate(int((dt-df)/86400), X_pred, model, dt))
+    iterations = int((dt-df)/86400)
+    single_simulation = np.matrix(simulate(iterations, X_pred, model, dt))
     #print(single_simulation)
-    """
+    
     multi_simulation = []
     for i in range (0,100):
-        multi_simulation.append(np.matrix(simulate(int((dt-df)/86400), X_pred, model)))
+        multi_simulation.append(np.matrix(simulate(iterations, X_pred, model, dt)))
         print(i)
     print("Done")
-    """
+    meanSimulation = toMean(multi_simulation, iterations)
+    print(meanSimulation)
     second_x_axis = single_simulation[:,-1:]
     second_x_axis = second_x_axis.tolist()
-    single_simulation = single_simulation[:,[2]]
+    single_simulation = single_simulation[:,[3]]
     single_simulation = single_simulation.tolist()
-    plt.plot(second_x_axis[0], single_simulation[0])
-
-    plt.plot(x_axis, y_axis)
+    second_x_axis = list(chain.from_iterable(second_x_axis))
+    single_simulation = list(chain.from_iterable(single_simulation))
+    plt.plot(x_axis, y_axis, label = "Real")
+    plt.plot(second_x_axis, single_simulation, label = "Single simulation")
+    plt.plot(second_x_axis, meanSimulation, label = "Mean simulation")
     plt.show()
 
 if __name__ == "__main__":
