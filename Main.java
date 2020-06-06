@@ -1,113 +1,63 @@
-@SuppressWarnings("unused")
-public class Main 
-{
-	private static String [] currency = {"BTC", "USD", "ETH", "USD", "LTC", "USD", "ETH", "BTC"};
-	private static String [] names = {"BitBay", "CEX.IO", "WhiteBit", "Ftx"};
-	private static Exchange[][] gieldy = new Exchange[4][4];
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+public class Main {
 	
-	private static void arbitrage(Exchange[][] gieldy, Wallet portfel, double tax)
-	{
-		Offer current, analyze;
-		double cost, influence, best;
+	public static void toCSV(String filename, ArrayList<Daily> generated) {
 		
-		for(int i=0; i<gieldy[0].length; i++) {
-			
-			for(int j=0; j<gieldy.length; j++) {
-				
-				best = 0.0;
-				current = gieldy[j][i].getAsks().get(0);
-				cost = current.getPrice() * current.getAmmount() * (1+tax);
-				
-				for(int k=0; k<gieldy.length; k++) {
-					
-					if(j!=k) {
-						
-						analyze = gieldy[k][i].getBids().get(0);
-						influence = analyze.getPrice() * current.getAmmount() * (1-tax);
-						
-						if(influence-cost>=0.01) {
-							
-							System.out.println(String.format("Na gie³dzie %s mo¿na kupiæ %.8f %s za %s po kursie %.2f i sprzedaæ na gie³dzie %s po kursie %.2f zyskuj¹c %.2f%s.", 
-							names[j], current.getAmmount(), currency[2*i], currency[2*i+1], current.getPrice(), names[k], analyze.getPrice(), influence-cost, currency[2*i+1]));
-											
-							if(influence-cost>best) best=influence-cost;
-						}
-					}
-				}
-				
-				System.out.println();
-				if(best>0)portfel.add(currency[2*i+1], best);
+		try {
+			BufferedWriter buffer = new BufferedWriter(new FileWriter(filename));
+			for(int i=0; i<generated.size(); i++)
+			{
+				buffer.write(generated.get(i).toCSV());
+				buffer.newLine();
 			}
+			buffer.close();
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
+		
 	}
 	
-	private static void zadania1_3(double tax) {
+	public static void simulation(String date, String learnFrom, String learnTo, int numberOfSims, boolean printOutput) throws Exception {
 		
-		Exchange[][] gieldy = new Exchange[4][4];
-		Wallet portfel = new Wallet();
-    	
-    	for(int i=0; i<gieldy.length; i++) {
-    		
-    		for(int j=0; j<gieldy[i].length; j++) {
-    			
-    			gieldy[i][j] = new Exchange(names[i], currency[2*j], currency[2*j+1], 1);
-    			//gieldy[i][j].printOrderbook();
-    		}
-    	}
-    	
-    	System.out.println();
-    	arbitrage(gieldy,portfel,tax);
-    	System.out.println(portfel);
-	}
-	
-	private static void zadanie4(int reps, double tax) throws Exception {
-		
-		Wallet portfel = new Wallet();
-		Exchange gielda = new Exchange("CEX.IO", "BTC", "USD", 1);
-		
-		// agent potrzebuje dwoch parametrów - pliku csv z danymi dotyczacymi kursu zamkniecia i wolumenu oraz daty w formacie rrrr-mm-dd 
-		// dla ktorej wylicza srednia wazona eksponencjalna bedacej podstawa podejmowania decyzji (im mniejszy okres tym mniej statyczny jest algorytm)
-		DecisionMaker agent = new DecisionMaker("bitcoin_stats.csv", "2020-05-20");
-		
-		for(int i=0; i<reps; i++) {
+		if(numberOfSims > 0)
+		{
+			Simulator simulator = new Simulator("btc_history.csv", learnFrom, learnTo);
+			simulator.showModificators();
+			System.out.println("Symulacja nr"+1);
+			simulator.simulate(date, printOutput);
 			
-			if(i>0) gielda.update(1);
-			Offer buy=gielda.getAsks().get(0), sell=gielda.getBids().get(0);
+			ArrayList<Daily> predictions = simulator.getGenerated(); 
+			double predSize = predictions.size();
 			
-			// decyzja jest podejmowana w oparciu o cene potencjalnego zakupu 
-			int decision = agent.makeDecision(sell.getPrice());
-			
-			if(decision==1) {
-				
-				double price = sell.getPrice()*sell.getAmmount()*(1+tax);
-				if(portfel.sell("USD", price)) { 
-					portfel.add("BTC", sell.getAmmount(), price);
-					System.out.println(String.format("Zakupiono %.8fBTC", sell.getAmmount()));
+			for(int i=1; i<numberOfSims; i++)
+			{
+				System.out.println("\nSymulacja nr"+(i+1));
+				simulator.simulate(date, printOutput);
+				for(int j=1; j<=predSize; j++)
+				{
+					predictions.get(j-1).combine(simulator.getGenerated().get(j-1));
 				}
 			}
-			else if(decision==(-1)) {
-				
-				double price = buy.getPrice()*sell.getAmmount()*(1-tax);
-				
-				if(portfel.sell("BTC", price)) { 
-					
-					portfel.add("USD", sell.getAmmount());
-					System.out.println(String.format("Sprzedano %.8fBTC", buy.getAmmount()));
-					
-					if(portfel.profitable(price, sell.getAmmount())) System.out.println("Sprzedano z zyskiem");
-					else System.out.println("Sprzedano ze strat¹");
-				}
+			
+			for(Daily day : predictions)
+			{
+				day.getAvg(numberOfSims);
 			}
-			Thread.sleep(5000);
+			toCSV("sim_to_"+date+"_"+numberOfSims+"based_"+learnFrom+"_"+learnTo+".csv", predictions);
 		}
-    	System.out.println(portfel);
-    	gielda.update(1);
-    	portfel.getCurrentValue("BTC",gielda.getAsks().get(0).getPrice());
+		else throw new IllegalArgumentException("Liczba symulacji musi byc wieksza od 0!");
 	}
+	
 	
 	public static void main(String[] args) throws Exception {
+		
+		simulation("2020-08-31", "2020-06-01", "2020-01-01", 1, true);
+		simulation("2020-08-31", "2020-06-01", "2020-01-01", 100, true);
+	}
 
-		//zadania1_3(0.005);
-		zadanie4(10, 0.005);
-    }
 }
