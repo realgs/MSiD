@@ -45,13 +45,21 @@ def toMean(multi_simulation, iterations):
         meanSimulation.append(sum_sim/100)
     return meanSimulation
 
-def start(dateFrom,dateTo):
+def run_simulation(currency, dateFrom,dateTo):
     df = time.mktime(datetime.datetime.strptime(dateFrom, "%d/%m/%Y").timetuple())
     dt = time.mktime(datetime.datetime.strptime(dateTo, "%d/%m/%Y").timetuple())
-    parameters = {"pair": "XBTUSD", "interval": 1440, "since": df}
+    if currency == "BTC":
+        parameters = {"pair": "XBTUSD", "interval": 1440, "since": df}
+    elif currency == "ETH" or "DAI":
+        parameters = {"pair": currency+"USDT", "interval": 1440, "since": df}
+    else:
+        exit(0)
     response = requests.get("https://api.kraken.com/0/public/OHLC", params = parameters)
     data = response.json()
-    result = data['result']['XXBTZUSD']
+    if currency == "BTC":
+        result = data['result']['XXBTZUSD']
+    else:
+        result = data['result'][currency+'USDT']
     dataset = []
     x_axis = []
     y_axis = []
@@ -92,26 +100,28 @@ def start(dateFrom,dateTo):
     X_pred = D[-1:,[0,1,2,5,6,7]]
     iterations = int((dt-df)/86400)
     single_simulation = np.matrix(simulate(iterations, X_pred, model, dt))
-    #print(single_simulation)
     
     multi_simulation = []
     for i in range (0,100):
         multi_simulation.append(np.matrix(simulate(iterations, X_pred, model, dt)))
-        print(i)
-    print("Done")
     meanSimulation = toMean(multi_simulation, iterations)
-    print(meanSimulation)
+
     second_x_axis = single_simulation[:,-1:]
     second_x_axis = second_x_axis.tolist()
-    single_simulation = single_simulation[:,[3]]
-    single_simulation = single_simulation.tolist()
+    single_simulation = single_simulation[:,[3,4]]
+    single_simulation_values = single_simulation[:,[0]].tolist()
+    single_simulation_volumes = single_simulation[:,[1]].tolist()
     second_x_axis = list(chain.from_iterable(second_x_axis))
-    single_simulation = list(chain.from_iterable(single_simulation))
+    single_simulation_values = list(chain.from_iterable(single_simulation_values))
+    single_simulation_volumes = list(chain.from_iterable(single_simulation_volumes))
     plt.plot(x_axis, y_axis, label = "Real")
-    plt.plot(second_x_axis, single_simulation, label = "Single simulation")
+    plt.plot(second_x_axis, single_simulation_values, label = "Single simulation")
     plt.plot(second_x_axis, meanSimulation, label = "Mean simulation")
+    plt.legend(loc="lower center")
+
     plt.show()
 
 if __name__ == "__main__":
-    start("01/02/2020","01/06/2020")
-    #print(random.uniform(0,1))
+    #BTC ETH OR DAI 
+    run_simulation("BTC","01/02/2020","01/06/2020")
+    
