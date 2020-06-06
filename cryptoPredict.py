@@ -5,6 +5,7 @@ import numpy as np
 import statsmodels.api as sm
 from sklearn.linear_model import LinearRegression
 import random 
+import matplotlib.pyplot as plt
 
 
 def growthOrLoss(probability):
@@ -14,7 +15,7 @@ def growthOrLoss(probability):
     else:
         return -1
 
-def simulate(iterations, x, reg):
+def simulate(iterations, x, reg, dt):
     sim_result = []
     for i in range(0, iterations):
         sim_day = []
@@ -30,6 +31,8 @@ def simulate(iterations, x, reg):
         sim_day.append(sim_day[2]/sim_day[3])
         x = sim_day
         x = np.matrix(x)
+        sim_day.append(dt)
+        dt += 86400
         sim_result.append(sim_day)
     return sim_result
 
@@ -42,11 +45,15 @@ def start(dateFrom,dateTo):
     data = response.json()
     result = data['result']['XXBTZUSD']
     dataset = []
+    x_axis = []
+    y_axis = []
     i = 0
     for record in result:
         if record[0] > dt:
             break
         data_day = []
+        x_axis.append(record[0])
+        y_axis.append(float(record[4]))
         data_day.append(1)
         data_day.append(abs((float(record[4]) - float(record[1]))/float(record[1]))) 
         if i > 0:
@@ -75,16 +82,24 @@ def start(dateFrom,dateTo):
     model = regressor.fit(X, y)
 
     X_pred = D[-1:,[0,1,2,5,6,7]]
-    single_simulation = np.matrix(simulate(int((dt-df)/86400), X_pred, model))
+    single_simulation = np.matrix(simulate(int((dt-df)/86400), X_pred, model, dt))
+    #print(single_simulation)
+    """
     multi_simulation = []
     for i in range (0,100):
         multi_simulation.append(np.matrix(simulate(int((dt-df)/86400), X_pred, model)))
         print(i)
     print("Done")
+    """
+    second_x_axis = single_simulation[:,-1:]
+    second_x_axis = second_x_axis.tolist()
+    single_simulation = single_simulation[:,[2]]
+    single_simulation = single_simulation.tolist()
+    plt.plot(second_x_axis[0], single_simulation[0])
+
+    plt.plot(x_axis, y_axis)
+    plt.show()
 
 if __name__ == "__main__":
     start("01/02/2020","01/06/2020")
     #print(random.uniform(0,1))
-
-
-
