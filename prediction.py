@@ -2,15 +2,13 @@ import json
 import requests
 from datetime import datetime
 import pandas as pd
-import matplotlib.pyplot as plt
 import time
-import numpy as np
 import plotly.graph_objects as graph_obj
 from plotly.subplots import make_subplots
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
 
-CURRENCY_PAIRS = ['BTC_ETH', 'BTC_LTC']
+CURRENCY_PAIRS = ['BTC_ETH', 'BTC_LTC', 'BTC_XRP']
 PERIOD = 7200
 
 
@@ -61,7 +59,7 @@ def speculate_price(currency_pair, begin_date, end_date, days_to_predict):
 
     reg.fit(x_train, y_train)
     periods = []
-    candle_time = time.time()
+    candle_time = int(time.time())
     for i in range(0, int((24/(PERIOD/3600))*days_to_predict)):
         periods.append(candle_time)
         candle_time += PERIOD
@@ -70,17 +68,15 @@ def speculate_price(currency_pair, begin_date, end_date, days_to_predict):
 
     a = reg.predict(x_future_time)
 
-    min_range = len(chart_dict['price'])
-    max_range = len(chart_dict['price']) + len(x_future_time)
-
-    for i in range(min_range, max_range):
-        chart_dict['time'].append(x_future_time)
-        chart_dict['price'].append(a[i - min_range])
-        chart_dict['open'].append(a[i - min_range])
-        chart_dict['high'].append(a[i - min_range])
-        chart_dict['low'].append(a[i - min_range])
-        chart_dict['close'].append(a[i - min_range])
-        chart_dict['volume'].append(0)
+    for i in range(0, len(periods)):
+        close_price = float(a[i])
+        chart_dict['time'].append(periods[i])
+        chart_dict['price'].append(close_price)
+        chart_dict['open'].append(close_price)
+        chart_dict['high'].append(close_price)
+        chart_dict['low'].append(close_price)
+        chart_dict['close'].append(close_price)
+        chart_dict['volume'].append(1)
 
     return chart_dict
 
@@ -96,7 +92,9 @@ def create_plot(currency_pair, chart_data):
 
 
 def main():
-    create_plot(CURRENCY_PAIRS[0], speculate_price(CURRENCY_PAIRS[0], '2020.06.05@20:52:30', '2020.06.06@20:52:30', 5))
+    for currency_pair in CURRENCY_PAIRS:
+        chart_data = speculate_price(currency_pair, '2020.05.05@20:52:30', '2020.06.06@23:59:59', 3)
+        create_plot(currency_pair, chart_data)
 
 
 if __name__ == "__main__":
