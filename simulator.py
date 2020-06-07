@@ -12,6 +12,8 @@
 import requests as req
 import matplotlib.pyplot as plot
 
+MAX_NN = 5
+
 def fetch_data(currency, startTime, endTime, step, limit):
     data = req.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency), params={'start': startTime, 'end': endTime, 'step': step, 'limit': limit})
     return data.json()
@@ -37,12 +39,8 @@ def parse_data(rawData):
         output.append(entry)
     return output
 
-def nearest_neighbours(data):
-    pass
-
 def distance(dataRow1, dataRow2):
     dist = 0.0
-    dist+=(dataRow1['timestamp'] - dataRow2['timestamp'])**2
     dist+=(dataRow1['close'] - dataRow2['close'])**2
     dist+=(dataRow1['open'] - dataRow2['open'])**2
     dist+=(dataRow1['volume'] - dataRow2['volume'])**2
@@ -50,6 +48,15 @@ def distance(dataRow1, dataRow2):
     dist+=(dataRow1['high'] - dataRow2['high'])**2
     return dist**(1/2)
 
+def nearest_neighbours(data, predictRow):
+    distances = []
+    for dataRow in data:
+        distances.append((dataRow, distance(dataRow, predictRow)))
+    distances.sort(key=lambda tup: tup[1])
+    neighbours = []
+    for i in range(min(len(distances), MAX_NN)):
+        neighbours.append(distances[i][0])
+    return neighbours
 
 def predict_direction(data):
     pass
@@ -70,8 +77,13 @@ def plotter(data):
     plot.plot(timestamps, difs)
     plot.show()
 
-data = fetch_data("btcusd", 1591040415, 1591440415, 86400, 50)
+data = fetch_data("btcusd", 1591040415, 1591440415, 86400, 1000)
 parsed = parse_data(data)
-for p in parsed:
-    print(p)
-plotter(parsed)
+lastRow = parsed.pop()
+nn = nearest_neighbours(parsed, lastRow)
+print("For row:")
+print(lastRow)
+print("NN are:")
+for n in nn:
+    print(n)
+#plotter(parsed)
