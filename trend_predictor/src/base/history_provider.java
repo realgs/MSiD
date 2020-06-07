@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -96,14 +97,26 @@ public class history_provider
             LocalDate start = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate end = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
+            int counter = 0;
+            long start_time = System.currentTimeMillis();
             for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1))
             {
 //                System.out.println(formatter.format(reversed_formatter.parse(date.toString())));
                 historical_data.add(obtain_data(formatter.format(reversed_formatter.parse(date.toString()))));
+
+//                counter ++;
+//                if(counter > 98)
+//                {
+//                    while (System.currentTimeMillis() < start_time + 100 * 1000){}
+//                    start_time =  System.currentTimeMillis();
+//                    counter = 0;
+//                }
+
+                Thread.sleep(600);
             }
 
         }
-        catch (ParseException e) { e.printStackTrace(); }
+        catch (ParseException | InterruptedException e) { e.printStackTrace(); }
 
         return historical_data;
     }

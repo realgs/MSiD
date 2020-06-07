@@ -48,7 +48,7 @@ public class Main
         }
         catch (ParseException e) { e.printStackTrace(); }
 
-        xData.add(xData.get(xData.size() - 1));
+//        xData.add(xData.get(xData.size() - 1));
 
         openData.add(historical.get(0).price());
         historical.forEach(x ->
@@ -65,6 +65,9 @@ public class Main
         });
 
         openData.remove(openData.size() - 1);
+        openData.remove(openData.size() - 1);
+        closeData.remove(closeData.size() - 1);
+        volumeData.remove(volumeData.size() - 1);
 
         chart.addSeries(caption, xData, openData, closeData, openData, closeData, volumeData);
 
@@ -175,9 +178,9 @@ public class Main
         chart_builder.title = currency + " from " + base_date_from + " to " + prediction_end_date;
         OHLCChart chart = new OHLCChart(chart_builder);
 
-//        draw_chart(chart, historical_data, predictions.get(0), base_date_from, prediction_end_date, "single");
+        draw_chart(chart, historical_data, predictions.get(0), base_date_from, prediction_end_date, "single");
         draw_chart(chart, historical_data, average_prediction, base_date_from, prediction_end_date, "average");
-//        draw_chart(chart, historical_data, median_prediction, base_date_from, prediction_end_date, "median");
+        draw_chart(chart, historical_data, median_prediction, base_date_from, prediction_end_date, "median");
 
         new SwingWrapper(chart).displayChart();
 
@@ -216,8 +219,8 @@ public class Main
         return prediction;
     }
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
-        generate_prediction("BTC", "23-03-2015", "28-03-2015", "30-04-2015");
+        generate_prediction("BTC", "23-08-2015", "28-12-2015", "30-01-2016");
     }
 }
