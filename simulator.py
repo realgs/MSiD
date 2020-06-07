@@ -76,7 +76,8 @@ def plotter(predictions, data):
     plot.plot(dates, actualValues, label = "Actual")
     plot.legend()
     plot.show()
-
-data = fetch_data("btcusd", 1591040415, 1591440415, 86400, 1000)
+    
+currPairs = ["ltcusd", "btcusd", "ethusd"]
+data = fetch_data(currPairs[2], 1591040415, 1591440415, 86400, 1000)
 parsed = parse_data(data)
 simulate(parsed)
