@@ -5,10 +5,10 @@ from datetime import datetime
 import random
 
 MAX_NN = 11
-NUM_OF_SIMS = 10
+NUM_OF_SIMS = 100
 currPairs = ["ltcusd", "btcusd", "ethusd"]
-noiseChance = 0.33
-noisePercent = 0.40
+noiseChance = 0.1
+noisePercent = 0.01
 
 def fetch_data(currency, startTime, endTime, step):
     limit = min(1000, (endTime-startTime)//step)
@@ -60,14 +60,14 @@ def simulate_single(data):
     for i in range(1, len(data)): #len(data) = simulation for historical period data
         nn = nearest_neighbours(data, predictionsData[i-1])
         valueDif, volumeAvg = predict_avg(nn)
-        if random.random() <= noiseChance:
-            valueDif+=valueDif*noisePercent
         entry = {}
         entry['timestamp'] = data[i]['timestamp']
         entry['volume'] = volumeAvg
         prevClose = predictionsData[i-1]['close']
         entry['open'] = prevClose
         entry['close'] = prevClose + prevClose * valueDif
+        if random.random() <= noiseChance:
+            entry['close']+=entry['close']*noisePercent
         predictions.append(entry['close'])
         predictionsData.append(entry)
 
@@ -79,15 +79,14 @@ def plotter(single, mean, data):
     for d in data:
         dates.append(datetime.fromtimestamp(d['timestamp']))
         actualValues.append(d['close'])
-    print(f"DATES:{len(dates)}, SINGLE:{len(single)}, MEAN:{len(mean)}, ACTUAL:{len(actualValues)}")
     plot.plot(dates, single, label = "Single simulation")
     plot.plot(dates, mean, label = "100 simulations")
     plot.plot(dates, actualValues, label = "Actual data")
     plot.legend()
     plot.show()
 
-def simulation():
-    data = fetch_data(currPairs[2], 1561040415, 1591440415, 86400)
+def simulation(currency, startTime, endTime, step):
+    data = fetch_data(currency, startTime, endTime, step)
     data = parse_data(data)
     singleSim = simulate_single(data)
     hundredSims = []
@@ -96,13 +95,13 @@ def simulation():
         hundredSims.append(simulate_single(data))
     meanSim = []
     limit = len(hundredSims[0])
-    print(f"LIMIT: {limit}, NUM:{NUM_OF_SIMS}, HUNNUM:{len(hundredSims)}, HUNLIM:{len(hundredSims[0])}")
     for i in range(limit):
         meanSim.append(0)
         for j in range(NUM_OF_SIMS):
-            print(f"I: {i}, J: {j}")
             meanSim[i] += hundredSims[j][i]
         meanSim[i] = meanSim[i] / NUM_OF_SIMS
     plotter(singleSim, meanSim, data)
     
-simulation()
+
+if __name__ == "__main__":
+    simulation(currPairs[2], 1561040415, 1591440415, 86400)#currPairs[0-2], starting timestamp, ending timestamp, step in seconds - supported: 60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400, 259200
