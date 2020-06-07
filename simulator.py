@@ -2,13 +2,15 @@ import requests as req
 import matplotlib.pyplot as plot
 import numpy as np
 from datetime import datetime
+import random
 
 MAX_NN = 11
 currPairs = ["ltcusd", "btcusd", "ethusd"]
+noiseChance = 0.33
+noisePercent = 0.40
 
-def fetch_data(currency, startTime, endTime, step, limit):
+def fetch_data(currency, startTime, endTime, step):
     limit = min(1000, (endTime-startTime)//step)
-    print(limit)
     data = req.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency), params={'start': startTime, 'end': endTime, 'step': step, 'limit': limit})
     return data.json()
 
@@ -57,6 +59,8 @@ def simulate(data):
     for i in range(1, len(data)): #len(data) = simulation for historical period data
         nn = nearest_neighbours(data, predictionsData[i-1])
         valueDif, volumeAvg = predict_avg(nn)
+        if random.random() <= noiseChance:
+            valueDif+=valueDif*noisePercent
         entry = {}
         entry['timestamp'] = data[i]['timestamp']
         entry['volume'] = volumeAvg
@@ -80,6 +84,6 @@ def plotter(predictions, data):
     plot.legend()
     plot.show()
 
-data = fetch_data(currPairs[2], 1581040415, 1591440415, 86400, 1000)
+data = fetch_data(currPairs[2], 1561040415, 1591440415, 86400)
 parsed = parse_data(data)
 simulate(parsed)
