@@ -8,14 +8,7 @@ MAX_NN = 11
 def fetch_data(currency, startTime, endTime, step, limit):
     data = req.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency), params={'start': startTime, 'end': endTime, 'step': step, 'limit': limit})
     return data.json()
-#   RAW DATA
-#pair	    Trading pair
-#high	    Price high
-#timestamp	Unix timestamp date and time
-#volume	    Volume
-#low	    Price low
-#close  	Closing price
-#open       Opening price
+
 def parse_data(rawData):
     rawData = rawData['data']['ohlc']
     output = []
@@ -45,38 +38,6 @@ def nearest_neighbours(data, predictRow):
     for i in range(min(len(distances), MAX_NN)):
         neighbours.append(distances[i][0])
     return neighbours
-
-def predict_linear_numpy(neighbours, timestamp):
-    x, y, v = [], [], []
-    for n in neighbours:
-        x.append(n['timestamp'])
-        y.append((n['close']-n['open'])/n['close'])
-        v.append(n['volume'])
-    x, y, v = np.array(x), np.array(y), np.array(v)
-    A = np.vstack([x, np.ones(len(x))]).T
-    b1, b2 = np.linalg.lstsq(A, y)[0]
-    value1 = b1 * timestamp + b2
-    A = np.vstack([x, np.ones(len(x))]).T
-    b1, b2 = np.linalg.lstsq(A, v)[0]
-
-    return value1, b1 * timestamp + b2
-
-def predict_linear(neighbours, timestamp):
-    x, y = [], []
-    for n in neighbours:
-        x.append(n['timestamp'])
-        y.append(n['close'])
-
-    x, y = np.array(x), np.array(y)
-
-    n = np.size(x) 
-    meanX, meanY = np.mean(x), np.mean(y) 
-    xySS = np.sum(y * x) - n * meanY * meanX 
-    xxSS = np.sum(x * x) - n * meanX * meanX 
-    b1 = xySS / xxSS 
-    b0 = meanY - b1 * meanX 
-  
-    return b1 * timestamp + b0
 
 def predict_avg(neighbours):
     valueDif = []
