@@ -5,6 +5,7 @@ from datetime import datetime
 import random
 
 MAX_NN = 11
+NUM_OF_SIMS = 10
 currPairs = ["ltcusd", "btcusd", "ethusd"]
 noiseChance = 0.33
 noisePercent = 0.40
@@ -52,7 +53,7 @@ def predict_avg(neighbours):
         volumeAvg.append(n['volume'])
     return np.mean(np.array(valueDif)), np.mean(np.array(volumeAvg))
 
-def simulate(data):
+def simulate_single(data):
     predictionsData = []
     predictionsData.append(data[0])
     predictions = []
@@ -70,20 +71,38 @@ def simulate(data):
         predictions.append(entry['close'])
         predictionsData.append(entry)
 
+    return predictions
+def plotter(single, mean, data):
     data.pop()
-    plotter(predictions, data)
-
-def plotter(predictions, data):
     dates = []
     actualValues = []
     for d in data:
         dates.append(datetime.fromtimestamp(d['timestamp']))
         actualValues.append(d['close'])
-    plot.plot(dates, predictions, label = "Predicted")
-    plot.plot(dates, actualValues, label = "Actual")
+    print(f"DATES:{len(dates)}, SINGLE:{len(single)}, MEAN:{len(mean)}, ACTUAL:{len(actualValues)}")
+    plot.plot(dates, single, label = "Single simulation")
+    plot.plot(dates, mean, label = "100 simulations")
+    plot.plot(dates, actualValues, label = "Actual data")
     plot.legend()
     plot.show()
 
-data = fetch_data(currPairs[2], 1561040415, 1591440415, 86400)
-parsed = parse_data(data)
-simulate(parsed)
+def simulation():
+    data = fetch_data(currPairs[2], 1561040415, 1591440415, 86400)
+    data = parse_data(data)
+    singleSim = simulate_single(data)
+    hundredSims = []
+    for i in range(NUM_OF_SIMS):
+        print(f"Simulation {i+1}...")
+        hundredSims.append(simulate_single(data))
+    meanSim = []
+    limit = len(hundredSims[0])
+    print(f"LIMIT: {limit}, NUM:{NUM_OF_SIMS}, HUNNUM:{len(hundredSims)}, HUNLIM:{len(hundredSims[0])}")
+    for i in range(limit):
+        meanSim.append(0)
+        for j in range(NUM_OF_SIMS):
+            print(f"I: {i}, J: {j}")
+            meanSim[i] += hundredSims[j][i]
+        meanSim[i] = meanSim[i] / NUM_OF_SIMS
+    plotter(singleSim, meanSim, data)
+    
+simulation()
