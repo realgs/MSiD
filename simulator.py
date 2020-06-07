@@ -11,8 +11,9 @@
 
 import requests as req
 import matplotlib.pyplot as plot
+import numpy as np
 
-MAX_NN = 5
+MAX_NN = 11
 
 def fetch_data(currency, startTime, endTime, step, limit):
     data = req.get("https://www.bitstamp.net/api/v2/ohlc/{0}/".format(currency), params={'start': startTime, 'end': endTime, 'step': step, 'limit': limit})
@@ -58,11 +59,41 @@ def nearest_neighbours(data, predictRow):
         neighbours.append(distances[i][0])
     return neighbours
 
-def predict_direction(data):
-    pass
+def predict_linear_numpy(neighbours, timestamp):
+    x, y = [], []
+    for n in neighbours:
+        x.append(n['timestamp'])
+        y.append(n['close'])
 
-def predict_value(data):
-    pass
+    x, y = np.array(x), np.array(y)
+    A = np.vstack([x, np.ones(len(x))]).T
+
+    b1, b2 = np.linalg.lstsq(A, y)[0]
+    return b1 * timestamp + b2
+
+#Least Squares
+def predict_linear(neighbours, timestamp):
+    x, y = [], []
+    for n in neighbours:
+        x.append(n['timestamp'])
+        y.append(n['close'])
+
+    x, y = np.array(x), np.array(y)
+
+    n = np.size(x) 
+    meanX, meanY = np.mean(x), np.mean(y) 
+    xySS = np.sum(y * x) - n * meanY * meanX 
+    xxSS = np.sum(x * x) - n * meanX * meanX 
+    b1 = xySS / xxSS 
+    b0 = meanY - b1 * meanX 
+  
+    return b1 * timestamp + b0
+
+def predict_avg(neighbours):
+    y = []
+    for n in neighbours:
+        y.append(n['close'])
+    return np.mean(np.array(y))
 
 def simulate(data):
     pass
@@ -87,3 +118,7 @@ print("NN are:")
 for n in nn:
     print(n)
 #plotter(parsed)
+lnnp = predict_linear_numpy(nn, lastRow['timestamp'])
+ln = predict_linear(nn, lastRow['timestamp'])
+avg = predict_avg(nn)
+print(f"Lin Nump: {lnnp} vs Lin: {ln} vs Avg: {avg}")
