@@ -70,13 +70,13 @@ def plotter(predictions, data):
     dates = []
     actualValues = []
     for d in data:
-        dates.append(d['timestamp'])
+        dates.append(datetime.fromtimestamp(d['timestamp']))
         actualValues.append(d['close'])
     plot.plot(dates, predictions, label = "Predicted")
     plot.plot(dates, actualValues, label = "Actual")
     plot.legend()
     plot.show()
-    
+
 currPairs = ["ltcusd", "btcusd", "ethusd"]
 data = fetch_data(currPairs[2], 1591040415, 1591440415, 86400, 1000)
 parsed = parse_data(data)
