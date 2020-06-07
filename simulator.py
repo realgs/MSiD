@@ -1,17 +1,7 @@
-#fetch data - DONE
-#parse data - DONE
-#implement knn
-#knn to detect fall or rise - look for similiar opens/closes/volumes
-#knn to detect how much - look for similiar probabilities
-#plot results
-
-#knn references: 
-#https://machinelearningmastery.com/tutorial-to-implement-k-nearest-neighbors-in-python-from-scratch/
-#https://github.com/sammanthp007/Stock-Price-Prediction-Using-KNN-Algorithm
-
 import requests as req
 import matplotlib.pyplot as plot
 import numpy as np
+from datetime import datetime
 
 MAX_NN = 11
 
@@ -35,18 +25,15 @@ def parse_data(rawData):
         entry['close'] = float(d['close'])
         entry['open'] = float(d['open'])
         entry['volume'] = float(d['volume'])
-        entry['low'] = float(d['low'])
-        entry['high'] = float(d['high'])
         output.append(entry)
     return output
 
 def distance(dataRow1, dataRow2):
     dist = 0.0
+    dist+=(dataRow1['timestamp'] - dataRow2['timestamp'])**2
     dist+=(dataRow1['close'] - dataRow2['close'])**2
     dist+=(dataRow1['open'] - dataRow2['open'])**2
     dist+=(dataRow1['volume'] - dataRow2['volume'])**2
-    dist+=(dataRow1['low'] - dataRow2['low'])**2
-    dist+=(dataRow1['high'] - dataRow2['high'])**2
     return dist**(1/2)
 
 def nearest_neighbours(data, predictRow):
@@ -60,18 +47,20 @@ def nearest_neighbours(data, predictRow):
     return neighbours
 
 def predict_linear_numpy(neighbours, timestamp):
-    x, y = [], []
+    x, y, v = [], [], []
     for n in neighbours:
         x.append(n['timestamp'])
-        y.append(n['close'])
-
-    x, y = np.array(x), np.array(y)
+        y.append((n['close']-n['open'])/n['close'])
+        v.append(n['volume'])
+    x, y, v = np.array(x), np.array(y), np.array(v)
     A = np.vstack([x, np.ones(len(x))]).T
-
     b1, b2 = np.linalg.lstsq(A, y)[0]
-    return b1 * timestamp + b2
+    value1 = b1 * timestamp + b2
+    A = np.vstack([x, np.ones(len(x))]).T
+    b1, b2 = np.linalg.lstsq(A, v)[0]
 
-#Least Squares
+    return value1, b1 * timestamp + b2
+
 def predict_linear(neighbours, timestamp):
     x, y = [], []
     for n in neighbours:
@@ -90,35 +79,43 @@ def predict_linear(neighbours, timestamp):
     return b1 * timestamp + b0
 
 def predict_avg(neighbours):
-    y = []
+    valueDif = []
+    volumeAvg = []
     for n in neighbours:
-        y.append(n['close'])
-    return np.mean(np.array(y))
+        valueDif.append((n['close']-n['open'])/n['close'])
+        volumeAvg.append(n['volume'])
+    return np.mean(np.array(valueDif)), np.mean(np.array(volumeAvg))
 
 def simulate(data):
-    pass
+    predictionsData = []
+    predictionsData.append(data[0])
+    predictions = []
+    for i in range(1, len(data)): #len(data) = simulation for historical period data
+        nn = nearest_neighbours(data, predictionsData[i-1])
+        valueDif, volumeAvg = predict_avg(nn)
+        entry = {}
+        entry['timestamp'] = data[i]['timestamp']
+        entry['volume'] = volumeAvg
+        prevClose = predictionsData[i-1]['close']
+        entry['open'] = prevClose
+        entry['close'] = prevClose + prevClose * valueDif
+        predictions.append(entry['close'])
+        predictionsData.append(entry)
 
-def plotter(data):
-    timestamps = []
-    difs = []
+    data.pop()
+    plotter(predictions, data)
+
+def plotter(predictions, data):
+    dates = []
+    actualValues = []
     for d in data:
-        timestamps.append(d['timestamp'])
-        difs.append(d['diff'])
-
-    plot.plot(timestamps, difs)
+        dates.append(d['timestamp'])
+        actualValues.append(d['close'])
+    plot.plot(dates, predictions, label = "Predicted")
+    plot.plot(dates, actualValues, label = "Actual")
+    plot.legend()
     plot.show()
 
 data = fetch_data("btcusd", 1591040415, 1591440415, 86400, 1000)
 parsed = parse_data(data)
-lastRow = parsed.pop()
-nn = nearest_neighbours(parsed, lastRow)
-print("For row:")
-print(lastRow)
-print("NN are:")
-for n in nn:
-    print(n)
-#plotter(parsed)
-lnnp = predict_linear_numpy(nn, lastRow['timestamp'])
-ln = predict_linear(nn, lastRow['timestamp'])
-avg = predict_avg(nn)
-print(f"Lin Nump: {lnnp} vs Lin: {ln} vs Avg: {avg}")
+simulate(parsed)
