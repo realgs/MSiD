@@ -9,6 +9,7 @@ NUM_OF_SIMS = 100
 currPairs = ["ltcusd", "btcusd", "ethusd"]
 noiseChance = 0.1
 noisePercent = 0.01
+currency = currPairs[0]
 
 def fetch_data(currency, startTime, endTime, step):
     limit = min(1000, (endTime-startTime)//step)
@@ -51,7 +52,7 @@ def predict_avg(neighbours):
     for n in neighbours:
         valueDif.append((n['close']-n['open'])/n['close'])
         volumeAvg.append(n['volume'])
-    return np.mean(np.array(valueDif)), np.mean(np.array(volumeAvg))
+    return np.mean(valueDif), np.mean(volumeAvg)
 
 def simulate_single(data):
     predictionsData = []
@@ -72,6 +73,7 @@ def simulate_single(data):
         predictionsData.append(entry)
 
     return predictions
+
 def plotter(single, mean, data):
     data.pop()
     dates = []
@@ -79,6 +81,7 @@ def plotter(single, mean, data):
     for d in data:
         dates.append(datetime.fromtimestamp(d['timestamp']))
         actualValues.append(d['close'])
+    plot.title(currency)
     plot.plot(dates, single, label = "Single simulation")
     plot.plot(dates, mean, label = "100 simulations")
     plot.plot(dates, actualValues, label = "Actual data")
@@ -100,8 +103,13 @@ def simulation(currency, startTime, endTime, step):
         for j in range(NUM_OF_SIMS):
             meanSim[i] += hundredSims[j][i]
         meanSim[i] = meanSim[i] / NUM_OF_SIMS
+    
+    avg = np.average(meanSim)
+    median = np.median(meanSim)
+    std = np.std(meanSim)
+    print(f"Average: {avg}, Median: {median}, Standard Deviation: {std}")
     plotter(singleSim, meanSim, data)
     
 
 if __name__ == "__main__":
-    simulation(currPairs[2], 1561040415, 1591440415, 86400)#currPairs[0-2], starting timestamp, ending timestamp, step in seconds - supported: 60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400, 259200
+    simulation(currency, 1561040415, 1591440415, 86400)#currency, starting timestamp, ending timestamp, step in seconds - supported: 60, 180, 300, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400, 259200
