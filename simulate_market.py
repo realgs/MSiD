@@ -6,7 +6,8 @@ import random
 import json
 import math
 
-K = 50 # Number of analyzed nearest "neighbours"
+K = 40 # Number of analyzed nearest "neighbours"
+currency_pair = ["btcusd", "ltcusd", "bchusd"]
 
 def convert_date_to_utc(year, month, day, hour=0, minutes=0, seconds=0):
     dt = datetime(year, month, day, hour, minutes, seconds)
@@ -195,10 +196,9 @@ def run_simulation(currency_pair, starting_date, ending_date, step, iterations):
 def main():
     starting_date = convert_date_to_utc(2016, 6, 29)
     ending_date = convert_date_to_utc(2020, 1, 1)
-    currency_pair = "btcusd"
     step = 60 * 60 * 24
-    run_simulation(currency_pair,starting_date, ending_date, step, 1)
-    run_simulation(currency_pair,starting_date, ending_date, step, 100)
+    run_simulation(currency_pair[0],starting_date, ending_date, step, 1)
+    run_simulation(currency_pair[0],starting_date, ending_date, step, 100)
 
 if __name__ == "__main__":
     main()
