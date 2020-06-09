@@ -1,0 +1,4 @@
+Zamieszczam przykładowy plik csv, w którym przechowywane są dane.
+Można też utworzyć nowy pusty plik przy pomocy gui i następnie
+dodać do niego wybrane przez siebie waluty.
+Domyślnie walutą na który przeliczany jest portfel jest USD.
