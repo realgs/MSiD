@@ -4,6 +4,8 @@ import json
 wallet_data = {'base_currency': "", 'data': {}}
 database_path = "wallet.json"
 
+currency_hierarchy = ["USD", "BTC"]
+
 markets = {
     'bitbay': 'https://api.bitbay.net/rest/trading/ticker',
     'bittrex': 'https://api.bittrex.com/v3/markets',
@@ -28,17 +30,17 @@ def update_currencies_values(data=wallet_data):
         cur_info['value'] = calculate_currency_value(get_bids(data['base_currency'], currency), cur_info['amount'])
 
 def check_currency_availability(currency):
-    for exchange, api_url in exchanges.items():
+    for exchange, url in markets.items():
         headers = {'content-type': 'application/json'}
         response = requests.request("GET", url, headers=headers)
         dic = response.json()
-        if exchange is "bitbay":
-            for market in dic:
-                if market['market']['first']['currency'] == currency:
+        if exchange is "bitbay" and dic['status'] is "Ok":
+            for market in dic['items']:
+                if market['market']['first']['currency'] == currency or market['market']['second']['currency'] == currency:
                     return True
         elif exchange is 'bittrex':
             for market in dic:
-                if market['baseCurrencySymbol'] == currency:
+                if market['baseCurrencySymbol'] == currency or market['quoteCurrencySymbol'] == currency:
                     return True
     return False
 

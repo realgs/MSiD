@@ -30,7 +30,7 @@ def remove_currency_dialog():
 def get_base_currency_dialog():
     currency = simpledialog.askstring('Data', 'Enter the base currency', parent=window)
     if currency is not None and currency != '':
-        presenter.add_currency(currency)
+        presenter.set_base_currency(currency)
 
 def update_display(wallet_display_text):
     basic_info = "Currency: Amount | Value\n"
@@ -48,10 +48,12 @@ def create_main_window():
     btn_set_currency = tk.Button(window, text='Set currency amount', command=set_currency_dialog)
     btn_change_currency_amount =tk.Button(window, text='Change currency amount', command=change_currency_amount_dialog)
     btn_remove_currency = tk.Button(window, text='Remove currency', command=remove_currency_dialog)
+    btn_change_base_currency = tk.Button(window, text='Change base currency', command=get_base_currency_dialog)
     btn_add_currency.pack()
     btn_set_currency.pack()
     btn_change_currency_amount.pack()
     btn_remove_currency.pack()
+    btn_change_base_currency.pack()
     lb_wallet_info.pack()
 
     window.mainloop()
