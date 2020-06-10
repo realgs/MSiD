@@ -1,5 +1,5 @@
-Aplikacja automatycznie generuje i zapisuje dane posiadanych walut portfela jako json.
-Mo¿na tak¿e jednak wgraæ do niego dane z zewn¹trz maj¹c na uwadze poni¿szy format:
+ï»¿Aplikacja automatycznie generuje i zapisuje dane posiadanych walut portfela jako json.
+MoÅ¼na takÅ¼e jednak wgraÄ‡ do niego dane z zewnÄ…trz majÄ…c na uwadze poniÅ¼szy format:
 
 {"base_currency": "<base_currency>",
 "data": 
