@@ -26,14 +26,13 @@ def change_currency_amount(currency, amount):
 
 def set_base_currency(currency):
     if wallet.set_base_currency(currency):
-        print()
+        update_view_display()
     else:
         viewer.error_display("Currency doesn't exist in this exchange")
         viewer.get_base_currency_dialog()
 
 def update_data():
     wallet.update_database()
-
 
 def update_view_display():
     wallet_data = wallet.get_wallet_data()

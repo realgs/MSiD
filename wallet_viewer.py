@@ -41,7 +41,7 @@ def error_display(error_info):
 
 def create_main_window():
     window.title("Crypto wallet")
-    window.geometry("250x300")
+    window.geometry("250x250")
 
     lb_wallet_info = tk.Label(window, textvariable=wallet_info)
     btn_add_currency = tk.Button(window, text='Add currency', command=add_currency_dialog)
@@ -49,7 +49,7 @@ def create_main_window():
     btn_change_currency_amount =tk.Button(window, text='Change currency amount', command=change_currency_amount_dialog)
     btn_remove_currency = tk.Button(window, text='Remove currency', command=remove_currency_dialog)
     btn_add_currency.pack()
-    #btn_set_currency.pack()
+    btn_set_currency.pack()
     btn_change_currency_amount.pack()
     btn_remove_currency.pack()
     lb_wallet_info.pack()

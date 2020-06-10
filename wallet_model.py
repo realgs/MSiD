@@ -4,6 +4,16 @@ import json
 wallet_data = {'base_currency': "", 'data': {}}
 database_path = "wallet.json"
 
+markets = {
+    'bitbay': 'https://api.bitbay.net/rest/trading/ticker',
+    'bittrex': 'https://api.bittrex.com/v3/markets',
+}
+
+exchanges = {
+    'bitbay': 'https://bitbay.net/API/Public/{0}{1}/orderbook.json',
+    'bittrex': 'https://api.bittrex.com/api/v1.1/public/getorderbook?market={1}-{0}&type=both',
+}
+
 def calculate_currency_value(bids, amount):
     value = 0.0
     for bid in bids:
@@ -18,27 +28,36 @@ def update_currencies_values(data=wallet_data):
         cur_info['value'] = calculate_currency_value(get_bids(data['base_currency'], currency), cur_info['amount'])
 
 def check_currency_availability(currency):
-    url = 'https://api.bittrex.com/v3/markets'
-    headers = {'content-type': 'application/json'}
-    response = requests.request("GET", url, headers=headers)
-    dic = response.json()
-    for market in dic:
-        if market['baseCurrencySymbol'] == currency:
-            return True
+    for exchange, api_url in exchanges.items():
+        headers = {'content-type': 'application/json'}
+        response = requests.request("GET", url, headers=headers)
+        dic = response.json()
+        if exchange is "bitbay":
+            for market in dic:
+                if market['market']['first']['currency'] == currency:
+                    return True
+        elif exchange is 'bittrex':
+            for market in dic:
+                if market['baseCurrencySymbol'] == currency:
+                    return True
     return False
 
 def get_bids(base_currency, currency):
-    url = 'https://api.bittrex.com/api/v1.1/public/getorderbook?market={0}-{1}&type=both'.format(base_currency, currency)
-    headers = {'content-type': 'application/json'}
-    response = requests.request("GET", url, headers=headers)
-    dic = response.json()
-    if dic['success'] == True:
+    for exchange, url in exchanges.items():
+        formated_url = url.format(currency, base_currency)
+        headers = {'content-type': 'application/json'}
+        response = requests.request("GET", formated_url, headers=headers)
+        dic = response.json()
         bids = []
-        for bid in dic['result']['sell']:
-            bids.append({'amount': bid['Quantity'], 'value': bid['Rate']})
-        return bids
-    else:
-        return None
+        if exchange is 'bitbay' and 'bids' in dic.keys():
+            for bid in dic['bids']:
+                bids.append({'amount': bid[1], 'value': bid[0]})
+            return bids
+        elif exchange is 'bittrex' and dic['success'] == True:
+            for bid in dic['result']['sell']:
+                bids.append({'amount': bid['Quantity'], 'value': bid['Rate']})
+            return bids
+    return None
 
 def add_currency(currency, amount):
     bids = get_bids(wallet_data['base_currency'], currency)
