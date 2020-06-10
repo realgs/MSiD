@@ -1,0 +1,13 @@
+Aplikacja automatycznie generuje i zapisuje dane posiadanych walut portfela jako json.
+Mo¿na tak¿e jednak wgraæ do niego dane z zewn¹trz maj¹c na uwadze poni¿szy format:
+
+{"base_currency": "<base_currency>",
+"data": 
+	{"<currency1>": 
+		{"amount': 0.0, "value": 0.0}}, 
+	"<currency2..n>":
+		{"amount': 0.0, "value": 0.0}}
+}
+
+np.:
+{"base_currency": "USD", "data": {"BTC": {"amount": 2.3, "value": 22467.187803234367}, "LTC": {"amount": 0.1, "value": 4.5919}}}

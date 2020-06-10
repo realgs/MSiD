@@ -1,13 +1,7 @@
+import threading
+import time
 import wallet_viewer as viewer
 import wallet_model as wallet
-
-
-'''
-TODO:
-1. auto-save data
-2. load data at startup
-3. auto-refresh values
-'''
 
 def add_currency(currency, amount):
     if wallet.add_currency(currency, float(amount)):
@@ -24,34 +18,47 @@ def remove_currency(currency):
     else:
         viewer.error_display("You don't have such currency")
 
+def change_currency_amount(currency, amount):
+    if wallet.change_currency_amount(currency, float(amount)):
+        update_view_display()
+    else:
+        viewer.error_display("You don't have such currency")
+
 def set_base_currency(currency):
     if wallet.set_base_currency(currency):
-        #update_view_display()
         print()
     else:
         viewer.error_display("Currency doesn't exist in this exchange")
         viewer.get_base_currency_dialog()
 
+def update_data():
+    wallet.update_database()
+
+
 def update_view_display():
     wallet_data = wallet.get_wallet_data()
     wallet_display_text = ""
-    print(wallet_data['data'])
+    sum = 0
     for currency, info in wallet_data['data'].items():
         wallet_display_text += "{}: {:.4f}  |  {:.4f} {}\n".format(currency, info['amount'], info['value'], wallet_data['base_currency'])
+        sum += info['value']
+    wallet_display_text += "\n\nIn total: {:.4f} {}".format(sum, wallet_data['base_currency'])
     viewer.update_display(wallet_display_text)
 
-def update_database():
-    print()
-
-def update_currencies_value():
-    print()
-
-def thread():
-    #TODO
-    update_database()
-    update_currencies_value()
+def run(wallet_data):
+    while True:
+        time.sleep(5)
+        wallet.update_database(wallet_data)
+        wallet.update_currencies_values(wallet_data)
+        update_view_display()
 
 def main():
+    if wallet.load_database() == True:
+        wallet.update_currencies_values()
+        update_view_display()
+    else:
+        viewer.get_base_currency_dialog()
+    threading.Thread(target=run, args=(wallet.get_wallet_data(),)).start()
     viewer.create_main_window()
 
 if __name__ == "__main__":
